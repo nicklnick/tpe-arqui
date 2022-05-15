@@ -9,6 +9,9 @@ static int posInKeys=0;
 // El ascii key actual 
 static char key;
 
+// Booleano para ver si hay un nuevo key
+static char keyAvailable;
+
 // Tabla de equivalencias entre makeCode y Ascii
 static char scanCodeTable[]={
     0,0,'1','2','3','4','5','6','7','8',	
@@ -25,9 +28,15 @@ void keyboard_handler() {
 	char c = readKeyboard();
 	if(c>=0 && c<128){
 		key = scanCodeTable[c];
+		keyAvailable = 1;
 	}
 }
 
 char get_key(){
+	keyAvailable = 0;
 	return key;
+}
+
+char checkIfAvailableKey(){
+	return keyAvailable;
 }

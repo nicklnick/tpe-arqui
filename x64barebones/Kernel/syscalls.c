@@ -1,56 +1,75 @@
 #include <syscalls.h>
 #include <stdint.h>
+#include <keyboard.h>
 
+// Normal mode
 #define STDOUT 1
 #define STDERR 2
 
+// Split screen
 #define STDOUT_LEFT 3
 #define STDOUT_RIGHT 5
 #define STDERR_LEFT 4
 #define STDERR_RIGHT 6
 
+// Colores 
 #define STDOUT_COLOR 7
 #define STDERR_COLOR 4
+
+// Offsets
+#define OFFSET 0
+#define OFFSET_RIGHT 80
 
 
 static uint8_t * const defaultVideoPos = (uint8_t*)0xB8000;
 
-static unsigned int currentVideoPosOffset = 0;
-static unsigned int currentVideoPosLeftOffset = 0;
-static unsigned int currentVideoPosRightOffset = 80;
+static unsigned int currentVideoPosOffset = OFFSET;
+static unsigned int currentVideoPosLeftOffset = OFFSET;
+static unsigned int currentVideoPosRightOffset = OFFSET_RIGHT;
 
 
-// 160 x 25 
-unsigned int write_left(const char * buf, char format, unsigned int count){
+// =========================VERSION 1==========================
+
+
+unsigned int write_to_side(const char * buf, char format, unsigned int count, unsigned int * offset , int limit, int step){
 	int i;
 
 	for(i=0; i<count; i++){
-		int aux = currentVideoPosLeftOffset;
-		if( aux % 160  == 80)
-			currentVideoPosLeftOffset += 80;
+		if( *offset % 160  == limit)		// si limit es 80 => left mode, limit es 0 => right / normal mode
+			*offset += step;				// si step es 1 => normal mode, si es 80 => right/left mode
 
-		*(defaultVideoPos + currentVideoPosLeftOffset++) = buf[i];
-		*(defaultVideoPos+ currentVideoPosLeftOffset++) = format;
+		char c = buf[i];
 
+		//--CARACTERES EPECIALES--
+		if(c=='\n'){			// avanzo a la proxima linea
+			int aux = 80 - (*offset % 80);
+			*offset += aux + step;
+		}
+		else{
+			*(defaultVideoPos + (*offset)++) = c;
+			*(defaultVideoPos + (*offset)++) = format;
+		}
 	}
 	return i;
 }
 
-unsigned int write_right(const char * buf, char format, unsigned int count){
-	int i;
 
-	for(i=0; i<count; i++){
-		int aux = currentVideoPosRightOffset;
-		if( aux % 160  == 0)
-			currentVideoPosRightOffset += 80;
+void scrollUp(int limit, int offset){				
+	for(int i=0, j = 160 ; j < 160 * 25 ;i++){				// Copio todo uno para arriba
 
-		*(defaultVideoPos + currentVideoPosRightOffset++) = buf[i];
-		*(defaultVideoPos+ currentVideoPosRightOffset++) = format;
-
+		*(defaultVideoPos + i) = *(defaultVideoPos + j); 
 	}
-	return i;
+
+
+
+
+	for(int i = 24 * 160; i < 25 * 160; i+=2){				// Elimino la ultima linea
+		*(defaultVideoPos + i) = ' '; 
+	}
 }
 
+
+// ====== SYSWRITE ======
 
 unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count){
 	char format;
@@ -60,7 +79,29 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count){
 	else 
 		format=STDERR_COLOR;
 
-	write_left(buf,format,count);
-	write_right(buf,format,count);	
+
+
 	return 0;
+}
+
+
+
+
+// ====== SYSREAD ======
+
+
+// Por ahora solo hacemos para STDIN
+unsigned int sys_read(unsigned int fd, char * buf, unsigned int count){
+	int i;
+
+	for(i=0; i<count && c!='\n'; ){
+		if(checkIfAvailableKey()){
+			char c = get_key();
+			buf[i] = c;
+			i++;
+			sys_write(STDOUT,&c, 1);
+		}
+	}
+
+	return i;
 }
