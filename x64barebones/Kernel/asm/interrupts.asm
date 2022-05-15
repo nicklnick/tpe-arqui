@@ -152,11 +152,9 @@ haltcpu:
 	ret
 
 
-
 ; ======= Interrupts de software ======= ;
 
 _swIntHandler:
-	;pushstate		;		opcional
 
 	push r9
 	mov r9, r8
@@ -167,8 +165,8 @@ _swIntHandler:
 	mov rdi, rax 
 
 	call swIntDispatcher 
+	pop r9
 
-	;popstate 		;		opcional
 	iretq
 
 

@@ -2,6 +2,7 @@
 #include <string.h>
 #include <lib.h>
 #include <moduleLoader.h>
+#include <idtLoader.h>
 
 
 extern uint8_t text;
@@ -47,8 +48,12 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
+extern void print();
+
 int main()
 {	
-	((EntryPoint)sampleCodeModuleAddress)();	
+	load_idt();
+
+	//((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
 	return 0;
 }

@@ -32,7 +32,6 @@ unsigned int write_left(const char * buf, char format, unsigned int count){
 		*(defaultVideoPos + currentVideoPosLeftOffset++) = buf[i];
 		*(defaultVideoPos+ currentVideoPosLeftOffset++) = format;
 
-		for(int k=0; k<50000000; k++);
 	}
 	return i;
 }
@@ -48,7 +47,6 @@ unsigned int write_right(const char * buf, char format, unsigned int count){
 		*(defaultVideoPos + currentVideoPosRightOffset++) = buf[i];
 		*(defaultVideoPos+ currentVideoPosRightOffset++) = format;
 
-		for(int k=0; k<50000000; k++);
 	}
 	return i;
 }
