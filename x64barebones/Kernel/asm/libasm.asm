@@ -1,26 +1,21 @@
-GLOBAL cpuVendor
+GLOBAL readKeyboard
 
 section .text
-	
-cpuVendor:
+
+readKeyboard:
 	push rbp
 	mov rbp, rsp
 
-	push rbx
+
+	readKeyboard_recieve:
+		mov ah, 1  					; 0000 0001
+		in al, 64h					; status del teclado/8042
+		and al, ah					; ???? bitwise(&)  0001 ; me quedo solo con el ultimo bit
+		cmp al, 1 					; para poder recibir, bit 0 de status tiene que estar en 1
+		jne readKeyboard_recieve	; sino, sigo esperando hasta que sea 0
 
 	mov rax, 0
-	cpuid
-
-
-	mov [rdi], ebx
-	mov [rdi + 4], edx
-	mov [rdi + 8], ecx
-
-	mov byte [rdi+13], 0
-
-	mov rax, rdi
-
-	pop rbx
+	in al, 60h					; leo letra
 
 	mov rsp, rbp
 	pop rbp
