@@ -3,6 +3,6 @@
 
 void keyboard_handler();
 char get_key();
-char checkIfAvailableKey()
+char checkIfAvailableKey();
 
 #endif

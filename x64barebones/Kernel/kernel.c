@@ -54,6 +54,9 @@ int main()
 {	
 	load_idt();
 
+	print();
+
+
 	//((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
 	return 0;
 }

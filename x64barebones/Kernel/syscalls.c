@@ -21,28 +21,28 @@
 #define OFFSET_RIGHT 80
 
 
-static uint8_t * const defaultVideoPos = (uint8_t*)0xB8000;
+static uint8_t * defaultVideoPos = (uint8_t*)0xB8000;
 
-static unsigned int currentVideoPosOffset = OFFSET;
-static unsigned int currentVideoPosLeftOffset = OFFSET;
-static unsigned int currentVideoPosRightOffset = OFFSET_RIGHT;
+//static unsigned int currentVideoPosOffset = OFFSET;
+///static unsigned int currentVideoPosLeftOffset = OFFSET;
+//static unsigned int currentVideoPosRightOffset = OFFSET_RIGHT;
 
 
 // =========================VERSION 1==========================
 
 
-unsigned int write_to_side(const char * buf, char format, unsigned int count, unsigned int * offset , int limit, int step){
+unsigned int write_to_side(const char * buf, char format, unsigned int count, unsigned int * offset , int from, int to, int step){
 	int i;
 
 	for(i=0; i<count; i++){
-		if( *offset % 160  == limit)		// si limit es 80 => left mode, limit es 0 => right / normal mode
-			*offset += step;				// si step es 1 => normal mode, si es 80 => right/left mode
+		if( *offset % to  == from)		// si from es 80 => left mode, from es 0 => right / normal mode
+			*offset += step;				// si step es 0 => normal mode, si es 80 => right/left mode
 
 		char c = buf[i];
 
 		//--CARACTERES EPECIALES--
 		if(c=='\n'){			// avanzo a la proxima linea
-			int aux = 80 - (*offset % 80);
+			int aux = to - (*offset % to);
 			*offset += aux + step;
 		}
 		else{
@@ -60,9 +60,6 @@ void scrollUp(int limit, int offset){
 		*(defaultVideoPos + i) = *(defaultVideoPos + j); 
 	}
 
-
-
-
 	for(int i = 24 * 160; i < 25 * 160; i+=2){				// Elimino la ultima linea
 		*(defaultVideoPos + i) = ' '; 
 	}
@@ -79,10 +76,17 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count){
 	else 
 		format=STDERR_COLOR;
 
+	int offset =0;
+	*defaultVideoPos = 'K';
 
+	write_to_side(buf, format, count, &offset, 80,160,80);
+	offset = 0;
+	write_to_side(buf, format, count, &offset, 0,80,80);
 
 	return 0;
 }
+
+
 
 
 
@@ -92,16 +96,17 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count){
 
 // Por ahora solo hacemos para STDIN
 unsigned int sys_read(unsigned int fd, char * buf, unsigned int count){
-	int i;
+	// int i;
 
-	for(i=0; i<count && c!='\n'; ){
-		if(checkIfAvailableKey()){
-			char c = get_key();
-			buf[i] = c;
-			i++;
-			sys_write(STDOUT,&c, 1);
-		}
-	}
+	// for(i=0; i<count && c!='\n'; ){
+	// 	if(checkIfAvailableKey()){
+	// 		char c = get_key();
+	// 		buf[i] = c;
+	// 		i++;
+	// 		sys_write(STDOUT,&c, 1);
+	// 	}
+	// }
 
-	return i;
+	// return i;
+	return 0;
 }
