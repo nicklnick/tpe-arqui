@@ -16,50 +16,97 @@
 #define STDOUT_COLOR 7
 #define STDERR_COLOR 4
 
-// Offsets
-#define OFFSET 0
-#define OFFSET_RIGHT 80
+// Columna de comienzo en pantalla
+#define START_LEFT 0
+#define START_RIGHT 80
+
+// Dimensiones de pantalla
+#define NORMAL_MODE_LENGTH 160
+#define SPLIT_MODE_LENGTH 80
+
+#define SCREEN_HEIGHT 25
+#define SCREEN_WIDTH 160
+
+// Salto de pantalla
+#define NORMAL_MODE_STEP 0
+#define SPLIT_MODE_STEP 80
+
 
 
 static uint8_t * defaultVideoPos = (uint8_t*)0xB8000;
 
-//static unsigned int currentVideoPosOffset = OFFSET;
-///static unsigned int currentVideoPosLeftOffset = OFFSET;
-//static unsigned int currentVideoPosRightOffset = OFFSET_RIGHT;
+static unsigned int currentVideoPosOffset = START_LEFT;
+static unsigned int currentVideoPosLeftOffset = START_LEFT;
+static unsigned int currentVideoPosRightOffset = START_RIGHT;
 
 
 // =========================VERSION 1==========================
 
+/*
+	Parametros:
+	start: columna inicial en pantalla (Ej: normal=izq=0, right= 80)		| length: longitud de pantalla en la que se imprime
+	step: cantidad de posiciones a saltar en pantalla, al llegar al final de la pantalla
 
-unsigned int write_to_side(const char * buf, char format, unsigned int count, unsigned int * offset , unsigned int length , int step){
+*/
+
+void scrollUp(int start, int length, int step){			
+
+	for(int i=start, j = SCREEN_WIDTH + start; j < SCREEN_WIDTH * SCREEN_HEIGHT ;){				// Copio todo uno para arriba 1 fila
+		*(defaultVideoPos + i++) = *(defaultVideoPos + j++); 
+
+		if( i % length  == 0){											// salto a nueva linea, si llegue a fin
+			i += step;
+			j += step;
+		}				
+	}
+
+
+}
+
+/* 
+	Parametros:
+	buf: texto que se debe escribir en pantalla 							| format: color/fondo de texto
+	offset: posicion actual de "cursor "									| count: cantidad de letras en texto
+	start: columna inicial en pantalla (Ej: normal=izq=0, right= 80)		| length: longitud de pantalla en la que se imprime
+	step: cantidad de posiciones a saltar en pantalla, al llegar al final de la pantalla
+
+*/
+unsigned int write(const char * buf, char format, unsigned int count, 
+	unsigned int * offset, unsigned int start,  unsigned int length , unsigned int step){
+
 	int i;
 
 	for(i=0; i<count; i++){
+
+		if(*offset == SCREEN_HEIGHT * length){							// llego al final de pantalla, tengo que hacer scroll up
+			scrollUp(start,length, step);
+			*offset = SCREEN_HEIGHT * start;
+		}
 		
 		char c = buf[i];
 
 		//--CARACTERES EPECIALES--	
-		if(c=='\n'){							// avanzo a la proxima linea
-			int aux = length - (*offset % length);
+		if(c=='\n'){										// CASO: hay un \n en el texto
+			int aux = length - (*offset % length);			// avanzo a la proxima linea en pantalla
 			*offset += aux + step;
 		}
+
 		else{
-			*(defaultVideoPos + (*offset)++) = c;
+			*(defaultVideoPos + (*offset)++) = c;			// escribo letra y formato
 			*(defaultVideoPos + (*offset)++) = format;
+
+			if( *offset % length  == 0)						// salto a new line si llego a fin 
+			*offset += step;
 		}
-		if( *offset % length  == 0)				// si from es 80 => left mode, from es 0 => right / normal mode
-			*offset += step;					// si step es 0 => normal mode, si es 80 => right/left mode
 	}
 	return i;
 }
 
-
-void scrollUp(int from, int to){				
-	for(int i=0, j = 160 ; j < 160 * 25 ;i++, j++){				// Copio todo uno para 
-		*(defaultVideoPos + i) = *(defaultVideoPos + j); 
+void clearScreen(){
+	for(int i=0 ; i < SCREEN_WIDTH * SCREEN_HEIGHT ; i+=2){				// Copio todo uno para arriba 1 fila
+		*(defaultVideoPos + i) = ' ';			
 	}
 }
-
 
 // ====== SYSWRITE ======
 
@@ -71,17 +118,32 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count){
 	else 
 		format=STDERR_COLOR;
 
-	int offset = 0;
-	*defaultVideoPos = 'K';
 
-	offset = 16;
-	write_to_side(buf, format, count, &offset, 160,0);
+	// ## REMOVE ##
+	if(currentVideoPosOffset==0 && currentVideoPosRightOffset==80 && currentVideoPosLeftOffset==0)
+		clearScreen();
 
-	for(int i=0; i<500000000; i++);
+	switch(fd){
+		case STDERR:							// mismo codigo
+		case STDOUT:
+			write(buf, format, count, &currentVideoPosOffset, START_LEFT, NORMAL_MODE_LENGTH, NORMAL_MODE_STEP);
+			currentVideoPosRightOffset=0;		// se resetean las split screen
+			currentVideoPosLeftOffset=0;
+		break;
 
-	scrollUp(0,0);
+		case STDERR_LEFT:
+		case STDOUT_LEFT:
+			write(buf, format, count, &currentVideoPosLeftOffset, START_LEFT, SPLIT_MODE_LENGTH, SPLIT_MODE_STEP);
+			currentVideoPosOffset=0;		// se resetean el normal mode
+		break;
 
-	return 0;
+		case STDERR_RIGHT:
+		case STDOUT_RIGHT:
+			write(buf, format, count, &currentVideoPosRightOffset, START_RIGHT, SPLIT_MODE_LENGTH, SPLIT_MODE_STEP);
+			currentVideoPosOffset=0;		// se resetean el normal mode
+		break;
+
+	}
 }
 
 

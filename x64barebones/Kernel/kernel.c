@@ -48,14 +48,17 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
-extern void print();
+extern void print(unsigned int fd, const char * string, unsigned int lenght);
 
 int main()
 {	
 	load_idt();
 
-	print();
+	print(3, "Este es un mensaje normal (left)\n", 33);
+	print(4, "Este es un mensaje de error (left)\n",35);
 
+	print(5, "Este es un mensaje normal (right)\n", 34);
+	print(6, "Este es un mensaje de error (right)\n",36);
 
 	//((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
 	return 0;
