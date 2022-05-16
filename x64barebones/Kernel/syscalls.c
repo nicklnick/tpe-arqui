@@ -38,8 +38,8 @@ unsigned int write_to_side(const char * buf, char format, unsigned int count, un
 		
 		char c = buf[i];
 
-		//--CARACTERES EPECIALES--
-		if(c=='\n'){			// avanzo a la proxima linea
+		//--CARACTERES EPECIALES--	
+		if(c=='\n'){							// avanzo a la proxima linea
 			int aux = length - (*offset % length);
 			*offset += aux + step;
 		}
@@ -47,21 +47,16 @@ unsigned int write_to_side(const char * buf, char format, unsigned int count, un
 			*(defaultVideoPos + (*offset)++) = c;
 			*(defaultVideoPos + (*offset)++) = format;
 		}
-		if( *offset % length  == 0)		// si from es 80 => left mode, from es 0 => right / normal mode
-			*offset += step;				// si step es 0 => normal mode, si es 80 => right/left mode
+		if( *offset % length  == 0)				// si from es 80 => left mode, from es 0 => right / normal mode
+			*offset += step;					// si step es 0 => normal mode, si es 80 => right/left mode
 	}
 	return i;
 }
 
 
-void scrollUp(int limit, int offset){				
-	for(int i=0, j = 160 ; j < 160 * 25 ;i++){				// Copio todo uno para arriba
-
+void scrollUp(int from, int to){				
+	for(int i=0, j = 160 ; j < 160 * 25 ;i++, j++){				// Copio todo uno para 
 		*(defaultVideoPos + i) = *(defaultVideoPos + j); 
-	}
-
-	for(int i = 24 * 160; i < 25 * 160; i+=2){				// Elimino la ultima linea
-		*(defaultVideoPos + i) = ' '; 
 	}
 }
 
@@ -81,6 +76,10 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count){
 
 	offset = 16;
 	write_to_side(buf, format, count, &offset, 160,0);
+
+	for(int i=0; i<500000000; i++);
+
+	scrollUp(0,0);
 
 	return 0;
 }
