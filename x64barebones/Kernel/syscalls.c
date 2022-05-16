@@ -31,24 +31,24 @@ static uint8_t * defaultVideoPos = (uint8_t*)0xB8000;
 // =========================VERSION 1==========================
 
 
-unsigned int write_to_side(const char * buf, char format, unsigned int count, unsigned int * offset , int from, int to, int step){
+unsigned int write_to_side(const char * buf, char format, unsigned int count, unsigned int * offset , unsigned int length , int step){
 	int i;
 
 	for(i=0; i<count; i++){
-		if( *offset % to  == from)		// si from es 80 => left mode, from es 0 => right / normal mode
-			*offset += step;				// si step es 0 => normal mode, si es 80 => right/left mode
-
+		
 		char c = buf[i];
 
 		//--CARACTERES EPECIALES--
 		if(c=='\n'){			// avanzo a la proxima linea
-			int aux = to - (*offset % to);
+			int aux = length - (*offset % length);
 			*offset += aux + step;
 		}
 		else{
 			*(defaultVideoPos + (*offset)++) = c;
 			*(defaultVideoPos + (*offset)++) = format;
 		}
+		if( *offset % length  == 0)		// si from es 80 => left mode, from es 0 => right / normal mode
+			*offset += step;				// si step es 0 => normal mode, si es 80 => right/left mode
 	}
 	return i;
 }
@@ -76,12 +76,11 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count){
 	else 
 		format=STDERR_COLOR;
 
-	int offset =0;
+	int offset = 0;
 	*defaultVideoPos = 'K';
 
-	write_to_side(buf, format, count, &offset, 80,160,80);
-	offset = 0;
-	write_to_side(buf, format, count, &offset, 0,80,80);
+	offset = 16;
+	write_to_side(buf, format, count, &offset, 160,0);
 
 	return 0;
 }

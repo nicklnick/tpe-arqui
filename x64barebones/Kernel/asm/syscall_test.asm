@@ -3,7 +3,7 @@ print:
 		mov eax, 1
 		mov rdi, 1
 		mov rsi, string
-		mov rdx, 81
+		mov rdx, 193
 
 		int 80h
 
@@ -11,4 +11,4 @@ print:
 
 
 section .data
-string db "Este es un string largo a ver si funciona estooooooooooo pimba pumba timon y pumba"
+string db "Este es un string largo a ver si funciona estooooooooooo pimba pumba timon y pumba pumbapumbapumbapumbapumbapumbapumbapumbapumbapumbapumbapumbapumbapumbapumbapumbapumbapumbapumbapumbapumbapumba"
