@@ -4,6 +4,8 @@
 #include <moduleLoader.h>
 #include <idtLoader.h>
 
+#include <keyboard.h> 			// ###### REMOVE ######
+
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -54,14 +56,14 @@ int main()
 {	
 	load_idt();
 
-	for(int i=0; i<30; i++){
-		for(int i=0; i<50000000; i++);
-		print(3, "pim\n", 4);
-		print(3, "pum\n",4);
-		print(3, "pam\n",4);		
+	char c;
+	while(1){
+		if(checkIfAvailableKey()){
+			c = get_key();
+			print(4, &c, 1);
+			print(5, &c, 1);
+		}
 	}
-	
-	print(3, "llegue\n",4);	
 
 	
 

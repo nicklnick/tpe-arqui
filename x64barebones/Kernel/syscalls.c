@@ -60,7 +60,9 @@ void scrollUp(int start, int length, int step){
 		}				
 	}
 
-
+	for(int i=(SCREEN_HEIGHT-1) * SCREEN_WIDTH + start; 				// elimino la ultima linea
+		i < (SCREEN_HEIGHT-1) * SCREEN_WIDTH + length + start; i+=2)
+		*(defaultVideoPos+i)=' ';
 }
 
 /* 
@@ -78,7 +80,7 @@ unsigned int write(const char * buf, char format, unsigned int count,
 
 	for(i=0; i<count; i++){
 
-		if(*offset >= (SCREEN_HEIGHT-1) * SCREEN_WIDTH + length){							// llego al final de pantalla, tengo que hacer scroll up
+		if(*offset >= (SCREEN_HEIGHT-1) * SCREEN_WIDTH + length + start){							// llego al final de pantalla, tengo que hacer scroll up
 			scrollUp(start, length, step);
 			*offset = (SCREEN_HEIGHT-1) * SCREEN_WIDTH + start;
 		}
@@ -119,7 +121,7 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count){
 		format=STDERR_COLOR;
 
 
-	// ## REMOVE ##
+	// ###### REMOVE #######
 	if(currentVideoPosOffset==0 && currentVideoPosRightOffset==80 && currentVideoPosLeftOffset==0)
 		clearScreen();
 

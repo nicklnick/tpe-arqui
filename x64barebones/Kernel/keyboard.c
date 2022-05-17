@@ -1,4 +1,5 @@
 #include <keyboard.h>
+#include <stdint.h>
 extern char readKeyboard();		// en libasm.asm
 
 #define BUFFER_SIZE 100
@@ -26,10 +27,12 @@ static char scanCodeTable[]={
 void keyboard_handler() {
 	char c = readKeyboard();
 	if(c>=0 && c<128){
-		keyBuffer[posInBuffer] = scanCodeTable[c];
+		if(posInBuffer!=0)
+			posInBuffer = (posInBuffer + 1) % BUFFER_SIZE;		// hacemos un circular array, asi si pisa lo mas viejo si se pasa del size
 
-		posInBuffer = (posInBuffer + 1) % BUFFER_SIZE;		// hacemos un circular array, asi si pisa lo mas viejo si se pasa del size
+		keyBuffer[posInBuffer] = scanCodeTable[c];		
 	}
+
 }
 
 char get_key(){
