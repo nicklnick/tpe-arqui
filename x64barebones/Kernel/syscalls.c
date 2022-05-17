@@ -78,9 +78,9 @@ unsigned int write(const char * buf, char format, unsigned int count,
 
 	for(i=0; i<count; i++){
 
-		if(*offset == SCREEN_HEIGHT * length){							// llego al final de pantalla, tengo que hacer scroll up
-			scrollUp(start,length, step);
-			*offset = SCREEN_HEIGHT * start;
+		if(*offset >= (SCREEN_HEIGHT-1) * SCREEN_WIDTH + length){							// llego al final de pantalla, tengo que hacer scroll up
+			scrollUp(start, length, step);
+			*offset = (SCREEN_HEIGHT-1) * SCREEN_WIDTH + start;
 		}
 		
 		char c = buf[i];
@@ -156,17 +156,17 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count){
 
 // Por ahora solo hacemos para STDIN
 unsigned int sys_read(unsigned int fd, char * buf, unsigned int count){
-	// int i;
+	int i;
 
-	// for(i=0; i<count && c!='\n'; ){
-	// 	if(checkIfAvailableKey()){
-	// 		char c = get_key();
-	// 		buf[i] = c;
-	// 		i++;
-	// 		sys_write(STDOUT,&c, 1);
-	// 	}
-	// }
+	char c=0;
+	for(i=0; i<count && c!='\n'; ){
+		if(checkIfAvailableKey()){
+			c = get_key();
+			buf[i] = c;
+			i++;
+			sys_write(STDOUT,&c, 1);
+		}
+	}
 
-	// return i;
-	return 0;
+	return i;
 }

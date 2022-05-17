@@ -54,11 +54,16 @@ int main()
 {	
 	load_idt();
 
-	print(3, "Este es un mensaje normal (left)\n", 33);
-	print(4, "Este es un mensaje de error (left)\n",35);
+	for(int i=0; i<30; i++){
+		for(int i=0; i<50000000; i++);
+		print(3, "pim\n", 4);
+		print(3, "pum\n",4);
+		print(3, "pam\n",4);		
+	}
+	
+	print(3, "llegue\n",4);	
 
-	print(5, "Este es un mensaje normal (right)\n", 34);
-	print(6, "Este es un mensaje de error (right)\n",36);
+	
 
 	//((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
 	return 0;

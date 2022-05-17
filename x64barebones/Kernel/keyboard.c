@@ -1,16 +1,15 @@
 #include <keyboard.h>
-
 extern char readKeyboard();		// en libasm.asm
 
-// ----Para despues----
-static char keyBuffer[100];
-static int posInKeys=0;
+#define BUFFER_SIZE 100
+#define FLOOR_MOD(x, total) 	if((x)<0)							\
+				    				x=((total) + (x)) % (total); 	\
+								else 								\
+				   					 x = (x) % (total);				\
 
-// El ascii key actual 
-static char key;
-
-// Booleano para ver si hay un nuevo key
-static char keyAvailable;
+// Buffer de caracters de teclado
+static char keyBuffer[BUFFER_SIZE];
+static int posInBuffer=0;
 
 // Tabla de equivalencias entre makeCode y Ascii
 static char scanCodeTable[]={
@@ -27,16 +26,25 @@ static char scanCodeTable[]={
 void keyboard_handler() {
 	char c = readKeyboard();
 	if(c>=0 && c<128){
-		key = scanCodeTable[c];
-		keyAvailable = 1;
+		keyBuffer[posInBuffer] = scanCodeTable[c];
+
+		posInBuffer = (posInBuffer + 1) % BUFFER_SIZE;		// hacemos un circular array, asi si pisa lo mas viejo si se pasa del size
 	}
 }
 
 char get_key(){
-	keyAvailable = 0;
-	return key;
+	if(checkIfAvailableKey()==0)
+		return 0;
+
+	char c = keyBuffer[posInBuffer];
+	keyBuffer[posInBuffer] = 0;							// agarro letra y la elimino, para delimitar los posiciones vacias
+
+	posInBuffer--;										// me muevo uno para atras.
+	FLOOR_MOD(posInBuffer, BUFFER_SIZE)					// % no coopera con numeros negativos
+
+	return c;
 }
 
 char checkIfAvailableKey(){
-	return keyAvailable;
+	return keyBuffer[posInBuffer]!=0;
 }
