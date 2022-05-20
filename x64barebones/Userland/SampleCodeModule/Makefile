@@ -1,6 +1,7 @@
 include ../Makefile.inc
 
 MODULE=0000-sampleCodeModule.bin
+
 SOURCES=$(wildcard [^_]*.c)
 
 all: $(MODULE)
