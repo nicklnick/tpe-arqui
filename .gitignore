@@ -9,3 +9,11 @@
 
 #Object files
 *.o
+*.elf
+x64barebones/.gdb_history
+x64barebones/.gdbinit
+x64barebones/Kernel/Makefile
+x64barebones/Kernel/Makefile.inc
+x64barebones/Userland/Makefile.inc
+x64barebones/Userland/SampleCodeModule/Makefile
+x64barebones/run.sh

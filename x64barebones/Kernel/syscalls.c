@@ -1,7 +1,6 @@
 #include <syscalls.h>
 #include <stdint.h>
 #include <keyboard.h>
-extern char readKeyboard();	
 
 // Normal mode
 #define STDOUT 1
@@ -154,17 +153,6 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count){
 
 #define STDIN 0
 
-static char table[]={
-    0,0,'1','2','3','4','5','6','7','8',	
-	'9','0','-','=','\b','\t','q','w','e','r',
-	't','y','u','i','o','p','[',']','\n',0,
-	'a','s','d','f','g','h','j','k','l',';',
-	'\'','`',0,'\\','z','x','c','v','b','n',
-	'm',',','.','/',0,'*',0,' ',0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,0,0,'-',0,0,0,'+',0,0,
-	0,0,0,0,0,0,0,0,0
-};	
-
 // Solo copia
 unsigned int sys_read(unsigned int fd, char * buf, unsigned int count){
 	// char * readDest;
@@ -176,15 +164,20 @@ unsigned int sys_read(unsigned int fd, char * buf, unsigned int count){
 	// 		return 0;	// Seria error?
 	// }
 
-	char c = readKeyboard(); 
-	int i;
-	for(i=0; i<count && c!='\n'; i++){
-		if(c>=0 && c<128){
-			c = table[c];
-			buf[i] = c;
-			sys_write(1,&c,1);
+	char c=0; 
+	int i=0;
+	while(c!='\n'){
+		if(keyboard_handler()){
+			c = peek_key();
+			sys_write(1,&c, 1);
+		
+			if(i<count-1){
+				buf[i] = get_key();
+				i++;
+			}
 		}
-		c = readKeyboard();
 	}
+	buf[i]=0;
+
 	return i;
 }

@@ -3,15 +3,19 @@
 extern char readKeyboard();		// en libasm.asm
 
 #define BUFFER_SIZE 100
+#define TRUE 1
+#define FALSE 0
 #define FLOOR_MOD(x, total) 	if((x)<0)							\
 				    				x=((total) + (x)) % (total); 	\
 								else 								\
 				   					 x = (x) % (total);	
 
+
 // Buffer de caracters de teclado
-static char keyBuffer[BUFFER_SIZE] = {0};
-static int writePos=0;
-static int readPos=0;
+static char keyBuffer[BUFFER_SIZE];
+static int writePos;
+static int readPos;
+static int peekPos;
 
 // Tabla de equivalencias entre makeCode y Ascii
 static char scanCodeTable[]={
@@ -25,9 +29,10 @@ static char scanCodeTable[]={
 	0,0,0,0,0,0,0,0,0
 };	
 
-void keyboard_handler() {
 
-	char c = readKeyboard();
+char keyboard_handler() {
+
+	int c = readKeyboard();
 
 	if(c>=0 && c<128){
 		if(writePos==readPos){
@@ -35,12 +40,14 @@ void keyboard_handler() {
 			FLOOR_MOD(prevToRead, BUFFER_SIZE)
 
 			if(keyBuffer[prevToRead]!=0)													// estoy a punto de pisar la primera letra a leer
-				readPos = (readPos + 1) % BUFFER_SIZE;	 									// tengo que avanzar read asi no se corta el texto
+				return FALSE;									 									// tengo que cortar, solo puedo escribir cuando la persona consuma mas del buffer			
 		} 
 
 		keyBuffer[writePos] = scanCodeTable[c];
 		writePos = (writePos + 1) % BUFFER_SIZE;
+		return TRUE;
 	}
+	return FALSE;
 }
 
 char get_key(){
@@ -53,6 +60,16 @@ char get_key(){
 
 	return c;
 }
+
+char peek_key(){
+	if(keyBuffer[peekPos]==0)
+		return 0;
+
+	char c = keyBuffer[peekPos];
+	peekPos = (peekPos + 1) % BUFFER_SIZE;	
+	return c;
+}
+
 
 char checkIfAvailableKey(){
 	return keyBuffer[readPos]!=0;
