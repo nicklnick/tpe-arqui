@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <syscalls.h>
 
 //registros en asm:		rax		  rdi		 rsi	 rdx		r10		 r8			r9
 //registros en c: 		rdi		  rsi		 rdx	 rcx		r8		 r9		   stack		// de derecha a izquierda se pasan a los registros

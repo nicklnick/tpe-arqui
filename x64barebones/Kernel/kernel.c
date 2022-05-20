@@ -59,9 +59,13 @@ int main()
 	
 	char buffer[100];
 
-	int i= read(1,buffer,20);
-	print(1,buffer,i);
+	int i = read(0,buffer,20);
 
+	
+	i = read(0,buffer,20);
+
+
+	while(1);
 
 	//((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
 	return 0;

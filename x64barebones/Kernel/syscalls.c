@@ -2,6 +2,9 @@
 #include <stdint.h>
 #include <keyboard.h>
 
+// Entrada estandar
+#define STDIN 0
+
 // Normal mode
 #define STDOUT 1
 #define STDERR 2
@@ -148,22 +151,9 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count){
 	}
 }
 
-
 // ====== SYSREAD ======
 
-#define STDIN 0
-
-// Solo copia
-unsigned int sys_read(unsigned int fd, char * buf, unsigned int count){
-	// char * readDest;
-	// switch(fd){								// Eligimos posicion de donde leer. Tambien lo podriamos hacer con una funcion/tabla
-	// 	case STDIN:
-	// 		;			// keyBuffer es una variable estatica
-	// 		break;
-	// 	default:
-	// 		return 0;	// Seria error?
-	// }
-
+unsigned int read_stdin(char * buf, unsigned int count){
 	char c=0; 
 	int i=0;
 	while(c!='\n'){
@@ -176,8 +166,19 @@ unsigned int sys_read(unsigned int fd, char * buf, unsigned int count){
 				i++;
 			}
 		}
-	}
+	}	
 	buf[i]=0;
-
+	
 	return i;
+}
+
+// Solo copia
+unsigned int sys_read(unsigned int fd, char * buf, unsigned int count){
+
+	switch(fd){								// Eligimos posicion de donde leer. Tambien lo podriamos hacer con una funcion/tabla
+		case STDIN:
+			return read_stdin(buf, count);
+		default:
+			return 0;	// Seria error?
+	}
 }
