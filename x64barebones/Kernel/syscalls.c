@@ -52,8 +52,8 @@ static unsigned int currentVideoPosRightOffset = START_RIGHT;
 
 */
 
-void scrollUp(int start, int length, int step){			
-
+void scrollUp(int start, int length, int step)
+{
 	for(int i=start, j = SCREEN_WIDTH + start; j < SCREEN_WIDTH * SCREEN_HEIGHT ;){				// Copio todo uno para arriba 1 fila
 		*(defaultVideoPos + i++) = *(defaultVideoPos + j++); 
 
@@ -77,13 +77,13 @@ void scrollUp(int start, int length, int step){
 
 */
 unsigned int write(const char * buf, char format, unsigned int count, 
-	unsigned int * offset, unsigned int start,  unsigned int length , unsigned int step){
-
+	unsigned int * offset, unsigned int start,  unsigned int length , unsigned int step)
+{
 	int i;
 
-	for(i=0; i<count; i++){
+	for(i=0; i<count; i++) {
 
-		if(*offset >= (SCREEN_HEIGHT-1) * SCREEN_WIDTH + length + start){							// llego al final de pantalla, tengo que hacer scroll up
+		if(*offset >= (SCREEN_HEIGHT-1) * SCREEN_WIDTH + length + start) {							// llego al final de pantalla, tengo que hacer scroll up
 			scrollUp(start, length, step);
 			*offset = (SCREEN_HEIGHT-1) * SCREEN_WIDTH + start;
 		}
@@ -91,31 +91,30 @@ unsigned int write(const char * buf, char format, unsigned int count,
 		char c = buf[i];
 
 		//--CARACTERES EPECIALES--	
-		if(c=='\n'){										// CASO: hay un \n en el texto
+		if(c == '\n') {										// CASO: hay un \n en el texto
 			int aux = length - (*offset % length);			// avanzo a la proxima linea en pantalla
 			*offset += aux + step;
 		}
-
-		else{	
+		else {	
 			*(defaultVideoPos + (*offset)++) = c;			// escribo letra y formato
 			*(defaultVideoPos + (*offset)++) = format;
 
-			if( *offset % length  == 0)						// salto a new line si llego a fin 
-			*offset += step;
+			if(*offset % length  == 0)						// salto a new line si llego a fin 
+                                *offset += step;
 		}
 	}
 	return i;
 }
 
-void clearScreen(){
-	for(int i=0 ; i < SCREEN_WIDTH * SCREEN_HEIGHT ; i+=2){				// Copio todo uno para arriba 1 fila
+void clearScreen() 
+{
+	for(int i=0 ; i < SCREEN_WIDTH * SCREEN_HEIGHT ; i+=2)			// Copio todo uno para arriba 1 fila
 		*(defaultVideoPos + i) = ' ';			
-	}
 }
 
 // ====== SYSWRITE ======
-
-unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count){
+unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count) 
+{
 	char format;
 
 	if(fd % 2 != 0)				// notar que solo los pares son ERROR
@@ -128,7 +127,7 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count){
 	if(currentVideoPosOffset==0 && currentVideoPosRightOffset==80 && currentVideoPosLeftOffset==0)
 		clearScreen();
 
-	switch(fd){
+	switch(fd) {
 		case STDERR:							// mismo codigo
 		case STDOUT:
 			write(buf, format, count, &currentVideoPosOffset, START_LEFT, NORMAL_MODE_LENGTH, NORMAL_MODE_STEP);
@@ -152,16 +151,16 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count){
 }
 
 // ====== SYSREAD ======
-
-unsigned int read_stdin(char * buf, unsigned int count){
+unsigned int read_stdin(char * buf, unsigned int count) 
+{
 	char c=0; 
 	int i=0;
-	while(c!='\n'){
-		if(keyboard_handler()){
+	while(c!='\n') {
+		if(keyboard_handler()) {
 			c = peek_key();
 			sys_write(1,&c, 1);
 		
-			if(i<count-1){
+			if(i<count-1) {
 				buf[i] = get_key();
 				i++;
 			}
@@ -173,9 +172,9 @@ unsigned int read_stdin(char * buf, unsigned int count){
 }
 
 // Solo copia
-unsigned int sys_read(unsigned int fd, char * buf, unsigned int count){
-
-	switch(fd){								// Eligimos posicion de donde leer. Tambien lo podriamos hacer con una funcion/tabla
+unsigned int sys_read(unsigned int fd, char * buf, unsigned int count)
+{
+	switch(fd) {						// Eligimos posicion de donde leer. Tambien lo podriamos hacer con una funcion/tabla
 		case STDIN:
 			return read_stdin(buf, count);
 		default:

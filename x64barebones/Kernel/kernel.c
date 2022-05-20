@@ -1,11 +1,8 @@
-#include <stdint.h>
-#include <string.h>
+#include <idtLoader.h>
 #include <lib.h>
 #include <moduleLoader.h>
-#include <idtLoader.h>
-
-#include <keyboard.h> 			// ###### REMOVE ######
-
+#include <stdint.h>
+#include <string.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -22,8 +19,7 @@ static void * const sampleDataModuleAddress = (void*)0x500000;
 typedef int (*EntryPoint)();
 
 
-void clearBSS(void * bssAddress, uint64_t bssSize)
-{
+void clearBSS(void * bssAddress, uint64_t bssSize) {
 	memset(bssAddress, 0, bssSize);
 }
 
