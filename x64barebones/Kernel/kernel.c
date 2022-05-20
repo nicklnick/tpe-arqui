@@ -51,21 +51,17 @@ void * initializeKernelBinary()
 }
 
 extern void print(unsigned int fd, const char * string, unsigned int lenght);
+extern unsigned int read(unsigned int fd, const char * string, unsigned int lenght);
 
 int main()
 {	
 	load_idt();
-
-	char c;
-	while(1){
-		if(checkIfAvailableKey()){
-			c = get_key();
-			print(4, &c, 1);
-			print(5, &c, 1);
-		}
-	}
-
 	
+	char buffer[100];
+
+	int i= read(1,buffer,20);
+	print(1,buffer,i);
+
 
 	//((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
 	return 0;

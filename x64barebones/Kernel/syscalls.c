@@ -1,6 +1,7 @@
 #include <syscalls.h>
 #include <stdint.h>
 #include <keyboard.h>
+extern char readKeyboard();	
 
 // Normal mode
 #define STDOUT 1
@@ -93,7 +94,7 @@ unsigned int write(const char * buf, char format, unsigned int count,
 			*offset += aux + step;
 		}
 
-		else{
+		else{	
 			*(defaultVideoPos + (*offset)++) = c;			// escribo letra y formato
 			*(defaultVideoPos + (*offset)++) = format;
 
@@ -149,26 +150,41 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count){
 }
 
 
-
-
-
-
 // ====== SYSREAD ======
 
+#define STDIN 0
 
-// Por ahora solo hacemos para STDIN
+static char table[]={
+    0,0,'1','2','3','4','5','6','7','8',	
+	'9','0','-','=','\b','\t','q','w','e','r',
+	't','y','u','i','o','p','[',']','\n',0,
+	'a','s','d','f','g','h','j','k','l',';',
+	'\'','`',0,'\\','z','x','c','v','b','n',
+	'm',',','.','/',0,'*',0,' ',0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,'-',0,0,0,'+',0,0,
+	0,0,0,0,0,0,0,0,0
+};	
+
+// Solo copia
 unsigned int sys_read(unsigned int fd, char * buf, unsigned int count){
+	// char * readDest;
+	// switch(fd){								// Eligimos posicion de donde leer. Tambien lo podriamos hacer con una funcion/tabla
+	// 	case STDIN:
+	// 		;			// keyBuffer es una variable estatica
+	// 		break;
+	// 	default:
+	// 		return 0;	// Seria error?
+	// }
+
+	char c = readKeyboard(); 
 	int i;
-
-	char c=0;
-	for(i=0; i<count && c!='\n'; ){
-		if(checkIfAvailableKey()){
-			c = get_key();
+	for(i=0; i<count && c!='\n'; i++){
+		if(c>=0 && c<128){
+			c = table[c];
 			buf[i] = c;
-			i++;
-			sys_write(STDOUT,&c, 1);
+			sys_write(1,&c,1);
 		}
+		c = readKeyboard();
 	}
-
 	return i;
 }
