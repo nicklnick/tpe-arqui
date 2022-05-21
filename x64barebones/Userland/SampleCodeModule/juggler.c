@@ -1,3 +1,5 @@
+#include <juggler.h>
+
 #define SIM_PROGRAMS 2
 #define END -1
 
@@ -55,6 +57,6 @@ void addCall(int (*func)(int, int), int param1, int screen)
         currentWrite = (currentWrite + 1) % SIM_PROGRAMS;
 
         // Sumamamos dim para que siga juggleando los programas
-        dim = (dim + 1) == SIM_PROGRAMS? SIM_PROGRAMS - 1 : dim + 1;      
+        dim = (dim + 1) == SIM_PROGRAMS? SIM_PROGRAMS : dim + 1;      
         return;
 }
