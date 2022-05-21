@@ -1,11 +1,16 @@
+/*--------  DEPENDENCIES --------*/
 #include <keyboard.h>
 #include <stdint.h>
 
+extern char readKeyboard();		// en libasm.asm
+
+/*-------- CONSTANTS --------*/
 #define BUFFER_SIZE 100
 #define TRUE 1
 #define FALSE 0
 #define UNMAPPED 1
 
+/*-------- STATIC FILE VARIABLES --------*/
 static char keyBuffer[BUFFER_SIZE];             // Buffer de caracters de teclado
 static int writePos;				// Posicion a escribir en el buffer
 static int readPos;				// Posicion a consumir en el buffer
@@ -27,16 +32,15 @@ static char scanCodeTable[] = {
 	UNMAPPED,UNMAPPED,UNMAPPED
 };	
 
-extern char readKeyboard();		// en libasm.asm
 
-/* -------------------------------------------------------------
- * keyboard_handler:
- *      Usa un array circular. Si se llega a la capacidad maxima, no sobre escribe. 
- * ------------------------------------------------------------
- * Devuelve: 1 si se escribio la entrada al buffer, 0 sino.
- * -------------------------------------------------------------
-*/
+/*-------- CODE --------*/
 
+char checkIfAvailableKey() {
+	return keyBuffer[readPos] != 0;
+}
+
+
+/* Usa un array circular. Si se llega a la capacidad maxima, no sobre-escribe. */
 char keyboard_handler() 
 {
 	int c = readKeyboard();
@@ -52,19 +56,13 @@ char keyboard_handler()
 }
 
 
-/* -------------------------------------------------------------
- * get_key:
- *      consumo letra del buffer y sobreescribe con 0 para denotar una posicion vacia.
- * ------------------------------------------------------------
- * Devuelve: 0 si no consumio nada, el caracter si lo consumio
- * -------------------------------------------------------------
-*/
+/* Consumo letra del buffer y sobreescribe con 0 para denotar una posicion vacia. */
 char get_key()
 {
 	if(!checkIfAvailableKey())
 		return 0;
 
-	if(peekPos == readPos)				// para que el peek no quede apuntando a nada
+	if(peekPos == readPos)          // para que el peek no quede apuntando a nada
 		peekPos = (peekPos + 1) % BUFFER_SIZE;
 
 	char c = keyBuffer[readPos];
@@ -75,13 +73,7 @@ char get_key()
 }
 
 
-/* -------------------------------------------------------------
- * peek_key:
- *      Como el get_key pero no lo consumo, es decir, no pone en 0 sino que lo deja. 
- * ------------------------------------------------------------
- * Devuelve: 0 si no consumio nada, el caracter si lo consumio
- * -------------------------------------------------------------
-*/
+/* Como el get_key pero no lo consumo, es decir, no pone en 0 sino que lo deja. */
 char peek_key()
 {
 	if(keyBuffer[peekPos]==0)
@@ -92,7 +84,3 @@ char peek_key()
 	return c;
 }
 
-
-char checkIfAvailableKey() {
-	return keyBuffer[readPos]!=0;
-}
