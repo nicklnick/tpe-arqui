@@ -2,37 +2,37 @@
 %macro switchState param1
 	mov rax, [param1 + 64 * 0]
 	mov rbx, [param1 + 64 * 1]
-	mov rcx, param1 + 64 * 2
-	mov rdx, param1 + 64 * 3
-	mov rbp, param1 + 64 * 4
-	mov rdi, param1 + 64 * 5
-	mov rsi, param1 + 64 * 6
-	mov r8, param1 + 64 * 7
-	mov r9, param1 + 64 * 8
-	mov r10, param1 + 64 * 9
-	mov r11, param1 + 64 * 10
-	mov r12, param1 + 64 * 11
-	mov r13, param1 + 64 * 12
-	mov r14, param1 + 64 * 13
-	mov r15, param1 + 64 * 14
+	mov rcx, [param1 + 64 * 2]
+	mov rdx, [param1 + 64 * 3]
+	mov rbp, [param1 + 64 * 4]
+	mov rdi, [param1 + 64 * 5]
+	mov rsi, [param1 + 64 * 6]
+	mov r8, [param1 + 64 * 7]
+	mov r9, [param1 + 64 * 8]
+	mov r10, [param1 + 64 * 9]
+	mov r11, [param1 + 64 * 10]
+	mov r12, [param1 + 64 * 11]
+	mov r13, [param1 + 64 * 12]
+	mov r14, [param1 + 64 * 13]
+	mov r15, [param1 + 64 * 14]
 %endmacro
 
 %macro saveState param1
 	mov [param1 + 64 * 0], rax
 	mov [param1 + 64 * 1], rbx
-	mov rcx, param1 + 64 * 2
-	mov rdx, param1 + 64 * 3
-	mov rbp, param1 + 64 * 4
-	mov rdi, param1 + 64 * 5
-	mov rsi, param1 + 64 * 6
-	mov r8, param1 + 64 * 7
-	mov r9, param1 + 64 * 8
-	mov r10, param1 + 64 * 9
-	mov r11, param1 + 64 * 10
-	mov r12, param1 + 64 * 11
-	mov r13, param1 + 64 * 12
-	mov r14, param1 + 64 * 13
-	mov r15, param1 + 64 * 14
+	mov [param1 + 64 * 2], rcx 
+	mov [param1 + 64 * 3], rdx 
+	mov [param1 + 64 * 4], rbp 
+	mov [param1 + 64 * 5], rdi 
+	mov [param1 + 64 * 6], rsi
+	mov [param1 + 64 * 7], r8 
+	mov [param1 + 64 * 8], r9 
+	mov [param1 + 64 * 9], r10
+	mov [param1 + 64 * 10], r11 
+	mov [param1 + 64 * 11], r12 
+	mov [param1 + 64 * 12], r13 
+	mov [param1 + 64 * 13], r14 
+	mov [param1 + 64 * 14], r15 
 %endmacro
 
 ; TO CHECKIATE
