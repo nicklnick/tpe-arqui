@@ -14,7 +14,8 @@
  *      [buf] = string to be written
  *      [count] = number of letters to be written
  * Devuelve: 
- *      ???????????????????
+ *      (uint) bytes written
+ *      
  */
 unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count);
 
@@ -29,7 +30,7 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count);
  *      [buf] = pointer to zone to leave what was read
  *      [count] = number of letters to be written
  * Devuelve: 
- *      ???????????????????
+ *      (uint) bytes read
  */
 unsigned int sys_read(unsigned int fd, char * buf, unsigned int count);
 
