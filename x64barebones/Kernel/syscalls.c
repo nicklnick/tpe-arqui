@@ -34,8 +34,6 @@
 #define NORMAL_MODE_STEP 0
 #define SPLIT_MODE_STEP 80
 
-
-
 static uint8_t * defaultVideoPos = (uint8_t*)0xB8000;
 
 static unsigned int currentVideoPosOffset = START_LEFT;
@@ -43,20 +41,44 @@ static unsigned int currentVideoPosLeftOffset = START_LEFT;
 static unsigned int currentVideoPosRightOffset = START_RIGHT;
 
 
-// =========================VERSION 1==========================
+// ====== SYS_REGISTER_PROCESS ======
+
+typedef struct process_entry{
+	int pid;						// TODO: agregar funcionalidad para tener PIDs unicos (?)
+	int screen;						// en que pantalla va a imprimir el proceso actual
+}process_entry;
+
+static process_entry activeProcess;		// El proceso que esta corriendo actualmente
+
+int get_process_register_screen(){
+	return activeProcess.screen;
+}
+
+unsigned int sys_register_process(int screen){
+	activeProcess.screen = screen;
+	return 0;
+}
+
+
+
+// ====== SYS_CLEAR_SCREEN ======
 
 void clearScreen(){
-	for(int i=0 ; i < SCREEN_WIDTH * SCREEN_HEIGHT ; i){				// Copio todo uno para arriba 1 fila
+	for(int i=0 ; i < SCREEN_WIDTH * SCREEN_HEIGHT ; i){
 		*(defaultVideoPos + i++) = ' ';
 		*(defaultVideoPos + i++) = STDOUT_COLOR;			
 	}
 }
 
-int sys_clear_screen(){
+unsigned int sys_clear_screen(){
 	clearScreen();
+	currentVideoPosOffset = currentVideoPosLeftOffset = START_LEFT;		// se resetan las pantallas
+	currentVideoPosRightOffset = START_RIGHT;
 	return 0;
 }
 
+
+// ====== SYSWRITE ======
 
 /*
 	Parametros:
@@ -80,6 +102,7 @@ void scrollUp(int start, int length, int step)
 		i < (SCREEN_HEIGHT-1) * SCREEN_WIDTH + length + start; i+=2)
 		*(defaultVideoPos+i)=' ';
 }
+
 
 /* 
 	Parametros:
@@ -119,13 +142,6 @@ unsigned int write(const char * buf, char format, unsigned int count,
 	return i;
 }
 
-void clearScreen() 
-{
-	for(int i=0 ; i < SCREEN_WIDTH * SCREEN_HEIGHT ; i+=2)			// Copio todo uno para arriba 1 fila
-		*(defaultVideoPos + i) = ' ';			
-}
-
-// ====== SYSWRITE ======
 unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count) 
 {
 	char format;
@@ -134,11 +150,6 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count)
 		format=STDOUT_COLOR;
 	else 
 		format=STDERR_COLOR;
-
-
-	// ###### REMOVE #######
-	if(currentVideoPosOffset==0 && currentVideoPosRightOffset==80 && currentVideoPosLeftOffset==0)
-		clearScreen();
 
 	switch(fd) {
 		case STDERR:							// mismo codigo
@@ -159,11 +170,17 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count)
 			write(buf, format, count, &currentVideoPosRightOffset, START_RIGHT, SPLIT_MODE_LENGTH, SPLIT_MODE_STEP);
 			currentVideoPosOffset=0;		// se resetean el normal mode
 		break;
-
+		default:			// el default ese la pantalla completa
+			write(buf, format, count, &currentVideoPosOffset, START_LEFT, NORMAL_MODE_LENGTH, NORMAL_MODE_STEP);
+			currentVideoPosRightOffset=0;		// se resetean las split screen
+			currentVideoPosLeftOffset=0;
 	}
 }
 
+
+
 // ====== SYSREAD ======
+
 unsigned int read_stdin(char * buf, unsigned int count) 
 {
 	char c=0; 
