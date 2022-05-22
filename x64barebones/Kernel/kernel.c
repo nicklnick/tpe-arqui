@@ -4,9 +4,6 @@
 #include <moduleLoader.h>
 #include <idtLoader.h>
 
-#include <keyboard.h> 			// ###### REMOVE ######
-
-
 extern uint8_t text;
 extern uint8_t rodata;
 extern uint8_t data;
@@ -56,16 +53,8 @@ extern unsigned int read(unsigned int fd, const char * string, unsigned int leng
 int main()
 {	
 	load_idt();
-	
-	char buffer[100];
 
-	int i = read(0,buffer,20);
-
-	
-	i = read(0,buffer,20);
-
-
-	while(1);
+	sys_clear_screen();
 
 	//((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
 	return 0;

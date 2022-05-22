@@ -45,6 +45,19 @@ static unsigned int currentVideoPosRightOffset = START_RIGHT;
 
 // =========================VERSION 1==========================
 
+void clearScreen(){
+	for(int i=0 ; i < SCREEN_WIDTH * SCREEN_HEIGHT ; i){				// Copio todo uno para arriba 1 fila
+		*(defaultVideoPos + i++) = ' ';
+		*(defaultVideoPos + i++) = STDOUT_COLOR;			
+	}
+}
+
+int sys_clear_screen(){
+	clearScreen();
+	return 0;
+}
+
+
 /*
 	Parametros:
 	start: columna inicial en pantalla (Ej: normal=izq=0, right= 80)		| length: longitud de pantalla en la que se imprime
@@ -107,11 +120,6 @@ unsigned int write(const char * buf, char format, unsigned int count,
 	return i;
 }
 
-void clearScreen(){
-	for(int i=0 ; i < SCREEN_WIDTH * SCREEN_HEIGHT ; i+=2){				// Copio todo uno para arriba 1 fila
-		*(defaultVideoPos + i) = ' ';			
-	}
-}
 
 // ====== SYSWRITE ======
 
@@ -122,11 +130,6 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count){
 		format=STDOUT_COLOR;
 	else 
 		format=STDERR_COLOR;
-
-
-	// ###### REMOVE #######
-	if(currentVideoPosOffset==0 && currentVideoPosRightOffset==80 && currentVideoPosLeftOffset==0)
-		clearScreen();
 
 	switch(fd){
 		case STDERR:							// mismo codigo
