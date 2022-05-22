@@ -46,14 +46,15 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
-extern void print(unsigned int fd, const char * string, unsigned int lenght);
-extern unsigned int read(unsigned int fd, const char * string, unsigned int lenght);
+extern void div_by_zero();
 
 int main()
 {	
 	load_idt();
 
 	sys_clear_screen();
+
+	div_by_zero();
 
 	//((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
 	return 0;

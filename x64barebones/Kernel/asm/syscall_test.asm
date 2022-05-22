@@ -1,21 +1,11 @@
-GLOBAL print
-GLOBAL read
-print:
-		push rbp
-		mov rbp, rsp
-		mov eax, 1
-		int 80h
-		mov rsp, rbp
-		pop rbp
-		ret
-read:
-		push rbp
-		mov rbp, rsp
+GLOBAL div_by_zero
 
 
-		mov eax, 0
-		int 80h
+div_by_zero:
+	mov rdx, 0
+	mov rax, 0
+	mov rcx, 0 
+	mov rbx, 3	; vemos si funciona
+	div rcx
 
-		mov rsp, rbp
-		pop rbp
-		ret
+	ret

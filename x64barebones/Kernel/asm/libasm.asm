@@ -1,4 +1,5 @@
 GLOBAL readKeyboard
+GLOBAL registerDump
 
 section .text
 
@@ -23,5 +24,32 @@ readKeyboard:
 	end:
 
 	mov rsp, rbp
+	pop rbp
+	ret
+
+; void registerDump(uint64_t * buffer);
+registerDump:		
+	push rbp
+	mov rbp, rsp
+
+	mov [rdi + 64 * 0], rax
+	mov [rdi + 64 * 1], rbx
+	mov [rdi + 64 * 2], rcx
+	mov [rdi + 64 * 3], rdx
+
+	mov [rdi + 64 * 4], rbp
+	mov [rdi + 64 * 5], rsp
+	mov [rdi + 64 * 6], rsi
+	mov [rdi + 64 * 7], rdi
+
+	mov [rdi + 64 * 8], r9
+	mov [rdi + 64 * 9], r10
+	mov [rdi + 64 * 10], r11
+	mov [rdi + 64 * 11], r12
+	mov [rdi + 64 * 12], r13
+	mov [rdi + 64 * 13], r14
+	mov [rdi + 64 * 14], r15
+
+	mov rsp, rbp 
 	pop rbp
 	ret

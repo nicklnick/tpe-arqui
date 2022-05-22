@@ -48,3 +48,35 @@ void * memcpy(void * destination, const void * source, uint64_t length)
 
 	return destination;
 }
+
+int str_len(const char * string){
+	int i = 0;
+    while(string[i] != '\0'){
+        i++;
+    }
+    return i;
+}
+
+void reverseString(char * buffer){
+	int i, j;
+    char aux;
+    j = str_len(buffer)-1;
+    for(i = 0 ; i<j ; i++, j--){
+        aux = buffer[i];
+        buffer[i] = buffer[j];
+        buffer[j] = aux;
+    }
+
+}
+
+int num_to_string(uint64_t num, char * buffer){
+	int i = 0;
+    while(num > 0){
+        buffer[i++] = num % 10 + '0';
+        num /= 10;
+    }
+    buffer[i] = 0;
+    reverseString(buffer);
+    return i;
+}
+
