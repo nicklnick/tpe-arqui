@@ -172,12 +172,24 @@ unsigned int read_stdin(char * buf, unsigned int count){
 	return i;
 }
 
+unsigned int consume_stdin(char * buf, unsigned int count){
+	int i=0;
+	while(checkIfAvailableKey() && i<count-1){
+		buf[i++] = get_key();
+	}
+	buf[i]=0;
+	return i;
+}
+
 // Solo copia
 unsigned int sys_read(unsigned int fd, char * buf, unsigned int count){
 
 	switch(fd){								// Eligimos posicion de donde leer. Tambien lo podriamos hacer con una funcion/tabla
 		case STDIN:
-			return read_stdin(buf, count);
+			if(checkIfAvailableKey()){
+				return consume_stdin(buf,count);		// Si el key buffer no esta vacio, primero tengo que consumirlo
+			}
+			return read_stdin(buf, count);				// El buffer esta vacio, puedo leer de pantalla
 		default:
 			return 0;	// Seria error?
 	}
