@@ -45,4 +45,6 @@ unsigned int sys_read(unsigned int fd, char * buf, unsigned int count);
  */
 unsigned int sys_clear_screen();
 
+unsigned int sys_rtc(unsigned int option);
+
 #endif

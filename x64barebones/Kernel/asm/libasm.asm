@@ -1,4 +1,5 @@
 GLOBAL readKeyboard
+GLOBAL getRTC
 
 section .text
 
@@ -25,3 +26,21 @@ readKeyboard:
 	mov rsp, rbp
 	pop rbp
 	ret
+
+;; Obtiene lo que le pidieron del rtc pedido
+getRTC:
+        push rbp
+        mov rbp, rsp
+
+        xor rax, rax            ; Limpio rax
+
+        cli
+        mov ax, di              
+        out 70h, al             ; Elegimos lo que queremos escribir/leer
+        in al, 71h              ; lo leemos
+        sli
+
+        mov rsp, rbp
+        pop rbp
+        ret
+        
