@@ -47,17 +47,26 @@ void * initializeKernelBinary()
 }
 
 extern void div_by_zero();
+extern int read(unsigned int fd, char * buf, unsigned int count);
 
 int main()
 {	
+
 	load_idt();
 
 	sys_clear_screen();
 
-	div_by_zero();
+	char buffer[100]={0};
+	sys_write(1,"Dame: ",6);
 
-	sys_write(1,"llego",5);
+	read(0, buffer,10);
 
-	//((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
+	sys_write(1,buffer,10);
+	sys_write(1,"\nllegue",7);
+	
+	//div_by_zero();
+
+	
+	((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
 	return 0;
 }

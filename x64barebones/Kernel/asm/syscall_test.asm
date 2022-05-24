@@ -1,4 +1,5 @@
 GLOBAL div_by_zero
+GLOBAL read
 
 
 div_by_zero:
@@ -9,3 +10,10 @@ div_by_zero:
 	div rcx
 
 	ret
+
+read:
+	
+	mov rax,0
+	int 80h
+
+	ret 

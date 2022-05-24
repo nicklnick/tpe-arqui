@@ -34,6 +34,10 @@
 #define NORMAL_MODE_STEP 0
 #define SPLIT_MODE_STEP 80
 
+#define VALID_KEY 1	// ##### REMOVE #####
+#define NO_KEY 0
+#define DELETE_KEY 2
+
 static uint8_t * defaultVideoPos = (uint8_t*)0xB8000;
 
 static unsigned int currentVideoPosOffset = START_LEFT;
@@ -82,6 +86,25 @@ unsigned int sys_clear_screen(){
 
 /*
 	Parametros:
+	offset: posicion actual de "cursor "	
+	start: columna inicial en pantalla (Ej: normal=izq=0, right= 80)		| length: longitud de pantalla en la que se imprime
+	step: cantidad de posiciones a saltar en pantalla, al llegar al final de la pantalla
+
+*/
+
+void deleteKey(unsigned int * offset, unsigned int start,  unsigned int length , unsigned int step){
+	if(*offset == start)			// si llegue al principio de la pantalla, no puedo ir para atras
+		return;
+
+	if( ((*offset - 2) % SCREEN_WIDTH) < start || ((*offset - 2) % SCREEN_WIDTH) > start + length){	
+		*offset -= step;			// si estamos por fuera de los limites, entro devuelta pero una linea arriba
+	}		
+	*offset -= 2;					// voy uno para atras
+	*(defaultVideoPos + *offset) = ' ';	
+}
+
+/*
+	Parametros:
 	start: columna inicial en pantalla (Ej: normal=izq=0, right= 80)		| length: longitud de pantalla en la que se imprime
 	step: cantidad de posiciones a saltar en pantalla, al llegar al final de la pantalla
 
@@ -126,18 +149,24 @@ unsigned int write(const char * buf, char format, unsigned int count,
 		
 		char c = buf[i];
 
-		//--CARACTERES EPECIALES--	
-		if(c == '\n') {										// CASO: hay un \n en el texto
+		//------ CARACTERES EPECIALES ------	
+		if(c == '\n') {		
 			int aux = length - (*offset % length);			// avanzo a la proxima linea en pantalla
 			*offset += aux + step;
 		}
+		else if(c == '\b')				
+			deleteKey(offset, start, length, step);		
+		
+
+		//------ CARACTERES NORMALES ------	
 		else {	
 			*(defaultVideoPos + (*offset)++) = c;			// escribo letra y formato
 			*(defaultVideoPos + (*offset)++) = format;
 
 			if(*offset % length  == 0)						// salto a new line si llego a fin 
-                                *offset += step;
+                *offset += step;
 		}
+
 	}
 	return i;
 }
@@ -183,28 +212,38 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count)
 
 unsigned int read_stdin(char * buf, unsigned int count) 
 {
-	char c=0; 
+	char c=0, keyboardResp; 
 	int i=0;
 	while(c!='\n') {
-		if(keyboard_handler()) {
+
+		keyboardResp = keyboard_handler();
+
+		if(keyboardResp==VALID_KEY) {
 			c = peek_key();
 			sys_write(1,&c, 1);
 		
-			if(i<count-1) {
-				buf[i] = get_key();
+			if(i<count-1) 
 				i++;
-			}
+		}
+		else if(keyboardResp == DELETE_KEY){
+			sys_write(1,"\b",1);
+			if(i>0)
+				i--;
 		}
 	}	
-	buf[i]=0;
-	
+
+	for(int j=0 ; j<=i;j++){				// consumo el buffer de una 
+		buf[j] = get_key();
+	}
+
 	return i;
 }
 
 unsigned int consume_stdin(char * buf, unsigned int count){
 	int i=0;
 	while(checkIfAvailableKey() && i<count-1){
-		buf[i++] = get_key();
+		char c = get_key();
+		buf[i++] = c;
 	}
 	buf[i]=0;
 	return i;
@@ -213,7 +252,7 @@ unsigned int consume_stdin(char * buf, unsigned int count){
 // Solo copia
 unsigned int sys_read(unsigned int fd, char * buf, unsigned int count)
 {
-	switch(fd) {						// Eligimos posicion de donde leer. Tambien lo podriamos hacer con una funcion/tabla
+	switch(fd) {										// Eligimos posicion de donde leer. Tambien lo podriamos hacer con una funcion/tabla
 		case STDIN:
 			if(checkIfAvailableKey()){
 				return consume_stdin(buf,count);		// Si el key buffer no esta vacio, primero tengo que consumirlo

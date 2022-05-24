@@ -69,11 +69,18 @@ void reverseString(char * buffer){
 
 }
 
-int num_to_string(uint64_t num, char * buffer){
+int hex_to_string(uint64_t num, char * buffer, int fixedLength){
 	int i = 0;
-    while(num > 0){
-        buffer[i++] = num % 10 + '0';
-        num /= 10;
+    for(int aux ; num > 0 ; i++, num/=16){
+       	aux = num % 16;
+       	if(aux >=0 && aux < 10)						// convierto a hex
+       		buffer[i] = aux + '0';
+       	else
+       		buffer[i] = aux - 10 + 'A';
+
+    }
+    while(i<fixedLength){					// le agrego 0 por deltante para llegar a la longitud deseada
+    	buffer[i++] = '0';
     }
     buffer[i] = 0;
     reverseString(buffer);
