@@ -35,9 +35,9 @@ void printRegisters(int screen){
 
 void zero_division() {
 	int screen =  get_process_register_screen() + 1;		// se le suma 1 pues la (screen + 1) es la misma screen pero en rojo.
-	sys_write(screen, ZERO_EXCEPTION_ERR_MSG, ZERO_EXCEPTION_ERR_MSG_LEN);
+	//sys_write(screen, ZERO_EXCEPTION_ERR_MSG, ZERO_EXCEPTION_ERR_MSG_LEN);
 	
-	printRegisters(screen);
+	//printRegisters(screen);
 
 	// TODO: Arrelgar el stack?
 
@@ -48,6 +48,7 @@ void invalid_op_code(){
 	sys_write(screen, INVALID_OP_CODE, INVALID_OP_CODE_MSG_LEN);
 
 	printRegisters(screen);
+
 }
 
 void exceptionDispatcher(int exception) {

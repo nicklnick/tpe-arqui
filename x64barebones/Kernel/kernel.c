@@ -56,6 +56,8 @@ int main()
 
 	div_by_zero();
 
+	sys_write(1,"llego",5);
+
 	//((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
 	return 0;
 }

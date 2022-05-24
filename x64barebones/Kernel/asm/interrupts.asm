@@ -74,14 +74,15 @@ SECTION .text
 	iretq
 %endmacro
 
-
+punga:
+	ret
 
 %macro exceptionHandler 1
 	pushState
 
 	mov rdi, %1 ; pasaje de parametro
 	call exceptionDispatcher
-
+	call punga
 	popState
 	iretq
 %endmacro
@@ -145,6 +146,7 @@ _irq05Handler:
 
 ;Zero Division Exception
 _exception0Handler:
+	add [rsp], 6
 	exceptionHandler 0
 
 ;Invalid Opcode Exception
