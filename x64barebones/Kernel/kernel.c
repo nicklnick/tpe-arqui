@@ -56,17 +56,8 @@ extern unsigned int read(unsigned int fd, const char * string, unsigned int leng
 int main()
 {	
 	load_idt();
+	print(1, "Hola", 5);
+	((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
 	
-	char buffer[100];
-
-	int i = read(0,buffer,20);
-
-	
-	i = read(0,buffer,20);
-
-
-	while(1);
-
-	//((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
 	return 0;
 }

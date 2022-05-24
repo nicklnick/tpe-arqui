@@ -1,5 +1,5 @@
-#include "syscalls.h"
-#include "stdlib.h"
+#include "./include/syscalls.h"
+#include "./include/libStd.h"
 
 // Entrada estandar
 #define STDIN 0
@@ -15,15 +15,15 @@
 #define STDERR_RIGHT 6
 
 void printFd(char * string, int fd){
-    sys_write(fd, string, strlen(string))
+    sys_write(fd, string, strlen(string));
 }
 
 void print(char * string){
-    printFd(string, STDOUT)
+    printFd(string, STDOUT);
 }
 
 void printErr(char * error){
-    printFd(error, STDERR)
+    printFd(error, STDERR);
 }
 
 void scanf(char * buf, int length){
