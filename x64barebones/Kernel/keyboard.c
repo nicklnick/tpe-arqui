@@ -5,10 +5,7 @@
 extern char readKeyboard();		// en libasm.asm
 
 /*-------- CONSTANTS --------*/
-#define BUFFER_SIZE 100
-#define VALID_KEY 1
-#define NO_KEY 0
-#define DELETE_KEY 2
+#define BUFFER_SIZE 200
 #define UNMAPPED 1
 
 /*--------- MACROS ----------*/
@@ -48,17 +45,19 @@ char checkIfAvailableKey() {
 	return keyBuffer[readPos] != 0;
 }
 
-static uint8_t * vid = (uint8_t*)0xB8000;
 
 /* Usa un array circular. Si se llega a la capacidad maxima, no sobre-escribe. */
 char keyboard_handler() 
 {
+
 	int c = readKeyboard();
 
-	if(c<0 || c>=128 || keyBuffer[writePos]!=0)			// caso: codigo invalido | no hay espacio en el buffer
+	if(c<0 || c>=128)			// caso: codigo invalido 
 		return NO_KEY;
+	if(keyBuffer[writePos]!=0)		// caso: no hay espacio en el buffer
+		return BUFFER_FULL;		
 			
-	c = scanCodeTable[c];						// convierto a ascii
+	c = scanCodeTable[c];			// convierto a ascii
 
 	// ------ Caracteres especiales ------
 	if(c=='\b'){

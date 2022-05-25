@@ -53,17 +53,20 @@ int main()
 {	
 
 	load_idt();
+	int i;
 
 	sys_clear_screen();
 
 	char buffer[100]={0};
 	sys_write(1,"Dame: ",6);
 
-	read(0, buffer,10);
+	i = read(0, buffer,10);
 
-	sys_write(1,buffer,10);
-	sys_write(1,"\nllegue",7);
-	
+	sys_write(1,buffer,i);
+	sys_write(1,"\nDame2: ",8);
+	i = read(0, buffer,10);
+	sys_write(1,buffer,i);
+
 	//div_by_zero();
 
 	

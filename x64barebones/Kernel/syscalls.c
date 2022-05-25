@@ -34,10 +34,6 @@
 #define NORMAL_MODE_STEP 0
 #define SPLIT_MODE_STEP 80
 
-#define VALID_KEY 1	// ##### REMOVE #####
-#define NO_KEY 0
-#define DELETE_KEY 2
-
 static uint8_t * defaultVideoPos = (uint8_t*)0xB8000;
 
 static unsigned int currentVideoPosOffset = START_LEFT;
@@ -212,9 +208,10 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count)
 
 unsigned int read_stdin(char * buf, unsigned int count) 
 {
-	char c=0, keyboardResp; 
+	char c=0, keyboardResp=0; 
 	int i=0;
-	while(c!='\n') {
+	int initialPos = currentVideoPosOffset;					// ### FEO ###
+	while(c!='\n' && keyboardResp != BUFFER_FULL) {		
 
 		keyboardResp = keyboard_handler();
 
@@ -222,17 +219,19 @@ unsigned int read_stdin(char * buf, unsigned int count)
 			c = peek_key();
 			sys_write(1,&c, 1);
 		
-			if(i<count-1) 
+			if(i<count) 
 				i++;
 		}
 		else if(keyboardResp == DELETE_KEY){
-			sys_write(1,"\b",1);
-			if(i>0)
-				i--;
+			if(currentVideoPosOffset > initialPos){			// ### FEO ###   // no dejo que borre lo que ya habia
+				sys_write(1,"\b",1);
+				if(i>0)
+					i--;
+			}
 		}
 	}	
 
-	for(int j=0 ; j<=i;j++){				// consumo el buffer de una 
+	for(int j=0 ; j<i;j++){				// consumo el buffer de una, hasta el \n o fin de caracteres
 		buf[j] = get_key();
 	}
 
@@ -241,11 +240,10 @@ unsigned int read_stdin(char * buf, unsigned int count)
 
 unsigned int consume_stdin(char * buf, unsigned int count){
 	int i=0;
-	while(checkIfAvailableKey() && i<count-1){
+	while(checkIfAvailableKey() && i<count){
 		char c = get_key();
 		buf[i++] = c;
 	}
-	buf[i]=0;
 	return i;
 }
 
