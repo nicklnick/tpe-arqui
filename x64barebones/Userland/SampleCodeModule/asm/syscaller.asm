@@ -11,13 +11,12 @@ syscaller:
 
     mov rax, rdi        ; Syscall ID
 
-   	mov rbx, rsi 	    ;1° param syscall
+   	mov rdi, rsi 	    ;1° param syscall
 	mov [aux], rcx 
-	mov rcx, rdx	    ;2° param syscall
+	mov rsi, rdx	    ;2° param syscall
 	mov rdx, [aux]	    ;3° param syscall
 
 	int 80h
-
 
     pop rbx
 

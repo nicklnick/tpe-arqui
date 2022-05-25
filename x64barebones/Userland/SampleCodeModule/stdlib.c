@@ -6,8 +6,8 @@ void num_to_string(long num, char * string){
         string[i++] = num%10 + '0';
         num /= 10;
     }
-    string[i] = 0;
     reverseString(string);
+    string[i] = 0;
 }
 
 void reverseString(char * string){
@@ -43,3 +43,22 @@ int strlen(char * string){
     return i;
 }
 
+int atoi(char * string){
+    int i;
+    int result = 0;
+    for(i = 0 ; string[i] != '\0' ; i++){
+        result = (result*10) + string[i] - '0';
+    }
+    return result;
+}
+
+void removeEnter(char * string){
+    int i;
+    int removed = 0;
+    for(i = 0 ; i < strlen(string) && !removed; i++){
+        if(string[i] = '\n'){
+            string[i] = '\0';
+            removed = 1;
+        }
+    }
+}
