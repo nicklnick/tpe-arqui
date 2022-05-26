@@ -1,6 +1,13 @@
 #ifndef	_KEYBOARD_H
 #define _KEYBOARD_H
 
+/* --- DEFINES --- */
+
+#define NO_KEY 0
+#define VALID_KEY 1
+#define DELETE_KEY 2
+#define BUFFER_FULL 3
+
 
 /*
  * << keyboard_handler >>

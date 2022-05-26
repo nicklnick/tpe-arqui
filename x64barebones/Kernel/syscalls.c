@@ -34,8 +34,6 @@
 #define NORMAL_MODE_STEP 0
 #define SPLIT_MODE_STEP 80
 
-
-
 static uint8_t * defaultVideoPos = (uint8_t*)0xB8000;
 
 static unsigned int currentVideoPosOffset = START_LEFT;
@@ -43,10 +41,30 @@ static unsigned int currentVideoPosLeftOffset = START_LEFT;
 static unsigned int currentVideoPosRightOffset = START_RIGHT;
 
 
-// =========================VERSION 1==========================
+// ====== SYS_REGISTER_PROCESS ======
+
+typedef struct process_entry{
+	int pid;						// TODO: agregar funcionalidad para tener PIDs unicos (?)
+	int screen;						// en que pantalla va a imprimir el proceso actual
+}process_entry;
+
+static process_entry activeProcess;		// El proceso que esta corriendo actualmente
+
+int get_process_register_screen(){
+	return activeProcess.screen;
+}
+
+unsigned int sys_register_process(int screen){
+	activeProcess.screen = screen;
+	return 0;
+}
+
+
+
+// ====== SYS_CLEAR_SCREEN ======
 
 void clearScreen(){
-	for(int i=0 ; i < SCREEN_WIDTH * SCREEN_HEIGHT ; i){				// Copio todo uno para arriba 1 fila
+	for(int i=0 ; i < SCREEN_WIDTH * SCREEN_HEIGHT ; i){
 		*(defaultVideoPos + i++) = ' ';
 		*(defaultVideoPos + i++) = STDOUT_COLOR;			
 	}
@@ -54,9 +72,32 @@ void clearScreen(){
 
 unsigned int sys_clear_screen(){
 	clearScreen();
+	currentVideoPosOffset = currentVideoPosLeftOffset = START_LEFT;		// se resetan las pantallas
+	currentVideoPosRightOffset = START_RIGHT;
 	return 0;
 }
 
+
+// ====== SYSWRITE ======
+
+/*
+	Parametros:
+	offset: posicion actual de "cursor "	
+	start: columna inicial en pantalla (Ej: normal=izq=0, right= 80)		| length: longitud de pantalla en la que se imprime
+	step: cantidad de posiciones a saltar en pantalla, al llegar al final de la pantalla
+
+*/
+
+void deleteKey(unsigned int * offset, unsigned int start,  unsigned int length , unsigned int step){
+	if(*offset == start)			// si llegue al principio de la pantalla, no puedo ir para atras
+		return;
+
+	if( ((*offset - 2) % SCREEN_WIDTH) < start || ((*offset - 2) % SCREEN_WIDTH) > start + length){	
+		*offset -= step;			// si estamos por fuera de los limites, entro devuelta pero una linea arriba
+	}		
+	*offset -= 2;					// voy uno para atras
+	*(defaultVideoPos + *offset) = ' ';	
+}
 
 /*
 	Parametros:
@@ -81,6 +122,7 @@ void scrollUp(int start, int length, int step)
 		*(defaultVideoPos+i)=' ';
 }
 
+
 /* 
 	Parametros:
 	buf: texto que se debe escribir en pantalla 							| format: color/fondo de texto
@@ -103,18 +145,24 @@ unsigned int write(const char * buf, char format, unsigned int count,
 		
 		char c = buf[i];
 
-		//--CARACTERES EPECIALES--	
-		if(c == '\n') {										// CASO: hay un \n en el texto
+		//------ CARACTERES EPECIALES ------	
+		if(c == '\n') {		
 			int aux = length - (*offset % length);			// avanzo a la proxima linea en pantalla
 			*offset += aux + step;
 		}
+		else if(c == '\b')				
+			deleteKey(offset, start, length, step);		
+		
+
+		//------ CARACTERES NORMALES ------	
 		else {	
 			*(defaultVideoPos + (*offset)++) = c;			// escribo letra y formato
 			*(defaultVideoPos + (*offset)++) = format;
 
 			if(*offset % length  == 0)						// salto a new line si llego a fin 
-                                *offset += step;
+                *offset += step;
 		}
+
 	}
 	return i;
 }
@@ -129,11 +177,6 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count)
 		format=STDOUT_COLOR;
 	else 
 		format=STDERR_COLOR;
-
-
-	// ###### REMOVE #######
-	if(currentVideoPosOffset==0 && currentVideoPosRightOffset==80 && currentVideoPosLeftOffset==0)
-		clearScreen();
 
 	switch(fd) {
 		case STDERR:							// mismo codigo
@@ -154,45 +197,63 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count)
 			write(buf, format, count, &currentVideoPosRightOffset, START_RIGHT, SPLIT_MODE_LENGTH, SPLIT_MODE_STEP);
 			currentVideoPosOffset=0;		// se resetean el normal mode
 		break;
-
+		default:			// el default ese la pantalla completa
+			write(buf, format, count, &currentVideoPosOffset, START_LEFT, NORMAL_MODE_LENGTH, NORMAL_MODE_STEP);
+			currentVideoPosRightOffset=0;		// se resetean las split screen
+			currentVideoPosLeftOffset=0;
 	}
         return 0;       // lo agregue yo (nico) pq no habia nada, supongo que seria error
 }
 
+
+
 // ====== SYSREAD ======
+
 unsigned int read_stdin(char * buf, unsigned int count) 
 {
-	char c=0; 
+	char c=0, keyboardResp=0; 
 	int i=0;
-	while(c!='\n') {
-		if(keyboard_handler()) {
+	int initialPos = currentVideoPosOffset;					// ### FEO ###
+	while(c!='\n' && keyboardResp != BUFFER_FULL) {		
+
+		keyboardResp = keyboard_handler();
+
+		if(keyboardResp==VALID_KEY) {
 			c = peek_key();
 			sys_write(1,&c, 1);
 		
-			if(i<count-1) {
-				buf[i] = get_key();
+			if(i<count) 
 				i++;
+		}
+		else if(keyboardResp == DELETE_KEY){
+			if(currentVideoPosOffset > initialPos){			// ### FEO ###   // no dejo que borre lo que ya habia
+				sys_write(1,"\b",1);
+				if(i>0)
+					i--;
 			}
 		}
 	}	
-	buf[i]=0;
-	
+
+	for(int j=0 ; j<i;j++){				// consumo el buffer de una, hasta el \n o fin de caracteres
+		buf[j] = get_key();
+	}
+
 	return i;
 }
 
 unsigned int consume_stdin(char * buf, unsigned int count){
 	int i=0;
-	while(checkIfAvailableKey() && i<count-1){
-		buf[i++] = get_key();
+	while(checkIfAvailableKey() && i<count){
+		char c = get_key();
+		buf[i++] = c;
 	}
-	buf[i]=0;
 	return i;
 }
 
 // Solo copia
 unsigned int sys_read(unsigned int fd, char * buf, unsigned int count)
 {
-	switch(fd) {						// Eligimos posicion de donde leer. Tambien lo podriamos hacer con una funcion/tabla
+	switch(fd) {										// Eligimos posicion de donde leer. Tambien lo podriamos hacer con una funcion/tabla
 		case STDIN:
 			if(checkIfAvailableKey()){
 				return consume_stdin(buf,count);		// Si el key buffer no esta vacio, primero tengo que consumirlo

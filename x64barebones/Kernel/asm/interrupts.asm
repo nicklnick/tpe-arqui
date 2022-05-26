@@ -14,6 +14,7 @@ GLOBAL _irq04Handler
 GLOBAL _irq05Handler
 
 GLOBAL _exception0Handler
+GLOBAL _exception6Handler
 
 GLOBAL _swIntHandler
 
@@ -62,7 +63,7 @@ SECTION .text
 %macro irqHandlerMaster 1
 	pushState
 
-	mov rdi, %1 	; pasaje de parametro
+	mov rdi, %1 			; pasaje de parametro
 	call irqDispatcher
 
 	; signal pic EOI (End of Interrupt)
@@ -73,12 +74,14 @@ SECTION .text
 	iretq
 %endmacro
 
-
+punga:
+	ret
 
 %macro exceptionHandler 1
 	pushState
 
-	mov rdi, %1 ; pasaje de parametro
+	mov rsi, rsp				; le paso comienzo del register dump
+	mov rdi, %1 				; pasaje de parametro
 	call exceptionDispatcher
 
 	popState
@@ -145,6 +148,12 @@ _irq05Handler:
 ;Zero Division Exception
 _exception0Handler:
 	exceptionHandler 0
+	; TODO: aumentar RIP en stack para skipear instruccion maligna
+
+;Invalid Opcode Exception
+_exception6Handler:
+	;exceptionHandler 6
+	; TODO: aumentar RIP en stack para skipear instruccion maligna
 
 haltcpu:
 	cli

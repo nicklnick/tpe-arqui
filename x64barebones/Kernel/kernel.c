@@ -46,15 +46,30 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
-extern void print(unsigned int fd, const char * string, unsigned int lenght);
-extern unsigned int read(unsigned int fd, const char * string, unsigned int lenght);
+extern void div_by_zero();
+extern int read(unsigned int fd, char * buf, unsigned int count);
 
 int main()
 {	
+
 	load_idt();
+	int i;
 
 	sys_clear_screen();
 
-	//((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
+	char buffer[100]={0};
+	sys_write(1,"Dame: ",6);
+
+	i = read(0, buffer,10);
+
+	sys_write(1,buffer,i);
+	sys_write(1,"\nDame2: ",8);
+	i = read(0, buffer,10);
+	sys_write(1,buffer,i);
+
+	//div_by_zero();
+
+	
+	((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
 	return 0;
 }

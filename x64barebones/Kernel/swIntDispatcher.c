@@ -12,6 +12,8 @@ unsigned int swIntDispatcher(uint64_t mode, uint64_t arg0, uint64_t arg1, uint64
 			return sys_write(arg0, arg1, arg2);
 		case 2:
 			return sys_clear_screen();
+		case 3:
+			return sys_register_process(arg0);
 
 	}
 }

@@ -27,6 +27,7 @@ void load_idt()
 
   setup_IDT_entry (0x20, (uint64_t)&_irq00Handler);         // clock
   setup_IDT_entry (0x00, (uint64_t)&_exception0Handler);    // exception
+  setup_IDT_entry (0x06, (uint64_t)&_exception6Handler);    // exception
 
   setup_IDT_entry (0x21, (uint64_t)&_irq01Handler);         // keyboard
 
