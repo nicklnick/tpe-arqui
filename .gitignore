@@ -10,4 +10,6 @@
 #Object files
 *.o
 *.elf
-x64barebones/.gdb_history
+
+#Other
+*.gdb_history
