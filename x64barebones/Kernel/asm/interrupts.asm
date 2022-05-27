@@ -74,8 +74,19 @@ SECTION .text
 	iretq
 %endmacro
 
-punga:
+;  = = = = = = MULTITASKING = = = = = = 
+
+extern getNextTask				; multitasking.c
+
+switchTask:
+	call getNextTask			; rax tiene el puntero a info del proximo stack
+
+	mov rsp, [rax]
+	mov ss, [rax + 16]
+
 	ret
+
+; = = = = = = = = = = = = = = = = = = =
 
 %macro exceptionHandler 1
 	pushState
@@ -83,6 +94,8 @@ punga:
 	mov rsi, rsp				; le paso comienzo del register dump
 	mov rdi, %1 				; pasaje de parametro
 	call exceptionDispatcher
+
+	call switchTask
 
 	popState
 	iretq
@@ -148,12 +161,10 @@ _irq05Handler:
 ;Zero Division Exception
 _exception0Handler:
 	exceptionHandler 0
-	; TODO: aumentar RIP en stack para skipear instruccion maligna
 
 ;Invalid Opcode Exception
 _exception6Handler:
 	;exceptionHandler 6
-	; TODO: aumentar RIP en stack para skipear instruccion maligna
 
 haltcpu:
 	cli
