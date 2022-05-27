@@ -35,6 +35,22 @@ int strContains(char * string1, char * string2){
     return contains;
 }
 
+// 1 si son iguales
+// 0 si no
+int strneql(char * string1, char * string2){
+    if(strlen(string1) != strlen(string2)){
+        return 0;
+    }
+
+    int i;
+    for(i = 0 ; i < strlen(string1) ; i ++){
+        if(string1[i] != string2[i]){
+            return 0;
+        }
+    }
+    return 1;
+}
+
 int strlen(char * string){
     int i = 0;
     while(string[i] != '\0'){
@@ -52,11 +68,19 @@ int atoi(char * string){
     return result;
 }
 
+void strncpy(char * string1, char * string2){
+    int i;
+    for(i = 0 ; i < strlen(string1) ; i++){
+        string1[i] = string2[i];
+    }
+    string1[i] = '\0';
+}
+
 void removeEnter(char * string){
     int i;
     int removed = 0;
     for(i = 0 ; i < strlen(string) && !removed; i++){
-        if(string[i] = '\n'){
+        if(string[i] == '\n'){
             string[i] = '\0';
             removed = 1;
         }
