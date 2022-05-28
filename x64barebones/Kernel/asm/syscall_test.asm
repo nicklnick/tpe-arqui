@@ -1,6 +1,6 @@
 GLOBAL div_by_zero
 GLOBAL read
-
+GLOBAL print
 
 div_by_zero:
 	mov rdx, 0
@@ -17,3 +17,9 @@ read:
 	int 80h
 
 	ret 
+	
+print:
+	mov rax,1
+	int 80h
+
+	ret

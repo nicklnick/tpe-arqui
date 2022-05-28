@@ -2,22 +2,24 @@
 #define _MULTITASKING_H
 
 #define TOTAL_TASKS 4
-#define STACK_SIZE 1000
+#define STACK_SIZE 2000
 
 // -----Informacion sobre cada task-----
 typedef struct taskInfo{
-		uint8_t *  stackPointer;		// puntero a byte, es decir, una posicion de memoria
-		uint8_t *  stackSegment;
+		uint64_t  stackPointer;		// puntero a byte, es decir, una posicion de memoria
+		uint64_t  stackSegment;  
 		uint8_t screen;
 		uint8_t pid;
+		uint8_t isActive;			// si el proceso es uno activo o ya se elimino
 }taskInfo;
 
-// -----El stack que usa cada task-----
-typedef struct stack{
-		uint8_t stackStart[STACK_SIZE];
-}stack;
 
-taskInfo getNextTask();
-void addTask(uint64_t entrypoint, int screen);
+
+void moveToNextTask();
+int addTask(uint64_t entrypoint, int screen);
+
+uint64_t getRSP();
+uint64_t getSS();
+uint64_t getDimTask();
 
 #endif

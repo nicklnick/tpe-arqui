@@ -74,19 +74,6 @@ SECTION .text
 	iretq
 %endmacro
 
-;  = = = = = = MULTITASKING = = = = = = 
-
-extern getNextTask				; multitasking.c
-
-switchTask:
-	call getNextTask			; rax tiene el puntero a info del proximo stack
-
-	mov rsp, [rax]
-	mov ss, [rax + 16]
-
-	ret
-
-; = = = = = = = = = = = = = = = = = = =
 
 %macro exceptionHandler 1
 	pushState
@@ -94,8 +81,6 @@ switchTask:
 	mov rsi, rsp				; le paso comienzo del register dump
 	mov rdi, %1 				; pasaje de parametro
 	call exceptionDispatcher
-
-	call switchTask
 
 	popState
 	iretq
@@ -132,10 +117,54 @@ picSlaveMask:
     pop     rbp
     retn
 
+;  = = = = = = MULTITASKING = = = = = = 
+
+extern getRSP				; multitasking.c
+extern getSS 				; multitasking.c
+extern getDimTask 			; multitasking.c
+extern moveToNextTask		; multitasking.c
+
+switchTask:
+	call moveToNextTask		
+	call getRSP				; rax tiene el puntero a info del proximo stack
+	mov rsp,rax
+	call getSS	
+	mov ss, rax		; uint64_t uint64_t 
+
+	jmp task_switched
+
+; = = = = = = = = = = = = = = = = = = =
+
+extern initializeMultiTasking;
+extern printCoso
 
 ;8254 Timer (Timer Tick)
 _irq00Handler:
-	irqHandlerMaster 0
+	pushState
+
+	call printCoso
+	call getDimTask
+	cmp rax, -1 								; si no esta inicalizado el multitasking, hay que hacerlo (EN ESTE MOMENTO)
+	jne already_initialized
+	mov rdi, rsp								; posicion acutal del stack
+	mov rsi, ss
+
+	call initializeMultiTasking
+
+	already_initialized:						; ya esta inicalizado
+	mov rdi, 0				
+
+	call irqDispatcher
+
+	jmp switchTask								; cambio los punteros al stack, es decir, cambio el task
+	task_switched:
+
+	; signal pic EOI (End of Interrupt)
+	mov al, 20h
+	out 20h, al
+
+	popState						; popeo los registros para el proximo task
+	iretq							; popeo el IP, CS, RSP, SS, FLAGS, .... para el proximo task
 
 ;Keyboard
 _irq01Handler:
@@ -188,8 +217,6 @@ _swIntHandler:
 	pop r9
 
 	iretq
-
-
 
 SECTION .bss
 	aux resq 1

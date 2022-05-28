@@ -46,30 +46,35 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
-extern void div_by_zero();
-extern int read(unsigned int fd, char * buf, unsigned int count);
+
+void punga1(){
+	while(1){
+		for(long k=0; k<100000000; k++);
+		sys_write(3,"punga1\n",7);
+	}
+}
+void punga2(){
+	while(1){
+		for(long k=0; k<100000000; k++);
+		sys_write(5,"punga2\n",7);
+	}
+}
+
+void printCoso(){
+	sys_write(3,"k",1);
+}
 
 int main()
 {	
-
-	load_idt();
-	int i;
-
 	sys_clear_screen();
 
-	char buffer[100]={0};
-	sys_write(1,"Dame: ",6);
+	load_idt();
 
-	i = read(0, buffer,10);
+	addTask(&punga1, 3);
+	//addTask(&punga2, 5);
 
-	sys_write(1,buffer,i);
-	sys_write(1,"\nDame2: ",8);
-	i = read(0, buffer,10);
-	sys_write(1,buffer,i);
+	while(1);			// IDLE PROCESS
 
-	//div_by_zero();
-
-	
-	((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
+	//((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
 	return 0;
 }
