@@ -1,4 +1,6 @@
-#include "./include/libStd.h"
+#include "./include/stdlib.h"
+
+#define NULL ((char *) 0)
 
 void num_to_string(long num, char * string){
     int i = 0;
@@ -10,18 +12,19 @@ void num_to_string(long num, char * string){
     string[i] = 0;
 }
 
-void reverseString(char * string){
-    int i, j;
+void reverseString(char * string)
+{
     char aux;
-    j = strlen(string)-1;
-    for(i = 0 ; i<j ; i++, j--){
+
+    for(int i = 0, j = strlen(string) - 1; i < j ; i++, j--) {
         aux = string[i];
         string[i] = string[j];
         string[j] = aux;
     }
 }
 
-int strContains(char * string1, char * string2){
+int strContains(char * string1, char * string2)
+{
     int i, j;
     int contains = 0;
     for(i = 0 ; i < strlen(string1) && !contains ; i++){
@@ -35,45 +38,49 @@ int strContains(char * string1, char * string2){
     return contains;
 }
 
-// 1 si son iguales
-// 0 si no
-int strneql(char * string1, char * string2){
-    if(strlen(string1) != strlen(string2)){
-        return 0;
-    }
+// 0 si son ==
+// s1 < s2 ==> <0
+// s1 > s2 ==> >0
+int strcmp(const char * s1, const char * s2)
+{
+        while(*s1 && (*s1 == *s2))
+                s1++, s2++;
 
-    int i;
-    for(i = 0 ; i < strlen(string1) ; i ++){
-        if(string1[i] != string2[i]){
-            return 0;
-        }
-    }
-    return 1;
+        return *(const unsigned char *)s1 - *(const unsigned char *)s2;
 }
 
-int strlen(char * string){
+int strlen(const char * string)
+{
     int i = 0;
-    while(string[i] != '\0'){
+    while(string[i])
         i++;
-    }
+
     return i;
 }
 
-int atoi(char * string){
-    int i;
+int atoi(const char * string) 
+{
     int result = 0;
-    for(i = 0 ; string[i] != '\0' ; i++){
-        result = (result*10) + string[i] - '0';
-    }
+
+    for(int i = 0 ; string[i] ; i++)
+        result = result*10 + string[i] - '0';
+
     return result;
 }
 
-void strncpy(char * string1, char * string2){
-    int i;
-    for(i = 0 ; i < strlen(string1) ; i++){
-        string1[i] = string2[i];
-    }
-    string1[i] = '\0';
+char * strncpy(char * dest, const char * src, unsigned int n)
+{
+        if(dest == NULL)
+                return NULL;
+
+        char * out = dest;
+        while(*src && n--) {
+                *dest = *src;
+                dest++; src++;
+        }
+        *dest = '\0';
+
+        return out;
 }
 
 void removeEnter(char * string){

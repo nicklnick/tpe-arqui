@@ -1,5 +1,5 @@
 #include "./include/syscalls.h"
-#include "./include/libStd.h"
+#include "./include/stdlib.h"
 
 // Entrada estandar
 #define STDIN 0
@@ -22,6 +22,11 @@ void printFd(char * string, int fd){
 
 void print(char * string){
     printFd(string, STDOUT);
+}
+
+void puts(char * string) {
+    printFd(string, STDOUT);
+    putchar('\n');
 }
 
 char getchar(){

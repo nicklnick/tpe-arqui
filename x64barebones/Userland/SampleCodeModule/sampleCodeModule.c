@@ -1,6 +1,6 @@
 /* sampleCodeModule.c */
 #include "./include/stdio.h"
-#include "./include/libStd.h"
+#include "./include/stdlib.h"
 #include "./include/syscalls.h"
 
 extern void shell();
@@ -20,7 +20,6 @@ int main() {
 		//print(&string);
 		print("\n");
 		enterSelection(string[0]);
-		
 	}
 
 	return 1;
