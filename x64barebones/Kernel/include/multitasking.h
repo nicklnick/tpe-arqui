@@ -9,5 +9,6 @@ void removeCurrentTask();
 
 uint64_t getRSP();
 uint64_t getSS();
+uint8_t getCurrentScreen();
 
 #endif

@@ -1,9 +1,12 @@
 #include <syscalls.h>
 #include <stdint.h>
 #include <keyboard.h>
+#include <multitasking.h>
 
 // Entrada estandar
-#define STDIN 0
+#define STDIN 1
+#define STDIN_LEFT 3
+#define STDIN_RIGHT 5
 
 // Normal mode
 #define STDOUT 1
@@ -64,7 +67,7 @@ unsigned int sys_clear_screen(){
 }
 
 
-// ====== SYSWRITE ======
+// ====== SYS_WRITE ======
 
 /*
 	Parametros:
@@ -154,7 +157,7 @@ unsigned int write(const char * buf, char format, unsigned int count,
 }
 
 
-// ====== SYSWRITE ======
+// ====== SYS_WRITE ======
 unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count) 
 {
 	char format;
@@ -193,27 +196,39 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count)
 
 
 
-// ====== SYSREAD ======
+// ====== SYS_READ ======
 
-unsigned int read_stdin(char * buf, unsigned int count) 
+unsigned int getFdOffSet(unsigned int fd){
+	switch(fd){
+		case STDIN_LEFT:
+			return currentVideoPosLeftOffset;
+		case STDIN_RIGHT:
+			return currentVideoPosRightOffset;
+		case STDIN:
+		default:
+			return currentVideoPosOffset;
+	}
+}
+
+unsigned int read_stdin(unsigned int fd, char * buf, unsigned int count) 
 {
 	char c=0, keyboardResp=0; 
 	int i=0;
-	int initialPos = currentVideoPosOffset;					// ### FEO ###
+	unsigned int initialPos = getFdOffSet(fd);					// ### FEO ###
 	while(c!='\n' && keyboardResp != BUFFER_FULL) {		
 
 		keyboardResp = keyboard_handler();
 
 		if(keyboardResp==VALID_KEY) {
 			c = peek_key();
-			sys_write(1,&c, 1);
+			sys_write(fd,&c, 1);
 		
 			if(i<count) 
 				i++;
 		}
 		else if(keyboardResp == DELETE_KEY){
-			if(currentVideoPosOffset > initialPos){			// ### FEO ###   // no dejo que borre lo que ya habia
-				sys_write(1,"\b",1);
+			if(getFdOffSet(fd) > initialPos){			// ### FEO ###   // no dejo que borre lo que ya habia
+				sys_write(fd,"\b",1);
 				if(i>0)
 					i--;
 			}
@@ -241,10 +256,12 @@ unsigned int sys_read(unsigned int fd, char * buf, unsigned int count)
 {
 	switch(fd) {										// Eligimos posicion de donde leer. Tambien lo podriamos hacer con una funcion/tabla
 		case STDIN:
+		case STDIN_LEFT:
+		case STDIN_RIGHT:
 			if(checkIfAvailableKey()){
 				return consume_stdin(buf,count);		// Si el key buffer no esta vacio, primero tengo que consumirlo
 			}
-			return read_stdin(buf, count);				// El buffer esta vacio, puedo leer de pantalla
+			return read_stdin(fd, buf, count);				// El buffer esta vacio, puedo leer de pantalla
 		default:
 			return 0;	// Seria error?
 	}
@@ -302,3 +319,17 @@ unsigned int sys_rtc(unsigned int option) {
         }
         return 0;       // error?
 }
+
+// ====== SYS_WRITE_TO_SCREEN ======
+
+unsigned int sys_write_to_screen(const char *buf, unsigned int count){
+	return sys_write(getCurrentScreen(),buf,count);			// no requiere de la especificacion de a que pantalla escribir 
+}
+
+
+// ====== SYS_READ_FROM_SCREEN ======
+
+unsigned int sys_read_from_screen(char *buf, unsigned int count){
+	return sys_read(getCurrentScreen(),buf,count);			// no requiere de la especificacion de a que pantalla escribir 
+}
+

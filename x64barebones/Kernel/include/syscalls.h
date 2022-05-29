@@ -47,4 +47,10 @@ unsigned int sys_clear_screen();
 
 unsigned int sys_rtc(unsigned int option);
 
+unsigned int sys_write_to_screen(const char *buf, unsigned int count);
+
+unsigned int sys_read_from_screen(char *buf, unsigned int count);
+
+
+
 #endif

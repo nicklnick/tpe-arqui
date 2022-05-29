@@ -13,13 +13,13 @@ div_by_zero:
 
 read:
 	
-	mov rax,0
+	mov rax,5
 	int 80h
 
 	ret 
 	
 print:
-	mov rax,1
+	mov rax,6
 	int 80h
 
 	ret

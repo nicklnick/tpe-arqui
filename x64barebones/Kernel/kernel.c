@@ -46,22 +46,8 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
-
-void punga1(){
-	char i=0;
-	while(1){
-		i = (i+1) % 10 + '0';
-		sys_write(3,&i,1);
-		sys_write(3,"punga1\n",7);
-	}
-		
-}
-
-extern void div_by_zero();
-
-void punga2(){
-	div_by_zero();
-}
+// Posible bug primero haciendo sys_read(1,buffer,n) y luego sys_write(3,buffer,n). 
+// Al ser pantallas distintas como q imprime por un microsegundo del lado incorrecto
 
 int main()
 {	
@@ -69,10 +55,8 @@ int main()
 
 	load_idt();
 	
-	addTask(&punga2, 5);
-	addTask(&punga1, 3);
+	addTask(&sampleCodeModuleAddress, 1);		
 	enableMultiTasking();
 
-	//((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
 	return 0;
 }
