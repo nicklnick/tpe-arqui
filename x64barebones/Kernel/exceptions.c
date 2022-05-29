@@ -4,11 +4,9 @@
 
 #define ZERO_EXCEPTION_ID 0
 #define ZERO_EXCEPTION_ERR_MSG "Se produjo una excepcion por division por cero!.\n"
-#define ZERO_EXCEPTION_ERR_MSG_LEN 49
 
 #define INVALID_OP_CODE 6
 #define INVALID_OP_CODE_ERR_MSG "Se produjo una excepcion por codigo de operacion invalida.\n"
-#define INVALID_OP_CODE_MSG_LEN 59
 
 #define TOTAL_REGISTERS 15
 #define REGISTER_LENGTH 16
@@ -33,23 +31,22 @@ void printRegisters(int screen, uint64_t * registerDumpPos){
 	}
 }
 
-void zero_division(uint64_t * registerDumpPos) {
+void default_exception_handle(const char * msg, uint64_t * registerDumpPos){
 	int screen =  getCurrentScreen() + 1;		// se le suma 1 pues la (screen + 1) es la misma screen pero en rojo.
-	sys_write(screen, ZERO_EXCEPTION_ERR_MSG, ZERO_EXCEPTION_ERR_MSG_LEN);
+	sys_write(screen, msg, str_len(msg));
 	
-	printRegisters(screen,registerDumpPos);
+	printRegisters(screen,registerDumpPos);		// imprimo valor de registros al causarse la exception
 
-	removeCurrentTask();
+	removeCurrentTask();						// lo elimino del queue de tasks
 
 }
 
+void zero_division(uint64_t * registerDumpPos) {
+	default_exception_handle(ZERO_EXCEPTION_ERR_MSG, registerDumpPos);
+}
+
 void invalid_op_code(uint64_t * registerDumpPos){
-	int screen =  getCurrentScreen() + 1;
-	sys_write(screen, INVALID_OP_CODE, INVALID_OP_CODE_MSG_LEN);
-
-	printRegisters(screen,registerDumpPos);
-
-	removeCurrentTask();
+	default_exception_handle(INVALID_OP_CODE_ERR_MSG, registerDumpPos);
 }
 
 void exceptionDispatcher(int exception, uint64_t * registerDumpPos) {

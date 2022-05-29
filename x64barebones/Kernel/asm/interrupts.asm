@@ -22,6 +22,13 @@ EXTERN irqDispatcher
 EXTERN exceptionDispatcher
 EXTERN swIntDispatcher
 
+EXTERN getRSP				; multitasking.c
+EXTERN getSS 				; multitasking.c
+EXTERN moveToNextTask		; multitasking.c
+
+GLOBAL forceNextTask
+GLOBAL forceCurrentTask
+
 SECTION .text
 
 %macro pushState 0
@@ -117,59 +124,6 @@ picSlaveMask:
     pop     rbp
     retn
 
-;  = = = = = = MULTITASKING = = = = = = 
-
-extern getRSP				; multitasking.c
-extern getSS 				; multitasking.c
-extern moveToNextTask		; multitasking.c
-
-GLOBAL forceNextTask
-GLOBAL forceCurrentTask
-
-forceNextTask:
-	call moveToNextTask		
-	call getRSP				; rax tiene el puntero a info del proximo stack
-	mov rsp,rax
-	call getSS	
-	mov ss, rax	
-	popState									; popeo los registros para el proximo task
-	iretq		
-
-
-forceCurrentTask:	
-		call getRSP				; rax tiene el puntero a info del proximo stack
-		mov rsp,rax
-		call getSS	
-		mov ss, rax	
-		popState				; popeo los registros para el proximo task
-		iretq					; popeo el IP, CS, RSP, SS, FLAGS, .... para el proximo task
-
-
-; = = = = = = = = = = = = = = = = = = =
-
-
-;8254 Timer (Timer Tick)
-_irq00Handler:
-	pushState
-
-	switchTask:
-		mov rdi, rsp 			; pongo los actuales asi despues puedo volver adonde estaba
-		mov rsi, ss
-	
-		call moveToNextTask		
-		call getRSP				; rax tiene el puntero a info del proximo stack
-		mov rsp,rax
-		call getSS	
-		mov ss, rax	
-
-	mov rdi, 0				
-	call irqDispatcher
-
-	mov al, 20h	
-	out 20h, al 								; signal pic EOI (End of Interrupt)
-
-	popState									; popeo los registros para el proximo task
-	iretq										; popeo el IP, CS, RSP, SS, FLAGS, .... para el proximo task
 
 ;Keyboard
 _irq01Handler:
@@ -206,7 +160,7 @@ haltcpu:
 	ret
 
 
-; ======= Interrupts de software ======= ;
+; = = = = = Interrupts de software = = = = = ;
 
 _swIntHandler:
 
@@ -222,6 +176,44 @@ _swIntHandler:
 	pop r9
 
 	iretq
+; = = = = = = = = = = = = = = = = = = = = = ;
 
-SECTION .bss
-	aux resq 1
+;  = = = = = = Multitasking = = = = = = 
+
+
+forceNextTask:
+	call moveToNextTask		; me muevo al proximo
+forceCurrentTask:
+	call getRSP				; rax tiene el RSP del proximo task
+	mov rsp,rax
+	call getSS	
+	mov ss, rax	
+	popState				; popeo los registros para el proximo task
+	iretq					; popeo el IP, CS, RSP, SS, FLAGS, .... para el proximo task	
+
+; = = = = = = = = = = = = = = = = = = =
+
+; = = = = = = Timer Tick = = = = = = = =
+_irq00Handler:
+	pushState
+
+	switchTask:
+		mov rdi, rsp 			; pongo los actuales asi despues puedo volver adonde estaba
+		mov rsi, ss
+		call moveToNextTask		
+		call getRSP				; rax tiene el SP del proximo stack
+		mov rsp,rax
+		call getSS	
+		mov ss, rax	
+
+	mov rdi, 0				
+	call irqDispatcher
+
+	mov al, 20h	
+	out 20h, al 								; signal pic EOI (End of Interrupt)
+
+	popState									
+	iretq										
+
+; = = = = = = = = = = = = = = = = = = =
+

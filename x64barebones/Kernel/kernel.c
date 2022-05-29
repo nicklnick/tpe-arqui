@@ -68,13 +68,10 @@ int main()
 	sys_clear_screen();
 
 	load_idt();
-
 	
 	addTask(&punga2, 5);
 	addTask(&punga1, 3);
 	enableMultiTasking();
-
-	while(1);		// IDLE PROCESS
 
 	//((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
 	return 0;
