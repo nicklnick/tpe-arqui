@@ -13,13 +13,13 @@ typedef struct taskInfo{
 		uint8_t isActive;			// si el proceso es uno activo o ya se elimino
 }taskInfo;
 
-
-
-void moveToNextTask();
+void moveToNextTask(uint64_t stackPointer, uint64_t stackSegment);
 int addTask(uint64_t entrypoint, int screen);
+void enableMultiTasking();
 
 uint64_t getRSP();
 uint64_t getSS();
-uint64_t getDimTask();
+
+void removeCurrentTask();
 
 #endif

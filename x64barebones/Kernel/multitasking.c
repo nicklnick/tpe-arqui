@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <multitasking.h>
+#include <interrupts.h>
 
 #define RET_POS 8
 
@@ -32,72 +33,84 @@ static taskInfo defaultStack;
 
 static uint8_t currentPid;
 
+static uint8_t isEnabled;
+
+
 
 /* --------- CODIGO ---------- */
 
-void initializeMultiTasking(uint64_t stackPointer, uint64_t stackSegment){	
-	defaultStack.stackPointer = stackPointer;						// Pongo los datos del stack normal, en la primera posicion
-	defaultStack.stackSegment = stackSegment;
-	defaultStack.screen = 1;
-	defaultStack.pid = currentPid++;
+void enableMultiTasking(){
+	isEnabled = 1;
+	forceCurrentTask();
 }
 
-void moveToNextTask(){
-	if(dimTasks == -1){					// si no hay tasks, se usa el normal
+uint8_t multitaskingEnabled(){
+	return (dimTasks != -1) && isEnabled;
+}
+
+
+void moveToNextTask(uint64_t stackPointer, uint64_t stackSegment){
+	if(!multitaskingEnabled()){										// si no hay tasks, se usa el normal
+		defaultStack.stackPointer = stackPointer;			// Pongo los datos del stack normal, en la primera posicion
+		defaultStack.stackSegment = stackSegment;
+		defaultStack.screen = 1;
+		defaultStack.pid = currentPid++;
 		return;
 	}
+
+	tasks[currentTask].stackPointer = stackPointer;			// updateo el current
+	tasks[currentTask].stackSegment = stackSegment;
 	
 	char found=0;
-	for(unsigned int i=currentTask; !found ; ){
-		i = ( i + 1 ) % TOTAL_TASKS;
+	for(unsigned int i=currentTask; !found ; ){			// busco el proximo stack
+		i = (i +  1) % TOTAL_TASKS;
 		if(tasks[i].isActive){
 			currentTask = i;
 			found = 1;
-		}
-		found = i + '0';
-
-		sys_write(3,&found,1);
+		}	
 	}
-
-	taskInfo resp = tasks[currentTask];
+	
 }
 
 uint64_t getRSP(){
-	if(dimTasks == -1){					// si no hay tasks, se usa el normal
+	if(!multitaskingEnabled()){					// si no hay tasks, se usa el normal
 		return defaultStack.stackPointer;
 	}
 	return tasks[currentTask].stackPointer;
 }
 uint64_t getSS(){
-	if(dimTasks == -1){					// si no hay tasks, se usa el normal
+	if(!multitaskingEnabled()){					// si no hay tasks, se usa el normal
 		return defaultStack.stackSegment;
 	}
 	return tasks[currentTask].stackSegment;
 }
-uint64_t getDimTask(){
-	return dimTasks;
+uint8_t getCurrentScreen(){
+	return tasks[currentTask].screen;
 }
 
-void removeTask(){
+void removeCurrentTask(){
 	tasks[currentTask].isActive = 0;
+	dimTasks = dimTasks==1 ? -1 : dimTasks - 1;
+	forceNextTask();				
 }
+
+
 
 int addTask(uint64_t entrypoint, int screen){
 	if(dimTasks>=TOTAL_TASKS){		// no acepto mas tasks al estar lleno
 		return -1;
 	}
-
 	dimTasks = dimTasks == -1 ? 1 : dimTasks+1;
 
 	int pos;
 	for(pos=0; tasks[pos].isActive ; pos++);													// busco espacio vacio en array de tasks
 
-	*((uint64_t*) (stacks[pos] + STACK_SIZE - RET_POS)) = (uint64_t) &removeTask;				// para el RET que vaya y se remueva automaticamente
+	*((uint64_t*) (stacks[pos] + STACK_SIZE - RET_POS)) = (uint64_t) &removeCurrentTask;				// para el RET que vaya y se remueva automaticamente
 	
 	*((uint64_t*) (stacks[pos] + STACK_SIZE - SS_POS)) = 0x0000000000000000;
-	*((uint64_t*) (stacks[pos] + STACK_SIZE - SP_POS)) = stacks[pos] + STACK_SIZE - SS_POS;		// agarro el comienzo del stack (que seria el final pq va disminuyendo RSP)
+	*((uint64_t*) (stacks[pos] + STACK_SIZE - SP_POS)) = stacks[pos] + STACK_SIZE - RET_POS;		// agarro el comienzo del stack
 	
-	*((uint64_t*) (stacks[pos] + STACK_SIZE - FLAGS_POS)) = 0x0000000000000000;
+	*((uint64_t*) (stacks[pos] + STACK_SIZE - FLAGS_POS)) = 0x202;				// tenemos que poner el flag de interrupcion en 1 y otros obligatorios
 
 	*((uint64_t*) (stacks[pos] + STACK_SIZE - CS_POS)) = 0x0000000000000008;				
 	*((uint64_t*) (stacks[pos] + STACK_SIZE - IP_POS)) = entrypoint;
@@ -108,7 +121,6 @@ int addTask(uint64_t entrypoint, int screen){
 	tasks[pos].screen = screen;
 	tasks[pos].pid = currentPid++;
 	tasks[pos].isActive = 1;
-
 	return tasks[pos].pid;
 }
 

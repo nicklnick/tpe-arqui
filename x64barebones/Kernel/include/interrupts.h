@@ -35,7 +35,7 @@ void picSlaveMask(uint8_t mask);
 void haltcpu(void);
 
 
-
+void forceNextTask();
 void _swIntHandler(void);       // ES VOID????
 
 

@@ -48,20 +48,19 @@ void * initializeKernelBinary()
 
 
 void punga1(){
+	char i=0;
 	while(1){
-		for(long k=0; k<100000000; k++);
+		i = (i+1) % 10 + '0';
+		sys_write(3,&i,1);
 		sys_write(3,"punga1\n",7);
 	}
-}
-void punga2(){
-	while(1){
-		for(long k=0; k<100000000; k++);
-		sys_write(5,"punga2\n",7);
-	}
+		
 }
 
-void printCoso(){
-	sys_write(3,"k",1);
+extern void div_by_zero();
+
+void punga2(){
+	div_by_zero();
 }
 
 int main()
@@ -70,10 +69,12 @@ int main()
 
 	load_idt();
 
+	
+	addTask(&punga2, 5);
 	addTask(&punga1, 3);
-	//addTask(&punga2, 5);
+	enableMultiTasking();
 
-	while(1);			// IDLE PROCESS
+	while(1);		// IDLE PROCESS
 
 	//((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
 	return 0;

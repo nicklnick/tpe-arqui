@@ -121,50 +121,55 @@ picSlaveMask:
 
 extern getRSP				; multitasking.c
 extern getSS 				; multitasking.c
-extern getDimTask 			; multitasking.c
 extern moveToNextTask		; multitasking.c
 
-switchTask:
+GLOBAL forceNextTask
+GLOBAL forceCurrentTask
+
+forceNextTask:
 	call moveToNextTask		
 	call getRSP				; rax tiene el puntero a info del proximo stack
 	mov rsp,rax
 	call getSS	
-	mov ss, rax		; uint64_t uint64_t 
+	mov ss, rax	
+	popState									; popeo los registros para el proximo task
+	iretq		
 
-	jmp task_switched
+
+forceCurrentTask:	
+		call getRSP				; rax tiene el puntero a info del proximo stack
+		mov rsp,rax
+		call getSS	
+		mov ss, rax	
+		popState				; popeo los registros para el proximo task
+		iretq					; popeo el IP, CS, RSP, SS, FLAGS, .... para el proximo task
+
 
 ; = = = = = = = = = = = = = = = = = = =
 
-extern initializeMultiTasking;
-extern printCoso
 
 ;8254 Timer (Timer Tick)
 _irq00Handler:
 	pushState
 
-	call printCoso
-	call getDimTask
-	cmp rax, -1 								; si no esta inicalizado el multitasking, hay que hacerlo (EN ESTE MOMENTO)
-	jne already_initialized
-	mov rdi, rsp								; posicion acutal del stack
-	mov rsi, ss
+	switchTask:
+		mov rdi, rsp 			; pongo los actuales asi despues puedo volver adonde estaba
+		mov rsi, ss
+	
+		call moveToNextTask		
+		call getRSP				; rax tiene el puntero a info del proximo stack
+		mov rsp,rax
+		call getSS	
+		mov ss, rax	
 
-	call initializeMultiTasking
-
-	already_initialized:						; ya esta inicalizado
 	mov rdi, 0				
-
 	call irqDispatcher
 
-	jmp switchTask								; cambio los punteros al stack, es decir, cambio el task
-	task_switched:
+	mov al, 20h	
+	out 20h, al 								; signal pic EOI (End of Interrupt)
 
-	; signal pic EOI (End of Interrupt)
-	mov al, 20h
-	out 20h, al
-
-	popState						; popeo los registros para el proximo task
-	iretq							; popeo el IP, CS, RSP, SS, FLAGS, .... para el proximo task
+	popState									; popeo los registros para el proximo task
+	iretq										; popeo el IP, CS, RSP, SS, FLAGS, .... para el proximo task
 
 ;Keyboard
 _irq01Handler:

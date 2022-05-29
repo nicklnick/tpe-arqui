@@ -1,4 +1,3 @@
-
 #include <stdint.h>
 #include <libasm.h>
 #include <lib.h>
@@ -16,9 +15,9 @@
 
 static char * registerOrder[] = {
 	"RAX: ","RBX: ","RCX: ","RDX: ",
-	"RBP: ","RSP: ","RSI: ","RDI: ",
-	"R8: ", "R9: ","R10: ","R11: ",
-	"R12: ","R13: ","R14: ","R15: " 
+	"RBP: ","RSI: ","RDI: ","R8: ", 
+	"R9: ","R10: ","R11: ","R12: ",
+	"R13: ","R14: ","R15: " 
 };
 
 void printRegisters(int screen, uint64_t * registerDumpPos){
@@ -35,21 +34,22 @@ void printRegisters(int screen, uint64_t * registerDumpPos){
 }
 
 void zero_division(uint64_t * registerDumpPos) {
-	int screen =  get_process_register_screen() + 1;		// se le suma 1 pues la (screen + 1) es la misma screen pero en rojo.
+	int screen =  getCurrentScreen() + 1;		// se le suma 1 pues la (screen + 1) es la misma screen pero en rojo.
 	sys_write(screen, ZERO_EXCEPTION_ERR_MSG, ZERO_EXCEPTION_ERR_MSG_LEN);
 	
 	printRegisters(screen,registerDumpPos);
 
-	// TODO: Arrelgar el stack?
+	removeCurrentTask();
 
 }
 
 void invalid_op_code(uint64_t * registerDumpPos){
-	int screen =  get_process_register_screen() + 1;
+	int screen =  getCurrentScreen() + 1;
 	sys_write(screen, INVALID_OP_CODE, INVALID_OP_CODE_MSG_LEN);
 
 	printRegisters(screen,registerDumpPos);
 
+	removeCurrentTask();
 }
 
 void exceptionDispatcher(int exception, uint64_t * registerDumpPos) {

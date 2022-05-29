@@ -43,23 +43,9 @@ static unsigned int currentVideoPosRightOffset = START_RIGHT;
 
 // ====== SYS_REGISTER_PROCESS ======
 
-typedef struct process_entry{
-	int pid;						// TODO: agregar funcionalidad para tener PIDs unicos (?)
-	int screen;						// en que pantalla va a imprimir el proceso actual
-}process_entry;
-
-static process_entry activeProcess;		// El proceso que esta corriendo actualmente
-
-int get_process_register_screen(){
-	return activeProcess.screen;
+unsigned int sys_register_process(uint64_t entryPoint, int screen){
+	return addTask(entryPoint, screen);
 }
-
-unsigned int sys_register_process(int screen){
-	activeProcess.screen = screen;
-	return 0;
-}
-
-
 
 // ====== SYS_CLEAR_SCREEN ======
 
