@@ -1,19 +1,34 @@
 /* sampleCodeModule.c */
+#include "./include/stdio.h"
+#include "./include/libStd.h"
+#include "./include/syscalls.h"
 
-char * v = (char*)0xB8000 + 79 * 2;
-
-static int var1 = 0;
-static int var2 = 0;
-
+extern void shell();
+void enterSelection(char selection);
 
 int main() {
-	//All the following code may be removed 
-	*v = 'X';
-	*(v+1) = 0x74;
+	
+	char string[5] = "";
+	
+	while(1){
+		print("Hola soy userman\n");
+		print("Opcion 1: Shell\n");
+		print("Ingrese su opcion: ");
+		scanf(&string, 5);
+		//print(&selection);
+		//num_to_string(selection, &string);
+		//print(&string);
+		print("\n");
+		enterSelection(string[0]);
+		
+	}
 
-	//Test if BSS is properly set up
-	if (var1 == 0 && var2 == 0)
-		return 0xDEADC0DE;
+	return 1;
+}
 
-	return 0xDEADBEEF;
+void enterSelection(char selection){
+	switch(selection){
+		case '1':
+			shell();
+	}
 }

@@ -69,10 +69,7 @@ int main()
 
 	load_idt();
 	
-	addTask(&punga2, 5);
-	addTask(&punga1, 3);
-	enableMultiTasking();
-
-	//((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
+	((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
+	
 	return 0;
 }
