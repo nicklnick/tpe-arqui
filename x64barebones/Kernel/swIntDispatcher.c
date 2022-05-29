@@ -7,7 +7,7 @@ unsigned int swIntDispatcher(uint64_t mode, uint64_t arg0, uint64_t arg1, uint64
 {
 	switch (mode) {
 		case 0:
-			return sys_read_from_screen(arg1, arg2);
+			return sys_read_from_screen(arg0, arg1);
 		case 1:
 			return sys_write_to_screen(arg0,arg1);
 		case 2:
