@@ -1,8 +1,7 @@
 #ifndef	_KEYBOARD_H
 #define _KEYBOARD_H
 
-/* --- DEFINES --- */
-
+/* --- CONSTANTS  --- */
 #define NO_KEY 0
 #define VALID_KEY 1
 #define DELETE_KEY 2
@@ -49,6 +48,5 @@ char peek_key();
 
 
 char checkIfAvailableKey();     
-
 
 #endif

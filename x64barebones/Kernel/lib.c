@@ -49,41 +49,49 @@ void * memcpy(void * destination, const void * source, uint64_t length)
 	return destination;
 }
 
-int str_len(const char * string){
-	int i = 0;
-    while(string[i] != '\0'){
-        i++;
-    }
-    return i;
+
+int str_len(const char * string)
+{
+        int len = 0;
+
+        while(string[len++] != '\0');
+
+        return len;
 }
 
-void reverseString(char * buffer){
-	int i, j;
-    char aux;
-    j = str_len(buffer)-1;
-    for(i = 0 ; i<j ; i++, j--){
-        aux = buffer[i];
-        buffer[i] = buffer[j];
-        buffer[j] = aux;
-    }
+
+void reverseString(char * buffer)
+{
+        int i, j = str_len(buffer) - 1;
+        char aux;
+
+        for(i = 0 ; i < j ; i++, j--) {
+                aux = buffer[i];
+                buffer[i] = buffer[j];
+                buffer[j] = aux;
+        }
 
 }
 
-int hex_to_string(uint64_t num, char * buffer, int fixedLength){
-	int i = 0;
-    for(int aux ; num > 0 ; i++, num/=16){
-       	aux = num % 16;
-       	if(aux >=0 && aux < 10)						// convierto a hex
-       		buffer[i] = aux + '0';
-       	else
-       		buffer[i] = aux - 10 + 'A';
 
-    }
-    while(i<fixedLength){					// le agrego 0 por deltante para llegar a la longitud deseada
-    	buffer[i++] = '0';
-    }
-    buffer[i] = 0;
-    reverseString(buffer);
-    return i;
+int hex_to_string(uint64_t num, char * buffer, int fixedLength)
+{
+        int i = 0;
+
+        for(int aux; num > 0 ; i++, num/=16){
+                aux = num % 16;
+
+                if(aux >=0 && aux < 10)						// convierto a hex
+                        buffer[i] = aux + '0';
+                else
+                        buffer[i] = aux - 10 + 'A';
+        }
+
+        while(i < fixedLength)				// le agrego 0 por delante para llegar a la longitud deseada
+                buffer[i++] = '0';
+        buffer[i] = 0;
+        reverseString(buffer);
+
+        return i;
 }
 

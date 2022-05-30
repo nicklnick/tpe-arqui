@@ -7,6 +7,7 @@ int addTask(uint64_t entrypoint, int screen);
 void moveToNextTask(uint64_t stackPointer, uint64_t stackSegment);
 void removeCurrentTask();
 
+/* GETTERS */
 uint64_t getRSP();
 uint64_t getSS();
 uint8_t getCurrentScreen();
