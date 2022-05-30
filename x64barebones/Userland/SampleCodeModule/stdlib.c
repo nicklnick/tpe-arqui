@@ -23,20 +23,6 @@ void reverseString(char * string)
     }
 }
 
-int strContains(char * string1, char * string2)
-{
-    int i, j;
-    int contains = 0;
-    for(i = 0 ; i < strlen(string1) && !contains ; i++){
-        for(j = 0 ; j < strlen(string2) ; j++){
-            if(string1[i] == string2[j])
-                contains = 1;
-            else   
-                contains = 0;
-        }
-    }
-    return contains;
-}
 
 // 0 si son ==
 // s1 < s2 ==> <0
