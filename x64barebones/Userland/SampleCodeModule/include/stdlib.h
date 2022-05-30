@@ -1,8 +1,9 @@
-void num_to_string(long num, char * string);
+#ifndef _STDLIB_H
+#define _STDLIB_H
 
-void reverseString(char * string);
+#include <stdint.h>
 
-int strContains(char * string1, char * string2);
+int num_to_string(uint64_t num, char * buffer);
 
 int strcmp(const char * s1, const char * s2);
 
@@ -12,6 +13,9 @@ int atoi(const char * string);
 
 void removeEnter(char * string);
 
-int strneql(char * string1, char * string2);
-
 char * strncpy(char * dest, const char * src, unsigned int n);
+
+uint8_t isNum(const char * string);
+
+
+#endif

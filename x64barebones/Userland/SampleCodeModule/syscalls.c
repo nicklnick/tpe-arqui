@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include "../include/syscalls.h"
 
 #define SYS_WRITE_TO_SCREEN 1
 #define SYS_READ_FROM_SCREEN 0
@@ -10,19 +10,19 @@
 extern uint64_t syscaller(uint64_t syscallID, uint64_t param1, uint64_t param2, uint64_t param3);
 
 unsigned int sys_write(const char * string, int length){
-    return syscaller(WRITE_ID, (uint64_t) string, (uint64_t) length);
+    return syscaller(SYS_WRITE_TO_SCREEN, (uint64_t) string, (uint64_t) length, 0);        // feo arreglar
 }   
 
 unsigned int sys_read(char * buf, int length){
-    return syscaller(READ_ID, (uint64_t) buf, (uint64_t) length);
+    return syscaller(SYS_READ_FROM_SCREEN, (uint64_t) buf, (uint64_t) length, 0);        // feo arreglar
 }
 
 unsigned int sys_clear_screen(){
-    return syscaller(SYS_CLEAR_SCREEN);
+    return syscaller(SYS_CLEAR_SCREEN, 0, 0, 0 );        // feo arreglar
 }
 unsigned int sys_register_process(uint64_t entryPoint, int screen){
-    return syscaller(SYS_REGISTER_PROCESS, (uint64_t) entryPoint, (uint64_t) screen);
+    return syscaller(SYS_REGISTER_PROCESS, (uint64_t) entryPoint, (uint64_t) screen, 0);        // feo arreglar
 }
 unsigned int sys_rtc(uint64_t mode){
-    return syscaller(SYS_RTC, mode);
+    return syscaller(SYS_RTC, mode, 0, 0);        // feo arreglar
 }

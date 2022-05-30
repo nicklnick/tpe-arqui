@@ -1,6 +1,16 @@
-void printFd(char * string, int fd);
-void print(char * string);
-void printErr(char * error);
-void scanf(char * buf, int length);
+#ifndef _STDIO_H
+#define _STDIO_H
+
+#define LEFT_SCREEN 3
+#define RIGHT_SCREEN 5
+#define NORMAL_SCREEN 1
+
+
+void print(char * string, int length);
+void puts(char * string);
+void read_line(char * buf, int length);
 char getchar();
-void putchar(char letter);
+
+
+
+#endif
