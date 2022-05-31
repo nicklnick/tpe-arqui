@@ -75,6 +75,15 @@ char * strncpy(char * dest, const char * src, unsigned int n)
 
         return out;
 }
+unsigned int strContainsChar(char * string, char c){                    // #### REMOVE? #####
+    int i;
+    for(i=0; string[i]!=0; i++){
+        if(string[i]==c){
+            return i;
+        }
+    }
+    return -1;
+}
 
 
 void removeEnter(char * string){                    // #### REMOVE #####

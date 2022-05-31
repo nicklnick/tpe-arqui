@@ -2,6 +2,7 @@ target remote localhost:1234
 add-symbol-file x64barebones/Kernel/kernel.elf 0x100000
 add-symbol-file x64barebones/Userland/0000-sampleCodeModule.elf 0x400000
 directory x64barebones/Kernel
+directory x64barebones/Userland/SampleCodeModule
 
 define src-prof
   dashboard -layout source expressions stack variables

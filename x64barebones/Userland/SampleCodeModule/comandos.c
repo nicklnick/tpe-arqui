@@ -47,16 +47,17 @@ void fibonacci(){
     int length;
 
     print("0",1);               // casos especiales
-    print(" - ",3);
+    putchar('\n');
 
     print("1",1);
-    print(" - ",3);
+    putchar('\n');
 
     while(1){
+        for(long k=0; k<5000000; k++);                      // ##### REMOVE ######
         current = prev1 + prev2;
         length = num_to_string(current,buffer);
         print(buffer,length);
-        print(" - ",3);
+        putchar('\n');
 
         prev1 = prev2;
         prev2 = current;
@@ -82,13 +83,13 @@ void primos(){
     int length;
 
     print("2",1);           // caso especial
-    print(" - ",3);
+    putchar('\n');
 
     while(1){
         if(isPrime(current)){
             length = num_to_string(current,buffer);
             print(buffer,length);
-            print(" - ",3);
+            putchar('\n');
         }
         current++;
     }

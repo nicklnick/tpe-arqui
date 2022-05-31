@@ -3,6 +3,7 @@
 #include <moduleLoader.h>
 #include <stdint.h>
 #include <string.h>
+#include <multitasking.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -55,7 +56,8 @@ int main()
 
 	load_idt();
 	
-	((EntryPoint)sampleCodeModuleAddress)();	// llamada a userland
+	addTask((uint64_t)sampleCodeModuleAddress,1);	// llamada a userland
+	enableMultiTasking();
 	
 	return 0;
 }

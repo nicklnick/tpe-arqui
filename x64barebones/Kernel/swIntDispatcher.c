@@ -20,6 +20,10 @@ unsigned int swIntDispatcher(uint64_t mode, uint64_t arg0, uint64_t arg1, uint64
 			return sys_read(arg0, arg1, arg2);			// deprecated?
 		case 6:
 			return sys_write(arg0, arg1, arg2);			// deprecated?
+		case 7:
+			return sys_consume_stdin(arg0, arg1);
+		case 8:
+			return sys_kill_process(arg0);
 
 	}
 }

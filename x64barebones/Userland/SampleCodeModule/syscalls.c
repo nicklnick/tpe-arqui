@@ -5,7 +5,8 @@
 #define SYS_CLEAR_SCREEN 2
 #define SYS_RTC 4
 #define SYS_REGISTER_PROCESS 3 
-
+#define SYS_CONSUME_STDIN 7
+#define SYS_KILL_PROCESS 8
 
 extern uint64_t syscaller(uint64_t syscallID, uint64_t param1, uint64_t param2, uint64_t param3);
 
@@ -25,4 +26,10 @@ unsigned int sys_register_process(uint64_t entryPoint, int screen){
 }
 unsigned int sys_rtc(uint64_t mode){
     return syscaller(SYS_RTC, mode, 0, 0);        // feo arreglar
+}
+unsigned int sys_consume_stdin(char * buf, unsigned int count){
+    return syscaller(SYS_CONSUME_STDIN, buf, count, 0);
+}
+unsigned int sys_kill_process(unsigned int pid){
+    return syscaller(SYS_KILL_PROCESS, pid,0,0);
 }

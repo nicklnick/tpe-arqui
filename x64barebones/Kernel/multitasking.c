@@ -156,6 +156,20 @@ void removeCurrentTask(){
 	dimTasks = dimTasks==1 ? NO_TASKS : dimTasks - 1;
 	forceNextTask();				
 }
+/*	
+	Elimina el task con ese pid y pasa al proximo. 
+	Un task no se puede matar a si mismo.
+*/
+int removeTask(unsigned int pid){
+	for(int i=0; i<TOTAL_TASKS; i++){
+		if(tasks[i].pid == pid){
+				tasks[i].isActive = INACTIVE_PROCESS;
+				dimTasks = dimTasks==1 ? NO_TASKS : dimTasks - 1;
+				return 1;
+		}
+	}	
+	return -1;		// si no encuentra el task, manda -1
+}
 
 
 /*	

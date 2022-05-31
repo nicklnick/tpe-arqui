@@ -43,6 +43,11 @@ static unsigned int currentVideoPosOffset = START_LEFT;
 static unsigned int currentVideoPosLeftOffset = START_LEFT;
 static unsigned int currentVideoPosRightOffset = START_RIGHT;
 
+// ====== SYS_KILL_PROCESS ======
+
+unsigned int sys_kill_process(unsigned int pid){
+	return removeTask(pid);
+}
 
 // ====== SYS_REGISTER_PROCESS ======
 
@@ -242,7 +247,7 @@ unsigned int read_stdin(unsigned int fd, char * buf, unsigned int count)
 	return i;
 }
 
-unsigned int consume_stdin(char * buf, unsigned int count){
+unsigned int sys_consume_stdin(char * buf, unsigned int count){
 	int i=0;
 	while(checkIfAvailableKey() && i<count){
 		char c = get_key();
@@ -259,7 +264,7 @@ unsigned int sys_read(unsigned int fd, char * buf, unsigned int count)
 		case STDIN_LEFT:
 		case STDIN_RIGHT:
 			if(checkIfAvailableKey()){
-				return consume_stdin(buf,count);		// Si el key buffer no esta vacio, primero tengo que consumirlo
+				return sys_consume_stdin(buf,count);		// Si el key buffer no esta vacio, primero tengo que consumirlo
 			}
 			return read_stdin(fd, buf, count);				// El buffer esta vacio, puedo leer de pantalla
 		default:
