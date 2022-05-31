@@ -5,6 +5,8 @@
 #define RIGHT_SCREEN 5
 #define NORMAL_SCREEN 1
 
+#define ESCAPE_KEY 27
+
 
 void print(char * string, int length);
 void puts(char * string);

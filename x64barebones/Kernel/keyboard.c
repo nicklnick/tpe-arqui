@@ -6,7 +6,8 @@ extern char readKeyboard();		// en libasm.asm
 
 /*-------- CONSTANTS --------*/
 #define BUFFER_SIZE 200
-#define UNMAPPED 1
+#define UNMAPPED 4
+#define ESCAPE_KEY 27
 
 /*--------- MACROS ----------*/
 #define INCREASE_MOD(x,total)	(x) = ((x) + 1) % total;
@@ -24,11 +25,11 @@ static int peekPos;			        // Posicion para observar en el buffer
 
 /* Tabla de equivalencias entre makeCode y Ascii */
 static char scanCodeTable[] = {
-        UNMAPPED,UNMAPPED,'1','2','3','4','5','6','7','8',	
+        UNMAPPED,ESCAPE_KEY,'1','2','3','4','5','6','7','8',	
 	'9','0','-','=','\b','\t','q','w','e','r',
 	't','y','u','i','o','p','[',']','\n',UNMAPPED,
 	'a','s','d','f','g','h','j','k','l',';',
-	'\'','`',UNMAPPED,'\\','z','x','c','v','b','n',
+	'\'','`',UNMAPPED,'|','z','x','c','v','b','n',
 	'm',',','.','/',UNMAPPED,'*',UNMAPPED,' ',UNMAPPED,
 	UNMAPPED,UNMAPPED,UNMAPPED,UNMAPPED,UNMAPPED,
 	UNMAPPED,UNMAPPED,UNMAPPED,UNMAPPED,UNMAPPED,
@@ -74,10 +75,13 @@ char keyboard_handler()
 	}
 
 	// ------ Caracteres normales -------
-	keyBuffer[writePos] = c;					// se agraga al buffer
-	INCREASE_MOD(writePos,BUFFER_SIZE)	
+	if(c != UNMAPPED){
+		keyBuffer[writePos] = c;					// se agraga al buffer
+		INCREASE_MOD(writePos,BUFFER_SIZE)	
 
-	return VALID_KEY;
+		return VALID_KEY;
+	}
+	return UNMAPPED;
 }
 
 

@@ -5,7 +5,7 @@
 
 #define SYMBOL "$> "
 #define SYMBOL_LENGTH 3
-#define PIPE "\\"
+#define PIPE "|"
 #define INVALID_COMMAND_MSG "Invalid command!"
 
 #define BUFFER_LENGTH 150
@@ -13,16 +13,16 @@
 
 #define NUM_OF_COMMANDS 5
 
-#define TOTAL_UNARY_COMMANDS 2                      // !!!! CAMBIAR !!!!
+#define TOTAL_UNARY_COMMANDS 2                                  // !!!! CAMBIAR !!!!
 #define TOTAL_BINARY_COMMANDS 1
 
 static char * unaryCommands[] = {
-    //"help", "inforeg"                                          // !!!!! AGREGAR !!!!!
+    //"help", "inforeg"                                         // !!!!! AGREGAR !!!!!
     "fibonacci", "primos"
 };
 
 static uint64_t unaryFunctions[] = {
-    //(uint64_t) &help, (uint64_t)&inforeg                       // !!!!! AGREGAR !!!!!
+    //(uint64_t) &help, (uint64_t)&inforeg                      // !!!!! AGREGAR !!!!!
     (uint64_t) &fibonacci, (uint64_t)&primos
 };
 
@@ -177,7 +177,7 @@ void commandsDispatcher(char ** words, int count){
     while(finishedExecution==0){ 
         size = consume_buffer(buffer, BUFFER_LENGTH-1);
         buffer[size] = 0;
-        if(strContainsChar(buffer,'.')>=0){                    // ## REMPLAZAR ##
+        if(strContainsChar(buffer,ESCAPE_KEY)>=0){                    // ## REMPLAZAR ##
             char p = pid1 + '0';
             putchar(p);
             sys_kill_process(pid1);
