@@ -8,6 +8,7 @@ void moveToNextTask(uint64_t stackPointer, uint64_t stackSegment);
 void removeCurrentTask();
 int removeTask(unsigned int pid);
 
+/* GETTERS */
 uint64_t getRSP();
 uint64_t getSS();
 uint8_t getCurrentScreen();

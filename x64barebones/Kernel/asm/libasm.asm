@@ -27,7 +27,7 @@ readKeyboard:
 	pop rbp
 	ret
 
-;; Obtiene lo que le pidieron del rtc pedido
+;; hace lo que dice
 getRTC:
         push rbp
         mov rbp, rsp
