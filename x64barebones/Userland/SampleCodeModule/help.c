@@ -1,4 +1,5 @@
-void help(){
+void help()
+{
     puts("Comandos:");
     putchar('\n');
     puts("   - fibo:");
@@ -23,6 +24,4 @@ void help(){
     putchar('\n');
     puts("   - multitasking:");
     puts("       para ejecucion simultanea (comando1 | comando2)");
-    
-
 }

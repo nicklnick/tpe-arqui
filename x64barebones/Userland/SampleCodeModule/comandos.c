@@ -2,14 +2,16 @@
 #include "./include/stdio.h"
 
 
-
 // = = = = = = = = PRINTMEM = = = = = = = = 
-
+//
 #define MAX_MEM_READ 16
 #define BYTE_LENGTH 2
 
-int hex_to_string(uint64_t num, char * buffer, int fixedLength){
+
+int hex_to_string(uint64_t num, char * buffer, int fixedLength)
+{
     int i = 0;
+
     for(int aux ; num > 0 ; i++, num/=16){
         aux = num % 16;
         if(aux >=0 && aux < 10)                     // convierto a hex
@@ -18,20 +20,23 @@ int hex_to_string(uint64_t num, char * buffer, int fixedLength){
             buffer[i] = aux - 10 + 'A';
 
     }
-    while(i<fixedLength){                   // le agrego 0 por deltante para llegar a la longitud deseada
+    while(i<fixedLength) {                   // le agrego 0 por deltante para llegar a la longitud deseada
         buffer[i++] = '0';
     }
     buffer[i] = 0;
+
     return i;
 }
 
-void printmem(uint64_t position){
+
+void printmem(uint64_t position)
+{
     uint64_t current;
     char buffer[BYTE_LENGTH + 1];
-    for(int i=0; i<MAX_MEM_READ; i++){
-        if(i!=0 && i%4==0){
+
+    for(int i=0; i < MAX_MEM_READ; i++) {
+        if(i!=0 && i%4==0)
             print(" ",1);
-        }
         current = *((uint8_t * )position + i);
         hex_to_string(current,buffer,BYTE_LENGTH);
         print(buffer,BYTE_LENGTH);
@@ -41,7 +46,8 @@ void printmem(uint64_t position){
 
 // = = = = = = = = FIBONACCI = = = = = = = = 
 
-void fibonacci(){
+void fibonacci()
+{
     char buffer[30];
     uint64_t prev1=0, prev2=1, current;
     int length;
@@ -52,8 +58,7 @@ void fibonacci(){
     print("1",1);
     putchar('\n');
 
-    while(1){
-        for(long k=0; k<5000000; k++);                      // ##### REMOVE ######
+    while(1) {
         current = prev1 + prev2;
         length = num_to_string(current,buffer);
         print(buffer,length);
@@ -68,16 +73,20 @@ void fibonacci(){
 // = = = = = = = = PRIMOS = = = = = = = =  
 
 // !!! Es ineficiente aproposito, asi no llena la pantalla demasiado rapido !!!
-char isPrime(uint64_t num){
+char isPrime(uint64_t num)
+{
     for(int i=2; i<num ;i++){
         if(num % i == 0) {
             return 0;
         }
     }
+
     return 1;
 }
 
-void primos(){
+
+void primos() 
+{
     char buffer[30];
     uint64_t current = 3;
     int length;
@@ -85,8 +94,8 @@ void primos(){
     print("2",1);           // caso especial
     putchar('\n');
 
-    while(1){
-        if(isPrime(current)){
+    while(1) {
+        if(isPrime(current)) {
             length = num_to_string(current,buffer);
             print(buffer,length);
             putchar('\n');
@@ -110,14 +119,14 @@ static char * registerOrder[] = {
     "R13: ","R14: ","R15: " 
 };
 
-void inforeg(){
-
+void inforeg()
+{
     char stringBuffer[BUFF_SIZE];
     uint64_t regBuffer[TOTAL_REGISTERS];
 
     getRegisters(regBuffer);        // meto valor de registros en buffer
 
-    for(int i=0; i<TOTAL_REGISTERS; i++){
+    for(int i=0; i<TOTAL_REGISTERS ; i++) {
         hex_to_string(regBuffer[i], stringBuffer, REGISTER_LENGTH);                  // Esto probablemente este roto
         print(registerOrder[i], strlen(registerOrder[i]));
         puts(stringBuffer);

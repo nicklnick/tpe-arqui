@@ -1,7 +1,7 @@
 #include "./include/stdlib.h"
 
-
 #define NULL ((char *) 0)
+
 
 void reverseString(char * string, int length)
 {
@@ -13,14 +13,16 @@ void reverseString(char * string, int length)
     }
 }
 
-int num_to_string(uint64_t num, char * buffer){
-    if(num==0){
+
+int num_to_string(uint64_t num, char * buffer)
+{
+    if(num==0) {
         buffer[0] = '0';
         buffer[1] = 0;
         return 2;
     }
     int i = 0;
-    while(num > 0){
+    while(num > 0) {
         buffer[i++] = num%10 + '0';
         num /= 10;
     }
@@ -42,6 +44,7 @@ int strcmp(const char * s1, const char * s2)
         return *(const unsigned char *)s1 - *(const unsigned char *)s2;
 }
 
+
 int strlen(const char * string)
 {
     int i = 0;
@@ -51,6 +54,8 @@ int strlen(const char * string)
     return i;
 }
 
+
+/* Converts string to int */
 int atoi(const char * string) 
 {
     int result = 0;
@@ -60,6 +65,7 @@ int atoi(const char * string)
 
     return result;
 }
+
 
 char * strncpy(char * dest, const char * src, unsigned int n)
 {
@@ -86,20 +92,23 @@ unsigned int strContainsChar(char * string, char c){                    // #### 
 }
 
 
-void removeEnter(char * string){                    // #### REMOVE #####
+void removeEnter(char * string)          // #### REMOVE #####
+{                   
     int i; 
     int removed = 0;
-    for(i = 0 ; i < strlen(string) && !removed; i++){
-        if(string[i] == '\n'){
+    for(i = 0 ; i < strlen(string) && !removed; i++) {
+        if(string[i] == '\n') {
             string[i] = '\0';
             removed = 1;
         }
     }
 }
 
-uint8_t isNum(const char * string){
-    for(int i=0; string[i]!=0; i++){
-        if(string[i]>'9' || string[i]<'0'){
+
+uint8_t isNum(const char * string)
+{
+    for(int i=0; string[i]!=0; i++) {
+        if(string[i]>'9' || string[i]<'0') {
             return 0;
         }
     }
