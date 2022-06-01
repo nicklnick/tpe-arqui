@@ -12,6 +12,7 @@ void print(char * string, int length);
 void puts(char * string);
 void read_line(char * buf, int length);
 char getchar();
+void clearScreen();
 unsigned int consume_buffer(char * buffer, int length);
 
 

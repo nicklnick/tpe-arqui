@@ -5,6 +5,6 @@
 void printmem(uint64_t position);
 void primos();
 void fibonacci();
-
+void help();
 #endif
 
