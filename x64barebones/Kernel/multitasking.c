@@ -6,8 +6,9 @@
 #define TOTAL_TASKS 4
 #define STACK_SIZE 2000
 
-#define ACTIVE_PROCESS 1 
 #define INACTIVE_PROCESS 0
+#define ACTIVE_PROCESS 1 
+#define PAUSED_PROCESS 2
 
 #define NO_TASKS -1
 #define ERROR_NO_SPACE_FOR_TASK -1
@@ -21,7 +22,7 @@
 										/*		 -=-=STACK=-=-		*/
 #define STACK_POINT_OF_ENTRY (21*8)   	/*  	|	RAX, RBX  |		*/
 										/*  	|	RCX, etc  |		*/   
-										/*		---------------		*/ 
+#define RDI_POS   (12*8)				/*		---------------		*/ 
 #define IP_POS    (6*8)					/*  	|	 RIP	  |		*/				
 #define CS_POS 	  (5*8)					/*  	|	  CS	  |		*/
 #define FLAGS_POS (4*8)					/*  	|	 RFLAGS	  |		*/
@@ -45,7 +46,7 @@ typedef struct taskInfo{
 		uint64_t  stackSegment;  	// valor de ss
 		uint8_t screen;				// en que pantalla va a imprimir
 		uint8_t pid;				// valor unico identificador
-		uint8_t isActive;			// si el proceso es uno activo o ya se elimino
+		uint8_t state;			// si el proceso es uno activo o ya se elimino
 }taskInfo;
 
 // ------ Queue de tasks -------
@@ -103,7 +104,7 @@ void moveToNextTask(uint64_t stackPointer, uint64_t stackSegment){
 	char found=0;
 	for(unsigned int i=currentTask; !found ; ){			// busco el proximo stack
 		i = (i +  1) % TOTAL_TASKS;
-		if(tasks[i].isActive){
+		if(tasks[i].state == ACTIVE_PROCESS){
 			currentTask = i;
 			found = 1;
 		}	
@@ -152,59 +153,77 @@ uint8_t getCurrentScreen(){
 	Elimina el current task y pasa al proximo. 
 */
 void removeCurrentTask(){
-	tasks[currentTask].isActive = INACTIVE_PROCESS;
+	tasks[currentTask].state = INACTIVE_PROCESS;
 	dimTasks = dimTasks==1 ? NO_TASKS : dimTasks - 1;
 	forceNextTask();				
+}
+
+// Encuentro el task usando el pid
+int findTask(unsigned int pid){
+	for(int i=0; i<TOTAL_TASKS; i++){
+		if(tasks[i].pid == pid)
+			return i;
+	}	
+	return -1;			// no existe task con ese pid
 }
 /*	
 	Elimina el task con ese pid y pasa al proximo. 
 	Un task no se puede matar a si mismo.
 */
 int removeTask(unsigned int pid){
-	for(int i=0; i<TOTAL_TASKS; i++){
-		if(tasks[i].pid == pid){
-				tasks[i].isActive = INACTIVE_PROCESS;
-				dimTasks = dimTasks==1 ? NO_TASKS : dimTasks - 1;
-				return 1;
-		}
-	}	
-	return -1;		// si no encuentra el task, manda -1
-}
+	int pos = findTask(pid);
+	if(pos < 0)					// se quiere remover task que no existe
+		return -1;
 
+	tasks[pos].state = INACTIVE_PROCESS;
+	dimTasks = dimTasks==1 ? NO_TASKS : dimTasks - 1;
+	return 1;
+}
+// pauso o despauso proceso con el pid
+int pauseOrUnpauseProcess(unsigned int pid){
+	int pos = findTask(pid);
+	if(pos < 0)					// se quiere pausar task que no existe
+		return -1;
+
+	tasks[pos].state = tasks[pos].state==PAUSED_PROCESS ? ACTIVE_PROCESS : PAUSED_PROCESS; 	// pausado -> despausado  | despausado -> pausado
+	return 1;
+}
 
 /*	
 	Agrega una funcion al queue de tasks. 
 	Parametros:  entrypoint: puntero a funcion  |  screen: en que pantalla va a imprimir
 */
 
-int addTask(uint64_t entrypoint, int screen){
+int addTask(uint64_t entrypoint, int screen, uint64_t arg0){
 	if(dimTasks>=TOTAL_TASKS){		// no acepto mas tasks al estar lleno
 		return ERROR_NO_SPACE_FOR_TASK;
 	}
 	dimTasks = dimTasks == NO_TASKS ? 1 : dimTasks+1;
 
 	int pos;
-	for(pos=0; tasks[pos].isActive ; pos++);													// busco espacio vacio en array de tasks
+	for(pos=0; tasks[pos].state==ACTIVE_PROCESS;pos++);											// encuentro posicion libre en el array de tasks
 
+	// --- Parametros de funcion ---
+	*((uint64_t*) (stacks[pos] + STACK_SIZE - RDI_POS)) = arg0;
 
-	*((uint64_t*) (stacks[pos] + STACK_SIZE - RET_POS)) = (uint64_t) &removeCurrentTask;		// para el RET que vaya y se remueva automaticamente de los tasks
 	
-	*((uint64_t*) (stacks[pos] + STACK_SIZE - SS_POS)) = SS_VALUE;
-	*((uint64_t*) (stacks[pos] + STACK_SIZE - SP_POS)) = stacks[pos] + STACK_SIZE - RET_POS;	// agarro el comienzo del stack
+	// --- "Stack frame" minimo para la funcion ---
+	*((uint64_t*) (stacks[pos] + STACK_SIZE - IP_POS)) = entrypoint;							// puntero al proceso que se va a correr
+	*((uint64_t*) (stacks[pos] + STACK_SIZE - CS_POS)) = CS_VALUE;				
 	
 	*((uint64_t*) (stacks[pos] + STACK_SIZE - FLAGS_POS)) = FLAG_VALUES;						// tenemos que poner el flag de interrupcion en 1 y otros obligatorios
+	
+	*((uint64_t*) (stacks[pos] + STACK_SIZE - SP_POS)) = stacks[pos] + STACK_SIZE - RET_POS;	// agarro el comienzo del stack
+	*((uint64_t*) (stacks[pos] + STACK_SIZE - SS_POS)) = SS_VALUE;
+	
+	*((uint64_t*) (stacks[pos] + STACK_SIZE - RET_POS)) = (uint64_t) &removeCurrentTask;		// para el RET que vaya y se remueva automaticamente de los tasks
 
-	*((uint64_t*) (stacks[pos] + STACK_SIZE - CS_POS)) = CS_VALUE;				
-	*((uint64_t*) (stacks[pos] + STACK_SIZE - IP_POS)) = entrypoint;							// puntero al proceso que se va a correr
-
+	// --- Datos de task ---
 	tasks[pos].stackPointer = stacks[pos] + STACK_SIZE - STACK_POINT_OF_ENTRY;					// comienzo del stack
 	tasks[pos].stackSegment = SS_VALUE;		
-
 	tasks[pos].screen = screen;
 	tasks[pos].pid = currentPid++;
-
-	tasks[pos].isActive = ACTIVE_PROCESS;
-
+	tasks[pos].state = ACTIVE_PROCESS;
 
 	return tasks[pos].pid;
 }

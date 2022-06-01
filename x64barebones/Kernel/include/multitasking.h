@@ -3,7 +3,7 @@
 
 void enableMultiTasking();
 
-int addTask(uint64_t entrypoint, int screen);
+int addTask(uint64_t entrypoint, int screen, uint64_t arg0);
 void moveToNextTask(uint64_t stackPointer, uint64_t stackSegment);
 void removeCurrentTask();
 int removeTask(unsigned int pid);

@@ -43,6 +43,12 @@ static unsigned int currentVideoPosOffset = START_LEFT;
 static unsigned int currentVideoPosLeftOffset = START_LEFT;
 static unsigned int currentVideoPosRightOffset = START_RIGHT;
 
+// ====== SYS_PAUSE_PROCESS ======
+
+unsigned int sys_pause_process(unsigned int pid){
+	return pauseOrUnpauseProcess(pid);
+}
+
 // ====== SYS_KILL_PROCESS ======
 
 unsigned int sys_kill_process(unsigned int pid){
@@ -51,8 +57,8 @@ unsigned int sys_kill_process(unsigned int pid){
 
 // ====== SYS_REGISTER_PROCESS ======
 
-unsigned int sys_register_process(uint64_t entryPoint, int screen){
-	return addTask(entryPoint, screen);
+unsigned int sys_register_process(uint64_t entryPoint, int screen, uint64_t arg0){
+	return addTask(entryPoint, screen, arg0);
 }
 
 // ====== SYS_CLEAR_SCREEN ======

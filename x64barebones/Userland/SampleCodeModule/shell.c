@@ -3,34 +3,38 @@
 #include "./include/comandos.h"
 #include "./include/syscalls.h"
 
-#define SYMBOL "$> "
-#define SYMBOL_LENGTH 3
+#define SYMBOL " $> "
+#define SYMBOL_LENGTH 4
 #define PIPE "|"
 #define INVALID_COMMAND_MSG "Invalid command!"
 
 #define BUFFER_LENGTH 150
 #define MAX_WORDS 10
 
+#define PAUSE_NORMAL_SCREEN ' '
+#define PAUSE_LEFT_SCREEN  'a'
+#define PAUSE_RIGHT_SCREEN 'l'
+
 #define NUM_OF_COMMANDS 5
 
-#define TOTAL_UNARY_COMMANDS 2                                  // !!!! CAMBIAR !!!!
-#define TOTAL_BINARY_COMMANDS 1
+#define TOTAL_UNARY_COMMANDS 3                                // !!!! CAMBIAR !!!!
+#define TOTAL_BINARY_COMMANDS 2
 
 static char * unaryCommands[] = {
-    //"help", "inforeg"                                         // !!!!! AGREGAR !!!!!
+    "inforeg",                                         // !!!!! AGREGAR !!!!!
     "fibonacci", "primos"
 };
 
 static uint64_t unaryFunctions[] = {
-    //(uint64_t) &help, (uint64_t)&inforeg                      // !!!!! AGREGAR !!!!!
+    (uint64_t)&inforeg,                      // !!!!! AGREGAR !!!!!
     (uint64_t) &fibonacci, (uint64_t)&primos
 };
 
 static char * binaryCommands[] = {
-    "printmem"
+    "printmem", "test"
 };
 static uint64_t binaryFunctions[] = {
-    (uint64_t)&printmem
+    (uint64_t)&printmem, (uint64_t) &test
 };
 
 
@@ -87,7 +91,7 @@ void commandsDispatcher(char ** words, int count){
             pos1 = checkUnaryCommand(words[0]);
             if(pos1 >= 0 ){
                 sys_clear_screen();
-                pid1 = sys_register_process(unaryFunctions[pos1], NORMAL_SCREEN);
+                pid1 = sys_register_process(unaryFunctions[pos1], NORMAL_SCREEN,0);
             }
             else{
                 puts(INVALID_COMMAND_MSG);
@@ -100,7 +104,7 @@ void commandsDispatcher(char ** words, int count){
             if(pos1 >= 0 && isNum(words[1])){
                 num1  = atoi(words[1]);
                 sys_clear_screen();
-                pid1 = sys_register_process(binaryFunctions[pos1], NORMAL_SCREEN); // !!!!!! PASAJE DE PARAMETROS
+                pid1 = sys_register_process(binaryFunctions[pos1], NORMAL_SCREEN, num1); // !!!!!! PASAJE DE PARAMETROS
             }
             else{
                 puts(INVALID_COMMAND_MSG);
@@ -114,8 +118,12 @@ void commandsDispatcher(char ** words, int count){
                 pos2 = checkUnaryCommand(words[2]);
                 if(pos1 >= 0 && pos2 >= 0){
                     sys_clear_screen();
-                    pid1 = sys_register_process(unaryFunctions[pos1], LEFT_SCREEN);        // !!! cuiada con argregar uno y despues otro
-                    pid2 = sys_register_process(unaryFunctions[pos2], RIGHT_SCREEN);
+                    pid1 = sys_register_process(unaryFunctions[pos1], LEFT_SCREEN,0);        // !!! cuiada con argregar uno y despues otro
+                    pid2 = sys_register_process(unaryFunctions[pos2], RIGHT_SCREEN,0);
+                }
+                else{
+                    puts(INVALID_COMMAND_MSG);          // ### FEO ###
+                    return; 
                 }
            }
            else{
@@ -131,8 +139,12 @@ void commandsDispatcher(char ** words, int count){
                 if(pos1 >=0 && pos2 >=0 && isNum(words[3])){
                     num1 = atoi(words[3]);
                     sys_clear_screen();
-                    pid1 = sys_register_process(unaryFunctions[pos1], LEFT_SCREEN);
-                    pid2 = sys_register_process(binaryFunctions[pos2], RIGHT_SCREEN); // !!!!!! PASAJE DE PARAMETROS
+                    pid1 = sys_register_process(unaryFunctions[pos1], LEFT_SCREEN,0);
+                    pid2 = sys_register_process(binaryFunctions[pos2], RIGHT_SCREEN,num1); // !!!!!! PASAJE DE PARAMETROS
+                }
+                else{
+                    puts(INVALID_COMMAND_MSG);          // ### FEO ###
+                    return; 
                 }
             }
             else if(strcmp(words[2],PIPE)==0){
@@ -141,8 +153,12 @@ void commandsDispatcher(char ** words, int count){
                 if(pos1 >=0 && pos2 >=0 && isNum(words[1])){
                     num1 = atoi(words[1]);
                     sys_clear_screen();
-                    pid1 = sys_register_process(binaryFunctions[pos1], LEFT_SCREEN); // !!!!!! PASAJE DE PARAMETROS
-                    pid2 = sys_register_process(unaryFunctions[pos2], RIGHT_SCREEN);
+                    pid1 = sys_register_process(binaryFunctions[pos1], LEFT_SCREEN,num1); // !!!!!! PASAJE DE PARAMETROS
+                    pid2 = sys_register_process(unaryFunctions[pos2], RIGHT_SCREEN,0);
+                }
+                else{
+                    puts(INVALID_COMMAND_MSG);          // ### FEO ###
+                    return; 
                 }
             }
             else{
@@ -159,8 +175,12 @@ void commandsDispatcher(char ** words, int count){
                     num1  = atoi(words[1]);
                     num2 = atoi(words[4]);
                     sys_clear_screen();
-                    pid1 = sys_register_process(binaryFunctions[pos1], LEFT_SCREEN); // !!!!!! PASAJE DE PARAMETROS
-                    pid2 = sys_register_process(binaryFunctions[pos2], RIGHT_SCREEN); // !!!!!! PASAJE DE PARAMETROS
+                    pid1 = sys_register_process(binaryFunctions[pos1], LEFT_SCREEN,num1); // !!!!!! PASAJE DE PARAMETROS
+                    pid2 = sys_register_process(binaryFunctions[pos2], RIGHT_SCREEN,num2); // !!!!!! PASAJE DE PARAMETROS
+                }
+                else{
+                    puts(INVALID_COMMAND_MSG);          // ### FEO ###
+                    return; 
                 }
             }
             else{
@@ -177,16 +197,30 @@ void commandsDispatcher(char ** words, int count){
     while(finishedExecution==0){ 
         size = consume_buffer(buffer, BUFFER_LENGTH-1);
         buffer[size] = 0;
-        if(strContainsChar(buffer,ESCAPE_KEY)>=0){                    // ## REMPLAZAR ##
-            char p = pid1 + '0';
-            putchar(p);
-            sys_kill_process(pid1);
-            if(pid2>0){
+        if(pid2>0){                                     // caso multitasking
+            if(strContainsChar(buffer,ESCAPE_KEY)>=0){                          // ## REMPLAZAR ##
+                sys_kill_process(pid1);
                 sys_kill_process(pid2);
+                finishedExecution = 1;
+                sys_clear_screen();
             }
-            finishedExecution = 1;
-            sys_clear_screen();
+            else if(strContainsChar(buffer,PAUSE_LEFT_SCREEN)>=0){              // #### HORRIBLE ####
+                sys_pause_process(pid1);
+            }
+            else if(strContainsChar(buffer,PAUSE_RIGHT_SCREEN)>=0){
+                sys_pause_process(pid2);
+            }
         }
+        else{                                           // caso single task
+            if(strContainsChar(buffer,ESCAPE_KEY)>=0){ 
+                sys_kill_process(pid1);
+                finishedExecution = 1;
+                sys_clear_screen();
+            }
+            else if(strContainsChar(buffer,PAUSE_NORMAL_SCREEN)>=0){             // #### HORRIBLE ####
+                sys_pause_process(pid1);
+            }
+        }        
     }
 }
 

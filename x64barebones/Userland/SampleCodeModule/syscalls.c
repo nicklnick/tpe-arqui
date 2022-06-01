@@ -7,6 +7,7 @@
 #define SYS_REGISTER_PROCESS 3 
 #define SYS_CONSUME_STDIN 7
 #define SYS_KILL_PROCESS 8
+#define SYS_PAUSE_PROCESS 9
 
 extern uint64_t syscaller(uint64_t syscallID, uint64_t param1, uint64_t param2, uint64_t param3);
 
@@ -21,8 +22,8 @@ unsigned int sys_read(char * buf, int length){
 unsigned int sys_clear_screen(){
     return syscaller(SYS_CLEAR_SCREEN, 0, 0, 0 );        // feo arreglar
 }
-unsigned int sys_register_process(uint64_t entryPoint, int screen){
-    return syscaller(SYS_REGISTER_PROCESS, (uint64_t) entryPoint, (uint64_t) screen, 0);        // feo arreglar
+unsigned int sys_register_process(uint64_t entryPoint, int screen, uint64_t arg0){
+    return syscaller(SYS_REGISTER_PROCESS, (uint64_t) entryPoint, (uint64_t) screen, arg0);        // feo arreglar
 }
 unsigned int sys_rtc(uint64_t mode){
     return syscaller(SYS_RTC, mode, 0, 0);        // feo arreglar
@@ -32,4 +33,7 @@ unsigned int sys_consume_stdin(char * buf, unsigned int count){
 }
 unsigned int sys_kill_process(unsigned int pid){
     return syscaller(SYS_KILL_PROCESS, pid,0,0);
+}
+unsigned int sys_pause_process(unsigned int pid){
+    return syscaller(SYS_PAUSE_PROCESS, pid,0,0);
 }

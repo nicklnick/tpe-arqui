@@ -1,9 +1,12 @@
 #include "./include/stdlib.h"
 #include "./include/stdio.h"
 
+void test(uint64_t arg0){
+    char c = arg0 + '0';
+    print(&c,1);
+}
 
 // = = = = = = = = PRINTMEM = = = = = = = = 
-//
 #define MAX_MEM_READ 16
 #define BYTE_LENGTH 2
 

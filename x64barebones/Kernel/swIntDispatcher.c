@@ -13,7 +13,7 @@ unsigned int swIntDispatcher(uint64_t mode, uint64_t arg0, uint64_t arg1, uint64
 		case 2:
 			return sys_clear_screen();
 		case 3:
-			return sys_register_process(arg0, arg1);
+			return sys_register_process(arg0, arg1, arg2);
 		case 4:
 			return sys_rtc(arg0);
 		case 5:
@@ -24,6 +24,8 @@ unsigned int swIntDispatcher(uint64_t mode, uint64_t arg0, uint64_t arg1, uint64
 			return sys_consume_stdin(arg0, arg1);
 		case 8:
 			return sys_kill_process(arg0);
+		case 9:
+			return sys_pause_process(arg0);
 
 	}
 }
