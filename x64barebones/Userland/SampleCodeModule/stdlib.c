@@ -32,6 +32,28 @@ int num_to_string(uint64_t num, char * buffer)
     return i;
 }
 
+int hex_to_string(uint64_t num, char * buffer, int fixedLength)
+{
+    int i = 0;
+
+    for(int aux ; num > 0 ; i++, num/=16){
+        aux = num % 16;
+        if(aux >=0 && aux < 10)                     // convierto a hex
+            buffer[i] = aux + '0';
+        else
+            buffer[i] = aux - 10 + 'A';
+
+    }
+    while(i<fixedLength) {                   // le agrego 0 por deltante para llegar a la longitud deseada
+        buffer[i++] = '0';
+    }
+    reverseString(buffer,i);
+    buffer[i] = 0;
+
+    return i;
+}
+
+
 
 // 0 si son ==
 // s1 < s2 ==> <0

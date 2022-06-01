@@ -97,7 +97,7 @@ void commandsDispatcher(char ** words, int count){
                 puts(INVALID_COMMAND_MSG);
                 return; 
            }
-           break;                                 // !!! Va salir del switch o de la funcion
+           break;
 
         case 2:
             pos1 = checkBinaryCommand(words[0]);
@@ -230,7 +230,6 @@ void shell(){
 
     int amount;
     while(1){
-
         print(SYMBOL, SYMBOL_LENGTH);
         read_line(buffer, BUFFER_LENGTH);
 

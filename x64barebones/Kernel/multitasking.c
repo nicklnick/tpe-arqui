@@ -161,7 +161,7 @@ void removeCurrentTask(){
 // Encuentro el task usando el pid
 int findTask(unsigned int pid){
 	for(int i=0; i<TOTAL_TASKS; i++){
-		if(tasks[i].pid == pid)
+		if(tasks[i].pid == pid && tasks[i].state != INACTIVE_PROCESS)
 			return i;
 	}	
 	return -1;			// no existe task con ese pid
