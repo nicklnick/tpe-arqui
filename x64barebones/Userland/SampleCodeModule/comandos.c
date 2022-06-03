@@ -148,6 +148,11 @@ void help(){
             currPage++;
             currPage = currPage%2;
             switchPage(currPage);
+        } else if(strContainsChar(buffer, ',')>=0){                    // ## REMPLAZAR ##
+            currPage--;
+            if(currPage < 0)
+                currPage += 2;
+            switchPage(currPage);
         }
     }
 }
@@ -230,8 +235,9 @@ void page1(){
 // ================================== TIME ==============================
 
 void time(){
-    char * date = getDate();
-    puts(date);
-    char * time = getTime();
-    puts(time);
+    char buffer[9];
+    getTime(buffer);
+    puts(buffer);
+    getDate(buffer);
+    puts(buffer);
 }

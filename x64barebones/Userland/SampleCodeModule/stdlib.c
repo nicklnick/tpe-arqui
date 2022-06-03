@@ -45,8 +45,7 @@ int strcmp(const char * s1, const char * s2)
 }
 
 
-int strlen(const char * string)
-{
+int strlen(const char * string){
     int i = 0;
     while(string[i])
         i++;
@@ -116,34 +115,33 @@ uint8_t isNum(const char * string)
 }
 
 
-char * formatString(char * string, char character){
+void formatString(char * string, char character){
     char aux[9];
-    aux[0] = string[0];
-    aux[1] = string[1];
+    int length = strlen(string);
+    int i = 0;
+    if(length < 6)
+        aux[0] = '0';
+    else
+        aux[0] = string[i++];
+    aux[1] = string[i++];
     aux[2] = character;
-    aux[3] = string[2];
-    aux[4] = string[3];
+    aux[3] = string[i++];
+    aux[4] = string[i++];
     aux[5] = character;
-    aux[6] = string[4];
-    aux[7] = string[5];
+    aux[6] = string[i++];
+    aux[7] = string[i];
     aux[8] = '\0';
-    strncpy(string, &aux, 9);
+    strncpy(string, aux, 9);
 }
 
-char * getTime(){
+void getTime(char * buffer){
     unsigned int num = sys_time();
-    char buffer[9];
     num_to_string((uint64_t) num, buffer);
-    puts(buffer);
-    formatString(&buffer, ':');
-    return &buffer;
+    formatString(buffer, ':');
 }
 
-char * getDate(){
+void getDate(char * buffer){
     unsigned int num = sys_date();
-    char buffer[9];
     num_to_string((uint64_t) num, buffer);
-    puts(buffer);
-    formatString(&buffer, '/');
-    return &buffer;
+    formatString(buffer, '/');
 }
