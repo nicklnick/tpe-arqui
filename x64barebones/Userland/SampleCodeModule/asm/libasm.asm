@@ -1,5 +1,9 @@
 GLOBAL getRegisters
 
+GLOBAL error
+
+GLOBAL error2
+
 section .text
 
 
@@ -8,9 +12,7 @@ getRegisters:
 		push rbp
 		mov rbp, rsp
 
-		; como que el RDI siempre va a estar mal ????
-
-		mov [rdi + 8 * 0], rax		; fijate los offsets!!!!!
+		mov [rdi + 8 * 0], rax
 		mov [rdi + 8 * 1], rbx
 		mov [rdi + 8 * 2], rcx
 		mov [rdi + 8 * 3], rdx
@@ -30,3 +32,21 @@ getRegisters:
 		mov rsp, rbp
 		pop rbp
 		ret
+
+
+error:
+		mov rax,0
+		mov rdx, 0
+		div rdx
+
+error2:
+		call error3
+		ret
+error3:
+		pop rax
+		mov rax, $opcode
+		push rax
+		ret
+
+section .data
+opcode dq 999999999

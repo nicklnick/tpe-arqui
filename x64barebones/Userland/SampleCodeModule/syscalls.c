@@ -1,10 +1,10 @@
 #include "../include/syscalls.h"
 
-#define SYS_WRITE_TO_SCREEN 1
 #define SYS_READ_FROM_SCREEN 0
+#define SYS_WRITE_TO_SCREEN 1
 #define SYS_CLEAR_SCREEN 2
-#define SYS_RTC 4
 #define SYS_REGISTER_PROCESS 3 
+#define SYS_RTC 4
 #define SYS_CONSUME_STDIN 7
 #define SYS_KILL_PROCESS 8
 #define SYS_PAUSE_PROCESS 9

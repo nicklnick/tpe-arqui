@@ -3,8 +3,8 @@
 #include "./include/comandos.h"
 #include "./include/syscalls.h"
 
-#define SYMBOL " $> "
-#define SYMBOL_LENGTH 4
+#define SYMBOL "$> "
+#define SYMBOL_LENGTH 3
 #define PIPE "|"
 #define INVALID_COMMAND_MSG "Invalid command!"
 
@@ -17,24 +17,29 @@
 
 #define NUM_OF_COMMANDS 5
 
-#define TOTAL_UNARY_COMMANDS 3                                // !!!! CAMBIAR !!!!
+#define TOTAL_UNARY_COMMANDS 5                         // !!!! CAMBIAR !!!!
 #define TOTAL_BINARY_COMMANDS 2
+
+extern void error();
+extern void error2();
 
 static char * unaryCommands[] = {
     "inforeg",                                         // !!!!! AGREGAR !!!!!
-    "fibonacci", "primos"
+    "fibonacci", "primos",
+    "error", "error2"
 };
 
 static uint64_t unaryFunctions[] = {
-    (uint64_t)&inforeg,                      // !!!!! AGREGAR !!!!!
-    (uint64_t) &fibonacci, (uint64_t)&primos
+    (uint64_t)&inforeg,                                 // !!!!! AGREGAR !!!!!
+    (uint64_t) &fibonacci, (uint64_t)&primos,
+    (uint64_t) &error, (uint64_t)&error2
 };
 
 static char * binaryCommands[] = {
     "printmem", "test"
 };
 static uint64_t binaryFunctions[] = {
-    (uint64_t)&printmem, (uint64_t) &test
+    (uint64_t)&printmem, (uint64_t)&test
 };
 
 
@@ -227,6 +232,7 @@ void commandsDispatcher(char ** words, int count){
 void shell(){
     char buffer[BUFFER_LENGTH];
     char * commands[MAX_WORDS];
+
 
     int amount;
     while(1){

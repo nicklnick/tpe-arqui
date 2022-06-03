@@ -6,12 +6,16 @@
 #define TOTAL_TASKS 4
 #define STACK_SIZE 2000
 
+// ----- Estado de task -----
 #define INACTIVE_PROCESS 0
 #define ACTIVE_PROCESS 1 
 #define PAUSED_PROCESS 2
 
+// ----- Valores de retorno ------
 #define NO_TASKS -1
 #define ERROR_NO_SPACE_FOR_TASK -1
+#define NO_TASK_FOUND -1
+#define TASK_ALTERED 1
 
 // ---- Valores default para el armado del stack ----
 #define FLAG_VALUES 0x202
@@ -164,7 +168,7 @@ int findTask(unsigned int pid){
 		if(tasks[i].pid == pid && tasks[i].state != INACTIVE_PROCESS)
 			return i;
 	}	
-	return -1;			// no existe task con ese pid
+	return NO_TASK_FOUND;			// no existe task con ese pid
 }
 /*	
 	Elimina el task con ese pid y pasa al proximo. 
@@ -173,20 +177,20 @@ int findTask(unsigned int pid){
 int removeTask(unsigned int pid){
 	int pos = findTask(pid);
 	if(pos < 0)					// se quiere remover task que no existe
-		return -1;
+		return NO_TASK_FOUND;
 
 	tasks[pos].state = INACTIVE_PROCESS;
 	dimTasks = dimTasks==1 ? NO_TASKS : dimTasks - 1;
-	return 1;
+	return TASK_ALTERED;
 }
 // pauso o despauso proceso con el pid
 int pauseOrUnpauseProcess(unsigned int pid){
 	int pos = findTask(pid);
 	if(pos < 0)					// se quiere pausar task que no existe
-		return -1;
+		return NO_TASK_FOUND;
 
 	tasks[pos].state = tasks[pos].state==PAUSED_PROCESS ? ACTIVE_PROCESS : PAUSED_PROCESS; 	// pausado -> despausado  | despausado -> pausado
-	return 1;
+	return TASK_ALTERED;
 }
 
 /*	
@@ -205,6 +209,13 @@ int addTask(uint64_t entrypoint, int screen, uint64_t arg0){
 
 	// --- Parametros de funcion ---
 	*((uint64_t*) (stacks[pos] + STACK_SIZE - RDI_POS)) = arg0;
+
+
+	// --- Pongo todos los registros que no se usan en 0 ---
+	for(int i=7 ; i<21 ; i++){
+		if(i!=12)
+			*((uint64_t*) (stacks[pos] + STACK_SIZE - i * 8)) = 0;
+	}
 
 	
 	// --- "Stack frame" minimo para la funcion ---

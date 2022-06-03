@@ -60,38 +60,37 @@ int str_len(const char * string)
 }
 
 
-void reverseString(char * buffer)
+void reverseString(char * string, int length)
 {
-        int i, j = str_len(buffer) - 1;
-        char aux;
-
-        for(i = 0 ; i < j ; i++, j--) {
-                aux = buffer[i];
-                buffer[i] = buffer[j];
-                buffer[j] = aux;
-        }
-
+    char aux;
+    for(int i = 0, j = length - 1; i < j ; i++, j--) {
+        aux = string[i];
+        string[i] = string[j];
+        string[j] = aux;
+    }
 }
+
 
 
 int hex_to_string(uint64_t num, char * buffer, int fixedLength)
 {
-        int i = 0;
+    int i = 0;
 
-        for(int aux; num > 0 ; i++, num/=16){
-                aux = num % 16;
+    for(int aux ; num > 0 ; i++, num/=16){
+        aux = num % 16;
+        if(aux >=0 && aux < 10)                     // convierto a hex
+            buffer[i] = aux + '0';
+        else
+            buffer[i] = aux - 10 + 'A';
 
-                if(aux >=0 && aux < 10)						// convierto a hex
-                        buffer[i] = aux + '0';
-                else
-                        buffer[i] = aux - 10 + 'A';
-        }
+    }
+    while(i<fixedLength) {                   // le agrego 0 por deltante para llegar a la longitud deseada
+        buffer[i++] = '0';
+    }
+    reverseString(buffer,i);
+    buffer[i] = 0;
 
-        while(i < fixedLength)				// le agrego 0 por delante para llegar a la longitud deseada
-                buffer[i++] = '0';
-        buffer[i] = 0;
-        reverseString(buffer);
-
-        return i;
+    return i;
 }
+
 

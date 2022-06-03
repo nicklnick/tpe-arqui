@@ -3,10 +3,10 @@
 #include <lib.h>
 
 #define ZERO_EXCEPTION_ID 0
-#define ZERO_EXCEPTION_ERR_MSG "Se produjo una excepcion por division por cero!.\n"
+#define ZERO_EXCEPTION_ERR_MSG "Se produjo una excepcion por division por cero!\n"
 
 #define INVALID_OP_CODE 6
-#define INVALID_OP_CODE_ERR_MSG "Se produjo una excepcion por codigo de operacion invalida.\n"
+#define INVALID_OP_CODE_ERR_MSG "Se produjo una excepcion por codigo de operacion invalida!\n"
 
 #define TOTAL_REGISTERS 15
 #define REGISTER_LENGTH 16
@@ -23,9 +23,9 @@ void printRegisters(int screen, uint64_t * registerDumpPos){
 	char buffer[100];
 	for(int i=0, j=TOTAL_REGISTERS-1; i<TOTAL_REGISTERS ; i++, j--){
 
-		sys_write(screen, registerOrder[i], str_len(registerOrder[i]));			// imprimo que registro es
+		sys_write(screen, registerOrder[i], str_len(registerOrder[i])-1);			// imprimo que registro es
 
-		int amount = hex_to_string(registerDumpPos[j], buffer, REGISTER_LENGTH);					
+		int amount = hex_to_string(registerDumpPos[j], buffer, REGISTER_LENGTH + 1);					
 		sys_write(screen, buffer,amount);										// imprimo valor de registro
 		sys_write(screen, "\n",1);
 	}
@@ -38,7 +38,6 @@ void default_exception_handle(const char * msg, uint64_t * registerDumpPos){
 	printRegisters(screen,registerDumpPos);		// imprimo valor de registros al causarse la exception
 
 	removeCurrentTask();						// lo elimino del queue de tasks
-
 }
 
 void zero_division(uint64_t * registerDumpPos) {

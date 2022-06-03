@@ -2,6 +2,9 @@
 #ifndef _SYSCALLS_H
 #define _SYSCALLS_H
 
+#include <stdint.h>
+
+
 
 /*
  * << sys_write >>
@@ -84,8 +87,22 @@ unsigned int sys_write_to_screen(const char *buf, unsigned int count);
  * Returns: 
  *      (uint) bytes read
  */
+
 unsigned int sys_read_from_screen(char *buf, unsigned int count);
-unsigned int sys_consume_stdin(char * buf, unsigned int count);     // consumo el buffer sin interrumpir para recibir teclado
+
+
+// agrego un task
+unsigned int sys_register_process(uint64_t entryPoint, int screen, uint64_t arg0);
+
+// elimino un task
+unsigned int sys_kill_process(unsigned int pid);
+
+// pauso/despauso un task
+unsigned int sys_pause_process(unsigned int pid);
+
+
+// consumo el buffer sin interrumpir para recibir teclado
+unsigned int sys_consume_stdin(char * buf, unsigned int count);    
 
 
 #endif

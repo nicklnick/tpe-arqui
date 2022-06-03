@@ -1,5 +1,4 @@
 #include <syscalls.h>
-#include <stdint.h>
 #include <keyboard.h>
 #include <multitasking.h>
 
@@ -42,6 +41,9 @@ static uint8_t * defaultVideoPos = (uint8_t*)0xB8000;
 static unsigned int currentVideoPosOffset = START_LEFT;
 static unsigned int currentVideoPosLeftOffset = START_LEFT;
 static unsigned int currentVideoPosRightOffset = START_RIGHT;
+
+
+/* ----------- CODIGO ------------ */
 
 // ====== SYS_PAUSE_PROCESS ======
 
