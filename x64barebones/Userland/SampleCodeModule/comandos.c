@@ -236,8 +236,8 @@ void page1(){
 
 void time(){
     char buffer[9];
-    getTime(buffer);
-    puts(buffer);
     getDate(buffer);
+    puts(buffer);
+    getTime(buffer);
     puts(buffer);
 }
