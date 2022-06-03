@@ -17,22 +17,20 @@
 
 #define NUM_OF_COMMANDS 5
 
-#define TOTAL_UNARY_COMMANDS 5                         // !!!! CAMBIAR !!!!
-#define TOTAL_BINARY_COMMANDS 2
+#define TOTAL_UNARY_COMMANDS 4                                   // !!!! CAMBIAR !!!!
+#define TOTAL_BINARY_COMMANDS 1
 
 extern void error();
 extern void error2();
 
 static char * unaryCommands[] = {
-    "inforeg",                                         // !!!!! AGREGAR !!!!!
-    "fibonacci", "primos",
-    "error", "error2"
+    //"help", "inforeg"                                         // !!!!! AGREGAR !!!!!
+    "fibonacci", "primos", "help", "time"
 };
 
 static uint64_t unaryFunctions[] = {
-    (uint64_t)&inforeg,                                 // !!!!! AGREGAR !!!!!
-    (uint64_t) &fibonacci, (uint64_t)&primos,
-    (uint64_t) &error, (uint64_t)&error2
+    //(uint64_t) &help, (uint64_t)&inforeg                      // !!!!! AGREGAR !!!!!
+    (uint64_t) &fibonacci, (uint64_t)&primos, (uint64_t)&help, (uint64_t)&time
 };
 
 static char * binaryCommands[] = {

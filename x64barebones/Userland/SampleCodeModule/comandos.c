@@ -9,6 +9,7 @@ void test(uint64_t arg0){
 // = = = = = = = = PRINTMEM = = = = = = = = 
 #define MAX_MEM_READ 16
 #define BYTE_LENGTH 2
+#define BUFFER_LENGTH 150
 
 void printmem(uint64_t position)
 {
@@ -112,4 +113,112 @@ void inforeg()
         print(registerOrder[i], strlen(registerOrder[i]));
         puts(stringBuffer);
     }
+}
+
+// ==================== help ======================================
+
+void help(){
+    int size;
+    char buffer[BUFF_SIZE];
+    int currPage = 0;
+    page0();
+    while(1){
+        size = consume_buffer(buffer, BUFFER_LENGTH-1);
+        buffer[size] = 0;
+        if(strContainsChar(buffer, '.')>=0){                    // ## REMPLAZAR ##
+            currPage++;
+            currPage = currPage%2;
+            switchPage(currPage);
+        } else if(strContainsChar(buffer, ',')>=0){                    // ## REMPLAZAR ##
+            currPage--;
+            if(currPage < 0)
+                currPage += 2;
+            switchPage(currPage);
+        }
+    }
+}
+
+void switchPage(int page){
+    clear_screen();
+    switch(page){
+        case 0: 
+            page0();
+            break;
+        case 1:
+            page1();
+            break;
+        default:
+            break;
+    }
+}
+
+void page0(){
+    putchar('\n');
+    puts("COMANDOS:");
+    putchar('\n');
+    puts("   - fibo:");
+    puts("       imprime la serie de fibonacci");
+    puts("       se corta ejecucion con la tecla X");
+    putchar('\n');
+    puts("   - primos:");
+    puts("       imprime los numeros primos");
+    puts("       se corta ejecucion con la tecla X");
+    putchar('\n');
+    puts("   - inforeg:");
+    puts("       imprime el contenido de los registros");
+    putchar('\n');
+    puts("   - printmem:");
+    puts("       recibe un puntero e imprime un vuelco (32 bytes) desde dicha direccion");
+    putchar('\n');    
+    puts("   - time:");
+    puts("       imprime el dia y hora del sistema");
+    putchar('\n');
+    puts("   - error:");
+    puts("       menu para simulacion de excepciones de kernel");
+    putchar('\n');
+    putchar('\n');
+    puts("Pag 1/2 proxima apretando .");
+
+    return;
+}
+
+void page1(){
+    putchar('\n');
+    putchar('\n');
+    puts("MULTITASKING:");
+    putchar('\n');
+    puts("   - Para ejecucion simultanea (comando1 | comando2)");
+    putchar('\n');
+    puts("       Con tecla - A - se pausa/reanuda ejecucion de lado izq");
+    puts("       Con tecla - L - se pausa/reanuda ejecucion de lado der");
+    puts("       Con tecla - ESC - regresa a la terminal unica");
+    putchar('\n');
+    putchar('\n');
+    putchar('\n');
+    putchar('\n');
+    putchar('\n');
+    putchar('\n');
+    putchar('\n');
+    putchar('\n');    
+    putchar('\n');
+    putchar('\n');
+    putchar('\n');
+    putchar('\n');
+    putchar('\n');
+    putchar('\n');
+    putchar('\n');
+    putchar('\n');
+    puts("Pag 2/2 proxima apretando .");
+
+}
+
+
+// ================================== TIME ==============================
+
+void time(){
+    char buffer[9];
+    getDate(buffer);
+    puts(buffer);
+    getTime(buffer);
+    puts(buffer);
 }

@@ -9,6 +9,9 @@
 #define SYS_KILL_PROCESS 8
 #define SYS_PAUSE_PROCESS 9
 
+#define RTC_TIME 1
+#define RTC_DAY 2
+
 extern uint64_t syscaller(uint64_t syscallID, uint64_t param1, uint64_t param2, uint64_t param3);
 
 unsigned int sys_write(const char * string, int length){
@@ -36,4 +39,12 @@ unsigned int sys_kill_process(unsigned int pid){
 }
 unsigned int sys_pause_process(unsigned int pid){
     return syscaller(SYS_PAUSE_PROCESS, pid,0,0);
+}
+
+unsigned int sys_time(){
+    return syscaller(SYS_RTC, RTC_TIME, 0 , 0);
+}
+
+unsigned int sys_date(){
+    return syscaller(SYS_RTC, RTC_DAY, 0, 0);
 }
