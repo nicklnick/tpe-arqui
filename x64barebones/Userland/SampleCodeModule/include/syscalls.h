@@ -9,5 +9,7 @@ unsigned int sys_clear_screen();
 unsigned int sys_register_process(uint64_t entryPoint, int screen);
 unsigned int sys_rtc(uint64_t mode);
 unsigned int sys_consume_stdin(char * buf, unsigned int count);
+unsigned int sys_time();
+unsigned int sys_date();
 
 #endif

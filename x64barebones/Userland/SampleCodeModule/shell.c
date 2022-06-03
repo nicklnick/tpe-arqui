@@ -13,17 +13,17 @@
 
 #define NUM_OF_COMMANDS 5
 
-#define TOTAL_UNARY_COMMANDS 3                                  // !!!! CAMBIAR !!!!
+#define TOTAL_UNARY_COMMANDS 4                                   // !!!! CAMBIAR !!!!
 #define TOTAL_BINARY_COMMANDS 1
 
 static char * unaryCommands[] = {
     //"help", "inforeg"                                         // !!!!! AGREGAR !!!!!
-    "fibonacci", "primos", "help"
+    "fibonacci", "primos", "help", "time"
 };
 
 static uint64_t unaryFunctions[] = {
     //(uint64_t) &help, (uint64_t)&inforeg                      // !!!!! AGREGAR !!!!!
-    (uint64_t) &fibonacci, (uint64_t)&primos, (uint64_t)&help
+    (uint64_t) &fibonacci, (uint64_t)&primos, (uint64_t)&help, (uint64_t)&time
 };
 
 static char * binaryCommands[] = {

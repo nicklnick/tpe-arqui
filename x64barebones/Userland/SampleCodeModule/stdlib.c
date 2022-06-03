@@ -114,3 +114,36 @@ uint8_t isNum(const char * string)
     }
     return 1;
 }
+
+
+char * formatString(char * string, char character){
+    char aux[9];
+    aux[0] = string[0];
+    aux[1] = string[1];
+    aux[2] = character;
+    aux[3] = string[2];
+    aux[4] = string[3];
+    aux[5] = character;
+    aux[6] = string[4];
+    aux[7] = string[5];
+    aux[8] = '\0';
+    strncpy(string, &aux, 9);
+}
+
+char * getTime(){
+    unsigned int num = sys_time();
+    char buffer[9];
+    num_to_string((uint64_t) num, buffer);
+    puts(buffer);
+    formatString(&buffer, ':');
+    return &buffer;
+}
+
+char * getDate(){
+    unsigned int num = sys_date();
+    char buffer[9];
+    num_to_string((uint64_t) num, buffer);
+    puts(buffer);
+    formatString(&buffer, '/');
+    return &buffer;
+}

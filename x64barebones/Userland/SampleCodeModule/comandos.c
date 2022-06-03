@@ -226,3 +226,12 @@ void page1(){
 
 }
 
+
+// ================================== TIME ==============================
+
+void time(){
+    char * date = getDate();
+    puts(date);
+    char * time = getTime();
+    puts(time);
+}
