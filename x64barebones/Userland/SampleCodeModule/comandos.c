@@ -1,11 +1,6 @@
 #include "./include/stdlib.h"
 #include "./include/stdio.h"
 
-void test(uint64_t arg0){
-    char c = arg0 + '0';
-    print(&c,1);
-}
-
 // = = = = = = = = PRINTMEM = = = = = = = = 
 #define MAX_MEM_READ 16
 #define BYTE_LENGTH 2
@@ -28,6 +23,9 @@ void printmem(uint64_t position)
 
 // = = = = = = = = FIBONACCI = = = = = = = = 
 
+#define FIBO_MAX 999999999999999999
+
+
 void fibonacci()
 {
     char buffer[30];
@@ -48,6 +46,11 @@ void fibonacci()
 
         prev1 = prev2;
         prev2 = current;
+
+        if(current >= FIBO_MAX){            // uint64_t entra en overflow despues de este numero
+            prev1 = 0;
+            prev2 = 1;
+        }
     }
 }
 
@@ -106,7 +109,7 @@ void inforeg()
     char stringBuffer[BUFF_SIZE];
     uint64_t regBuffer[TOTAL_REGISTERS];
 
-    getRegisters(regBuffer);        // meto valor de registros en buffer
+    sys_inforeg(regBuffer);        // meto valor de registros en buffer
 
     for(int i=0; i<TOTAL_REGISTERS ; i++) {
         hex_to_string(regBuffer[i], stringBuffer, REGISTER_LENGTH);                  // Esto probablemente este roto
@@ -115,7 +118,7 @@ void inforeg()
     }
 }
 
-// ==================== help ======================================
+// = = = = = = = = = HELP = = = = = = = = = = 
 
 void help(){
     int size;
@@ -153,72 +156,76 @@ void switchPage(int page){
 }
 
 void page0(){
-    putchar('\n');
     puts("COMANDOS:");
-    putchar('\n');
-    puts("   - fibo:");
-    puts("       imprime la serie de fibonacci");
-    puts("       se corta ejecucion con la tecla X");
-    putchar('\n');
-    puts("   - primos:");
-    puts("       imprime los numeros primos");
-    puts("       se corta ejecucion con la tecla X");
-    putchar('\n');
-    puts("   - inforeg:");
-    puts("       imprime el contenido de los registros");
-    putchar('\n');
-    puts("   - printmem:");
-    puts("       recibe un puntero e imprime un vuelco (32 bytes) desde dicha direccion");
-    putchar('\n');    
-    puts("   - time:");
-    puts("       imprime el dia y hora del sistema");
-    putchar('\n');
-    puts("   - error:");
-    puts("       menu para simulacion de excepciones de kernel");
-    putchar('\n');
-    putchar('\n');
-    puts("Pag 1/2 proxima apretando .");
+    puts("   - fibo:\n       imprime la serie de fibonacci\n       se corta ejecucion con la tecla ESC\n");
+    puts("   - primos:\n       imprime los numeros primos\n        se corta ejecucion con la tecla ESC\n");
+    puts("   - inforeg:\n       imprime el contenido de los registros\n");
+    puts("   - printmem:\n       recibe un parametro e imprime un vuelco (32 bytes) desde dicha direccion\n");    
+    puts("   - time:\n       imprime el dia y hora del sistema\n");
+    puts("   - div-error:\n       ejecuta una division por 0 para testear la excepcion\n");
+    puts("   - opcode-error:\n       ejecuta una operacion invalida para testear la excepcion\n");
+    puts("Pag 1/2 |  proxima apretando . | previa apretando ,");
 
     return;
 }
 
 void page1(){
-    putchar('\n');
-    putchar('\n');
-    puts("MULTITASKING:");
-    putchar('\n');
-    puts("   - Para ejecucion simultanea (comando1 | comando2)");
-    putchar('\n');
-    puts("       Con tecla - A - se pausa/reanuda ejecucion de lado izq");
-    puts("       Con tecla - L - se pausa/reanuda ejecucion de lado der");
+    puts("\n\nTECLA ESCPECIAL:\n");
+    puts("       Con tecla - F5 - se hace una captura de los registros");
+    puts("\nMULTITASKING:\n");
+    puts("   - Para ejecucion simultanea comando1 | comando2\n");
+    puts("       Con tecla - F1 - se pausa/reanuda ejecucion de modo normal");
+    puts("       Con tecla - F2 - se pausa/reanuda ejecucion de lado izq");
+    puts("       Con tecla - F3 - se pausa/reanuda ejecucion de lado der");
     puts("       Con tecla - ESC - regresa a la terminal unica");
-    putchar('\n');
-    putchar('\n');
-    putchar('\n');
-    putchar('\n');
-    putchar('\n');
-    putchar('\n');
-    putchar('\n');
-    putchar('\n');    
-    putchar('\n');
-    putchar('\n');
-    putchar('\n');
-    putchar('\n');
-    putchar('\n');
-    putchar('\n');
-    putchar('\n');
-    putchar('\n');
-    puts("Pag 2/2 proxima apretando .");
-
+    print("\n\n\n\n\n\n\n\n\n\n\n\n",12);
+    puts("Pag 2/2 |  proxima apretando . | previa apretando ,");
 }
 
 
-// ================================== TIME ==============================
+// = = = = = = = = =  TIME  = = = = = = = = = 
+
+
+#define RTC_TIME 1
+#define RTC_DAY 2
+
+void formatString(char * string, char character){
+    char aux[9];
+    int length = strlen(string);
+    int i = 0;
+    if(length < 6)
+        aux[0] = '0';
+    else
+        aux[0] = string[i++];
+    aux[1] = string[i++];
+    aux[2] = character;
+    aux[3] = string[i++];
+    aux[4] = string[i++];
+    aux[5] = character;
+    aux[6] = string[i++];
+    aux[7] = string[i];
+    aux[8] = '\0';
+    strncpy(string, aux, 9);
+}
+
+void getTime(char * buffer){
+    unsigned int num = sys_rtc(RTC_TIME);
+    num_to_string((uint64_t) num, buffer);
+    formatString(buffer, ':');
+}
+
+void getDate(char * buffer){
+    unsigned int num = sys_rtc(RTC_DAY);
+    num_to_string((uint64_t) num, buffer);
+    formatString(buffer, '/');
+}
 
 void time(){
     char buffer[9];
+    print("DATE: ",6);
     getDate(buffer);
     puts(buffer);
+    print("TIME: ",6);
     getTime(buffer);
     puts(buffer);
 }

@@ -8,43 +8,39 @@
 #define SYS_CONSUME_STDIN 7
 #define SYS_KILL_PROCESS 8
 #define SYS_PAUSE_PROCESS 9
+#define SYS_INFOREG 10
 
-#define RTC_TIME 1
-#define RTC_DAY 2
+#define NULL 0
 
 extern uint64_t syscaller(uint64_t syscallID, uint64_t param1, uint64_t param2, uint64_t param3);
 
 unsigned int sys_write(const char * string, int length){
-    return syscaller(SYS_WRITE_TO_SCREEN, (uint64_t) string, (uint64_t) length, 0);        // feo arreglar
+    return syscaller(SYS_WRITE_TO_SCREEN, (uint64_t) string, (uint64_t) length, NULL);        // feo arreglar
 }   
 
 unsigned int sys_read(char * buf, int length){
-    return syscaller(SYS_READ_FROM_SCREEN, (uint64_t) buf, (uint64_t) length, 0);        // feo arreglar
+    return syscaller(SYS_READ_FROM_SCREEN, (uint64_t) buf, (uint64_t) length, NULL);        // feo arreglar
 }
 
 unsigned int sys_clear_screen(){
-    return syscaller(SYS_CLEAR_SCREEN, 0, 0, 0 );        // feo arreglar
+    return syscaller(SYS_CLEAR_SCREEN, NULL, NULL, NULL );        // feo arreglar
 }
 unsigned int sys_register_process(uint64_t entryPoint, int screen, uint64_t arg0){
     return syscaller(SYS_REGISTER_PROCESS, (uint64_t) entryPoint, (uint64_t) screen, arg0);        // feo arreglar
 }
-unsigned int sys_rtc(uint64_t mode){
-    return syscaller(SYS_RTC, mode, 0, 0);        // feo arreglar
+unsigned int sys_rtc(unsigned int  mode){
+    return syscaller(SYS_RTC, mode, NULL, NULL);        // feo arreglar
 }
 unsigned int sys_consume_stdin(char * buf, unsigned int count){
-    return syscaller(SYS_CONSUME_STDIN, buf, count, 0);
+    return syscaller(SYS_CONSUME_STDIN, buf, count, NULL);
 }
 unsigned int sys_kill_process(unsigned int pid){
-    return syscaller(SYS_KILL_PROCESS, pid,0,0);
+    return syscaller(SYS_KILL_PROCESS, pid,NULL,NULL);
 }
 unsigned int sys_pause_process(unsigned int pid){
-    return syscaller(SYS_PAUSE_PROCESS, pid,0,0);
+    return syscaller(SYS_PAUSE_PROCESS, pid,NULL,NULL);
+}
+unsigned int sys_inforeg(uint64_t * buffer){
+    return syscaller(SYS_INFOREG, buffer,NULL,NULL);
 }
 
-unsigned int sys_time(){
-    return syscaller(SYS_RTC, RTC_TIME, 0 , 0);
-}
-
-unsigned int sys_date(){
-    return syscaller(SYS_RTC, RTC_DAY, 0, 0);
-}

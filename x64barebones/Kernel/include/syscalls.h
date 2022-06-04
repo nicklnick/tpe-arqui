@@ -104,5 +104,9 @@ unsigned int sys_pause_process(unsigned int pid);
 // consumo el buffer sin interrumpir para recibir teclado
 unsigned int sys_consume_stdin(char * buf, unsigned int count);    
 
+// caputra de registros
+void saveInfoReg(uint64_t * regDumpPos);
+unsigned int sys_inforeg(uint64_t * buffer);
+
 
 #endif

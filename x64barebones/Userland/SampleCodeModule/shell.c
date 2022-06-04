@@ -3,43 +3,51 @@
 #include "./include/comandos.h"
 #include "./include/syscalls.h"
 
+extern void divError();             // exception_test.asm
+extern void opCodeError();
+
+// --- Simbolos ---
 #define SYMBOL "$> "
 #define SYMBOL_LENGTH 3
 #define PIPE "|"
 #define INVALID_COMMAND_MSG "Invalid command!"
 
+// --- Dimensiones ---
 #define BUFFER_LENGTH 150
 #define MAX_WORDS 10
-
-#define PAUSE_NORMAL_SCREEN ' '
-#define PAUSE_LEFT_SCREEN  'a'
-#define PAUSE_RIGHT_SCREEN 'l'
-
-#define NUM_OF_COMMANDS 5
-
-#define TOTAL_UNARY_COMMANDS 4                                   // !!!! CAMBIAR !!!!
+#define TOTAL_UNARY_COMMANDS 7
 #define TOTAL_BINARY_COMMANDS 1
 
-extern void error();
-extern void error2();
+// --- Caracteres especiales ---
+#define PAUSE_NORMAL_SCREEN 17
+#define PAUSE_LEFT_SCREEN  18
+#define PAUSE_RIGHT_SCREEN 19
 
+static char specialKeys[] = {
+    PAUSE_RIGHT_SCREEN, PAUSE_LEFT_SCREEN, PAUSE_NORMAL_SCREEN, ESCAPE_KEY
+};
+#define TOTAL_SPECIAL_KEYS 4
+
+// --- Comandos ---
 static char * unaryCommands[] = {
-    //"help", "inforeg"                                         // !!!!! AGREGAR !!!!!
-    "fibonacci", "primos", "help", "time"
+    "fibonacci", "primos", "help", "time", "inforeg",
+    "div-error", "opcode-error"
 };
 
 static uint64_t unaryFunctions[] = {
-    //(uint64_t) &help, (uint64_t)&inforeg                      // !!!!! AGREGAR !!!!!
-    (uint64_t) &fibonacci, (uint64_t)&primos, (uint64_t)&help, (uint64_t)&time
+    (uint64_t) &fibonacci, (uint64_t)&primos, (uint64_t)&help, (uint64_t)&time, (uint64_t)&inforeg,
+    (uint64_t) &divError, (uint64_t)&opCodeError
 };
 
 static char * binaryCommands[] = {
-    "printmem", "test"
+    "printmem"
 };
 static uint64_t binaryFunctions[] = {
-    (uint64_t)&printmem, (uint64_t)&test
+    (uint64_t)&printmem
 };
 
+
+/* - - - - - - CODIGO - - - - - - */
 
 int parseCommands(char * string, char ** words){         // noto las posiciones de la palabra en words
     int count=0;
@@ -61,20 +69,24 @@ int parseCommands(char * string, char ** words){         // noto las posiciones 
 
 // devuelve la posicion en el array de punteros a funciones
 // o -1 si no dio ninguno
-unsigned int checkUnaryCommand(char * string){
-
-    for(int i=0; i<TOTAL_UNARY_COMMANDS; i++){
-        if(strcmp(string, unaryCommands[i])==0){
+unsigned int checkCommand(char * string, char ** array, unsigned int dim){
+    for(int i=0; i<dim; i++){
+        if(strcmp(string, array[i])==0){
             return i;
         }
     }
     return -1;
 }
-unsigned int checkBinaryCommand(char * string){         // quizas generalizar comportamiento
 
-    for(int i=0; i<TOTAL_BINARY_COMMANDS; i++){
-        if(strcmp(string, binaryCommands[i])==0){
-            return i;
+// retorna la primera key especial que encuntra
+char findSpecialKey(char * string, char * keys, unsigned int size){
+    int i;
+    for(i=0; string[i]!=0; i++){
+        for(int j=0; j<size; j++){
+            if(string[i]==keys[j]){
+                return keys[j];
+                puts("pimba");
+            }
         }
     }
     return -1;
@@ -91,7 +103,7 @@ void commandsDispatcher(char ** words, int count){
             puts("Too few arguments!");
             return; 
         case 1:
-            pos1 = checkUnaryCommand(words[0]);
+            pos1 = checkCommand(words[0],unaryCommands, TOTAL_UNARY_COMMANDS);
             if(pos1 >= 0 ){
                 sys_clear_screen();
                 pid1 = sys_register_process(unaryFunctions[pos1], NORMAL_SCREEN,0);
@@ -103,7 +115,7 @@ void commandsDispatcher(char ** words, int count){
            break;
 
         case 2:
-            pos1 = checkBinaryCommand(words[0]);
+            pos1 = checkCommand(words[0],binaryCommands, TOTAL_BINARY_COMMANDS);
             if(pos1 >= 0 && isNum(words[1])){
                 num1  = atoi(words[1]);
                 sys_clear_screen();
@@ -117,8 +129,8 @@ void commandsDispatcher(char ** words, int count){
 
         case 3:
            if(strcmp(words[1],PIPE)==0){
-                pos1 = checkUnaryCommand(words[0]);
-                pos2 = checkUnaryCommand(words[2]);
+                pos1 = checkCommand(words[0],unaryCommands, TOTAL_UNARY_COMMANDS);
+                pos2 = checkCommand(words[2],unaryCommands, TOTAL_UNARY_COMMANDS);
                 if(pos1 >= 0 && pos2 >= 0){
                     sys_clear_screen();
                     pid1 = sys_register_process(unaryFunctions[pos1], LEFT_SCREEN,0);        // !!! cuiada con argregar uno y despues otro
@@ -137,8 +149,8 @@ void commandsDispatcher(char ** words, int count){
 
         case 4:
             if(strcmp(words[1],PIPE)==0){
-                pos1 = checkUnaryCommand(words[0]);
-                pos2 = checkBinaryCommand(words[2]);
+                pos1 = checkCommand(words[0],unaryCommands, TOTAL_UNARY_COMMANDS);
+                pos2 = checkCommand(words[2], binaryCommands, TOTAL_BINARY_COMMANDS);
                 if(pos1 >=0 && pos2 >=0 && isNum(words[3])){
                     num1 = atoi(words[3]);
                     sys_clear_screen();
@@ -151,8 +163,8 @@ void commandsDispatcher(char ** words, int count){
                 }
             }
             else if(strcmp(words[2],PIPE)==0){
-                pos1 = checkBinaryCommand(words[0]);
-                pos2 = checkUnaryCommand(words[3]);
+                pos1 = checkCommand(words[0], binaryCommands, TOTAL_BINARY_COMMANDS);
+                pos2 = checkCommand(words[3],unaryCommands, TOTAL_UNARY_COMMANDS);
                 if(pos1 >=0 && pos2 >=0 && isNum(words[1])){
                     num1 = atoi(words[1]);
                     sys_clear_screen();
@@ -172,8 +184,8 @@ void commandsDispatcher(char ** words, int count){
 
         case 5:
             if(strcmp(words[2],PIPE)==0 && isNum(words[1]) && isNum(words[4])){
-                pos1 = checkBinaryCommand(words[0]);
-                pos2 = checkBinaryCommand(words[3]);
+                pos1 = checkCommand(words[0], binaryCommands, TOTAL_BINARY_COMMANDS);
+                pos2 = checkCommand(words[3], binaryCommands, TOTAL_BINARY_COMMANDS);
                 if(pos1 >= 0 && pos2 >=0 ){
                     num1  = atoi(words[1]);
                     num2 = atoi(words[4]);
@@ -200,30 +212,29 @@ void commandsDispatcher(char ** words, int count){
     while(finishedExecution==0){ 
         size = consume_buffer(buffer, BUFFER_LENGTH-1);
         buffer[size] = 0;
-        if(pid2>0){                                     // caso multitasking
-            if(strContainsChar(buffer,ESCAPE_KEY)>=0){                          // ## REMPLAZAR ##
+        char key = findSpecialKey(buffer, specialKeys, TOTAL_SPECIAL_KEYS);
+
+        switch(key){
+            case ESCAPE_KEY:
                 sys_kill_process(pid1);
-                sys_kill_process(pid2);
-                finishedExecution = 1;
+                if(pid2>0)
+                    sys_kill_process(pid2);
                 sys_clear_screen();
-            }
-            else if(strContainsChar(buffer,PAUSE_LEFT_SCREEN)>=0){              // #### HORRIBLE ####
-                sys_pause_process(pid1);
-            }
-            else if(strContainsChar(buffer,PAUSE_RIGHT_SCREEN)>=0){
-                sys_pause_process(pid2);
-            }
-        }
-        else{                                           // caso single task
-            if(strContainsChar(buffer,ESCAPE_KEY)>=0){ 
-                sys_kill_process(pid1);
                 finishedExecution = 1;
-                sys_clear_screen();
-            }
-            else if(strContainsChar(buffer,PAUSE_NORMAL_SCREEN)>=0){             // #### HORRIBLE ####
-                sys_pause_process(pid1);
-            }
-        }        
+                break;
+            case PAUSE_NORMAL_SCREEN:
+                if(pid2<0)
+                    sys_pause_process(pid1);
+                break;
+            case PAUSE_RIGHT_SCREEN:
+                if(pid2>0)
+                    sys_pause_process(pid2);
+                break;
+            case PAUSE_LEFT_SCREEN:
+                if(pid2>0)
+                    sys_pause_process(pid1);
+                break;
+        }  
     }
 }
 

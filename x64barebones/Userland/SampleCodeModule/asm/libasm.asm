@@ -1,9 +1,5 @@
 GLOBAL getRegisters
 
-GLOBAL error
-
-GLOBAL error2
-
 section .text
 
 
@@ -32,21 +28,3 @@ getRegisters:
 		mov rsp, rbp
 		pop rbp
 		ret
-
-
-error:
-		mov rax,0
-		mov rdx, 0
-		div rdx
-
-error2:
-		call error3
-		ret
-error3:
-		pop rax
-		mov rax, $opcode
-		push rax
-		ret
-
-section .data
-opcode dq 999999999

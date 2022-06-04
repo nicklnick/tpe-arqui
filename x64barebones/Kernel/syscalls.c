@@ -36,6 +36,10 @@
 #define NORMAL_MODE_STEP 0
 #define SPLIT_MODE_STEP 80
 
+// Valores de retorno
+#define INVALID_SCREEN -1
+
+// Variables estaticas
 static uint8_t * defaultVideoPos = (uint8_t*)0xB8000;
 
 static unsigned int currentVideoPosOffset = START_LEFT;
@@ -44,6 +48,25 @@ static unsigned int currentVideoPosRightOffset = START_RIGHT;
 
 
 /* ----------- CODIGO ------------ */
+
+// ====== SYS_INFOREG =======
+
+#define TOTAL_REGISTERS 15
+static uint64_t inforegData[TOTAL_REGISTERS] = {0};
+
+void saveInfoReg(uint64_t * regDumpPos){
+	for(int i=0; i<TOTAL_REGISTERS; i++){
+		inforegData[i] = regDumpPos[i];
+	}
+}
+
+unsigned int sys_inforeg(uint64_t * buffer){			// recibo buffer y le escribo, NUNCA devuelvo puntero a algo que esta en kernel
+	for(int i=0; i<TOTAL_REGISTERS; i++){
+		buffer[i] = inforegData[i];
+	}
+	return 1;
+}
+
 
 // ====== SYS_PAUSE_PROCESS ======
 
@@ -60,6 +83,8 @@ unsigned int sys_kill_process(unsigned int pid){
 // ====== SYS_REGISTER_PROCESS ======
 
 unsigned int sys_register_process(uint64_t entryPoint, int screen, uint64_t arg0){
+	if(screen != STDOUT && screen != STDOUT_LEFT && screen != STDOUT_RIGHT)			// si no es una pantalla valida, se rechaza el proceso.
+		return INVALID_SCREEN;
 	return addTask(entryPoint, screen, arg0);
 }
 

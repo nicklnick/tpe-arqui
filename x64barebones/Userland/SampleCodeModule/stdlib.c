@@ -1,6 +1,6 @@
 #include "./include/stdlib.h"
 
-#define NULL ((char *) 0)
+#define NULL 0
 
 
 void reverseString(char * string, int length)
@@ -60,10 +60,12 @@ int hex_to_string(uint64_t num, char * buffer, int fixedLength)
 // s1 > s2 ==> >0
 int strcmp(const char * s1, const char * s2)
 {
-        while(*s1 && (*s1 == *s2))
-                s1++, s2++;
+        while(*s1 && (*s1 == *s2)){
+            s1++; s2++;
+        }
+                
 
-        return *(const unsigned char *)s1 - *(const unsigned char *)s2;
+        return *s1 - *s2;
 }
 
 
@@ -136,34 +138,3 @@ uint8_t isNum(const char * string)
     return 1;
 }
 
-
-void formatString(char * string, char character){
-    char aux[9];
-    int length = strlen(string);
-    int i = 0;
-    if(length < 6)
-        aux[0] = '0';
-    else
-        aux[0] = string[i++];
-    aux[1] = string[i++];
-    aux[2] = character;
-    aux[3] = string[i++];
-    aux[4] = string[i++];
-    aux[5] = character;
-    aux[6] = string[i++];
-    aux[7] = string[i];
-    aux[8] = '\0';
-    strncpy(string, aux, 9);
-}
-
-void getTime(char * buffer){
-    unsigned int num = sys_time();
-    num_to_string((uint64_t) num, buffer);
-    formatString(buffer, ':');
-}
-
-void getDate(char * buffer){
-    unsigned int num = sys_date();
-    num_to_string((uint64_t) num, buffer);
-    formatString(buffer, '/');
-}

@@ -1,13 +1,20 @@
 /*--------  DEPENDENCIES --------*/
 #include <keyboard.h>
 #include <stdint.h>
+#include <syscalls.h>
 
 extern char readKeyboard();		// en libasm.asm
 
 /*-------- CONSTANTS --------*/
 #define BUFFER_SIZE 200
 #define UNMAPPED 4
+
+// --- Caracteres especiales ---
 #define ESCAPE_KEY 27
+#define F1_KEY 17
+#define F2_KEY 18
+#define F3_KEY 19
+#define F5_SCAN_CODE 0x3F
 
 /*--------- MACROS ----------*/
 #define INCREASE_MOD(x,total)	(x) = ((x) + 1) % total;
@@ -31,7 +38,7 @@ static char scanCodeTable[] = {
 	'a','s','d','f','g','h','j','k','l',';',
 	'\'','`',UNMAPPED,'|','z','x','c','v','b','n',
 	'm',',','.','/',UNMAPPED,'*',UNMAPPED,' ',UNMAPPED,
-	UNMAPPED,UNMAPPED,UNMAPPED,UNMAPPED,UNMAPPED,
+	F1_KEY,F2_KEY,F3_KEY,UNMAPPED,UNMAPPED,
 	UNMAPPED,UNMAPPED,UNMAPPED,UNMAPPED,UNMAPPED,
 	UNMAPPED,UNMAPPED,UNMAPPED,UNMAPPED,UNMAPPED,'-',
 	UNMAPPED,UNMAPPED,UNMAPPED,'+',UNMAPPED,UNMAPPED,
@@ -48,13 +55,17 @@ char checkIfAvailableKey() {
 
 
 /* Usa un array circular. Si se llega a la capacidad maxima, no sobre-escribe. */
-char keyboard_handler() 
+char keyboard_handler(uint64_t * regDumpPos) 
 {
 
 	int c = readKeyboard();
 
+	if(c==F5_SCAN_CODE)
+		saveInfoReg(regDumpPos);	// caso: aprienta boton de captura de registros
+
 	if(c<0 || c>=128)			// caso: codigo invalido 
 		return NO_KEY;
+	
 	if(keyBuffer[writePos]!=0)		// caso: no hay espacio en el buffer
 		return BUFFER_FULL;		
 			

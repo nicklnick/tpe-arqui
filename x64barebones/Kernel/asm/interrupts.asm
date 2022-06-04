@@ -124,11 +124,6 @@ picSlaveMask:
     pop     rbp
     retn
 
-
-;Keyboard
-_irq01Handler:
-	irqHandlerMaster 1
-
 ;Cascade pic never called
 _irq02Handler:
 	irqHandlerMaster 2
@@ -217,3 +212,18 @@ _irq00Handler:
 
 ; = = = = = = = = = = = = = = = = = = =
 
+; = = = = = = = = Keyboard = = = = = = = = 
+_irq01Handler:
+	pushState
+	
+	mov rdi, 1
+	mov rsi, rsp  			; puntero a principio de dump de registros
+	call irqDispatcher
+
+	; signal pic EOI (End of Interrupt)
+	mov al, 20h
+	out 20h, al
+
+	popState
+	iretq
+; = = = = = = = = = = = = = = = = = = = = 
