@@ -85,7 +85,6 @@ char findSpecialKey(char * string, char * keys, unsigned int size){
         for(int j=0; j<size; j++){
             if(string[i]==keys[j]){
                 return keys[j];
-                puts("pimba");
             }
         }
     }
