@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <multitasking.h>
+#include <syscalls.h>
 
 extern uint8_t text;
 extern uint8_t rodata;

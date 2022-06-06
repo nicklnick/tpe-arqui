@@ -11,5 +11,6 @@ unsigned int sys_rtc(unsigned int mode);
 unsigned int sys_consume_stdin(char * buf, unsigned int count);
 unsigned int sys_kill_process(unsigned int pid);
 unsigned int sys_pause_process(unsigned int pid);
+unsigned int sys_inforeg(uint64_t * buffer);
 
 #endif

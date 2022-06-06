@@ -91,7 +91,7 @@ unsigned int sys_register_process(uint64_t entryPoint, int screen, uint64_t arg0
 // ====== SYS_CLEAR_SCREEN ======
 
 void clearScreen(){
-	for(int i=0 ; i < SCREEN_WIDTH * SCREEN_HEIGHT ; i){
+	for(int i=0 ; i < SCREEN_WIDTH * SCREEN_HEIGHT ; ){
 		*(defaultVideoPos + i++) = ' ';
 		*(defaultVideoPos + i++) = STDOUT_COLOR;			
 	}

@@ -37,6 +37,7 @@ void haltcpu();
 
 
 void forceNextTask();
+void forceCurrentTask();
 void _swIntHandler();
 
 

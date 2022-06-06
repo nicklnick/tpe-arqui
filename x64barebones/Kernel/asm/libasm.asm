@@ -38,7 +38,7 @@ getRTC:
         mov ax, di              
         out 70h, al             ; Elegimos lo que queremos escribir/leer
         in al, 71h              ; lo leemos
-        sli
+        sti
 
         mov rsp, rbp
         pop rbp

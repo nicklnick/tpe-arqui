@@ -9,12 +9,13 @@
 
 
 void print(char * string, int length);
+void putchar(char c);
 void puts(char * string);
 void read_line(char * buf, int length);
 char getchar();
-void clearScreen();
+void clear_screen();
 unsigned int consume_buffer(char * buffer, int length);
-
+char getchar();
 
 
 #endif

@@ -29,18 +29,18 @@ unsigned int sys_register_process(uint64_t entryPoint, int screen, uint64_t arg0
     return syscaller(SYS_REGISTER_PROCESS, (uint64_t) entryPoint, (uint64_t) screen, arg0);        // feo arreglar
 }
 unsigned int sys_rtc(unsigned int  mode){
-    return syscaller(SYS_RTC, mode, NULL, NULL);        // feo arreglar
+    return syscaller(SYS_RTC, (uint64_t)mode, NULL, NULL);        // feo arreglar
 }
 unsigned int sys_consume_stdin(char * buf, unsigned int count){
-    return syscaller(SYS_CONSUME_STDIN, buf, count, NULL);
+    return syscaller(SYS_CONSUME_STDIN, (uint64_t)buf, (uint64_t)count, NULL);
 }
 unsigned int sys_kill_process(unsigned int pid){
-    return syscaller(SYS_KILL_PROCESS, pid,NULL,NULL);
+    return syscaller(SYS_KILL_PROCESS,(uint64_t) pid,NULL,NULL);
 }
 unsigned int sys_pause_process(unsigned int pid){
-    return syscaller(SYS_PAUSE_PROCESS, pid,NULL,NULL);
+    return syscaller(SYS_PAUSE_PROCESS,(uint64_t) pid,NULL,NULL);
 }
 unsigned int sys_inforeg(uint64_t * buffer){
-    return syscaller(SYS_INFOREG, buffer,NULL,NULL);
+    return syscaller(SYS_INFOREG,(uint64_t) buffer,NULL,NULL);
 }
 

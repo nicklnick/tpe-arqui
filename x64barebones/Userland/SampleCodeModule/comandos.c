@@ -1,5 +1,6 @@
 #include "./include/stdlib.h"
 #include "./include/stdio.h"
+#include "./include/syscalls.h"
 
 // = = = = = = = = PRINTMEM = = = = = = = = 
 #define MAX_MEM_READ 16
@@ -120,40 +121,6 @@ void inforeg()
 
 // = = = = = = = = = HELP = = = = = = = = = = 
 
-void help(){
-    int size;
-    char buffer[BUFF_SIZE];
-    int currPage = 0;
-    page0();
-    while(1){
-        size = consume_buffer(buffer, BUFFER_LENGTH-1);
-        buffer[size] = 0;
-        if(strContainsChar(buffer, '.')>=0){                    // ## REMPLAZAR ##
-            currPage++;
-            currPage = currPage%2;
-            switchPage(currPage);
-        } else if(strContainsChar(buffer, ',')>=0){                    // ## REMPLAZAR ##
-            currPage--;
-            if(currPage < 0)
-                currPage += 2;
-            switchPage(currPage);
-        }
-    }
-}
-
-void switchPage(int page){
-    clear_screen();
-    switch(page){
-        case 0: 
-            page0();
-            break;
-        case 1:
-            page1();
-            break;
-        default:
-            break;
-    }
-}
 
 void page0(){
     puts("COMANDOS:");
@@ -182,6 +149,40 @@ void page1(){
     puts("Pag 2/2 |  proxima apretando . | previa apretando ,");
 }
 
+void switchPage(int page){
+    clear_screen();
+    switch(page){
+        case 0: 
+            page0();
+            break;
+        case 1:
+            page1();
+            break;
+        default:
+            break;
+    }
+}
+
+void help(){
+    int size;
+    char buffer[BUFF_SIZE];
+    int currPage = 0;
+    page0();
+    while(1){
+        size = consume_buffer(buffer, BUFFER_LENGTH-1);
+        buffer[size] = 0;
+        if(strContainsChar(buffer, '.')>=0){                    // ## REMPLAZAR ##
+            currPage++;
+            currPage = currPage%2;
+            switchPage(currPage);
+        } else if(strContainsChar(buffer, ',')>=0){                    // ## REMPLAZAR ##
+            currPage--;
+            if(currPage < 0)
+                currPage += 2;
+            switchPage(currPage);
+        }
+    }
+}
 
 // = = = = = = = = =  TIME  = = = = = = = = = 
 
