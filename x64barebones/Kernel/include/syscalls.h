@@ -22,7 +22,7 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count);
 
 
 /*
- * << sys_write >>
+ * << sys_read >>
  * ----------------------------------------------------------------------
  * Descripcion: Reads up to [count] bytes from [fd] and writes to [buf]
  * ----------------------------------------------------------------------
