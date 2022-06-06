@@ -4,8 +4,6 @@
 
 #include <stdint.h>
 
-
-
 /*
  * << sys_write >>
  * ----------------------------------------------------------------------
@@ -24,7 +22,7 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count);
 
 
 /*
- * << sys_write >>
+ * << sys_read >>
  * ----------------------------------------------------------------------
  * Descripcion: Reads up to [count] bytes from [fd] and writes to [buf]
  * ----------------------------------------------------------------------
@@ -91,21 +89,81 @@ unsigned int sys_write_to_screen(const char *buf, unsigned int count);
 unsigned int sys_read_from_screen(char *buf, unsigned int count);
 
 
-// agrego un task
+/*
+ * << sys_register_process >>
+ * ----------------------------------------------------------------------
+ * Description: Registers a processs to participate in multitasking
+ * ----------------------------------------------------------------------
+ * Receives: 
+ *      (uint64_t) start of function
+ *      (int) screen to print
+ *      (uint64_t) argument of function (if any)
+ * Returns: 
+ *      (uint) pid
+ */
 unsigned int sys_register_process(uint64_t entryPoint, int screen, uint64_t arg0);
 
-// elimino un task
+/*
+ * << sys_kill_process >>
+ * ----------------------------------------------------------------------
+ * Description: Eliminates a task from multitasking
+ * ----------------------------------------------------------------------
+ * Receives: 
+ *      (uint64_t) pid of process to kill
+ * Returns: 
+ *      (uint) 1 if it was killed
+ *             -1 if no task was found
+ */
 unsigned int sys_kill_process(unsigned int pid);
 
-// pauso/despauso un task
+/*
+ * << sys_pause_process >>
+ * ----------------------------------------------------------------------
+ * Description: Pauses or unpauses a task
+ * ----------------------------------------------------------------------
+ * Receives: 
+ *      (uint64_t) pid of process to pause/unpause
+ * Returns: 
+ *      (uint) 1 if it was killed
+ *             -1 if no task was found
+ */
 unsigned int sys_pause_process(unsigned int pid);
 
 
-// consumo el buffer sin interrumpir para recibir teclado
+/*
+ * << sys_consume_stdin >>
+ * ----------------------------------------------------------------------
+ * Description: Consumes buffer without interrupting to receive keyboard
+ * ----------------------------------------------------------------------
+ * Receives: 
+ *      (char*) buffer to leave keys consumed
+ *      (uint) amount of keys to consume
+ * Returns: 
+ *      (uint) amount of keys consumed
+ */
 unsigned int sys_consume_stdin(char * buf, unsigned int count);    
 
-// caputra de registros
+/*
+ * << saveInfoReg >>
+ * ----------------------------------------------------------------------
+ * Description: Makes a snapshot of register values at the time of calling
+ * this function
+ * ----------------------------------------------------------------------
+ * Receives: 
+ *      (uint64_t*) place where all registers can be found
+ * Returns: --
+ */
 void saveInfoReg(uint64_t * regDumpPos);
+
+/*
+ * << sys_inforeg >>
+ * ----------------------------------------------------------------------
+ * Description: Transfers saved register data from saveInfoReg into a buffer
+ * ----------------------------------------------------------------------
+ * Receives: 
+ *      (char*) buffer to leave register values
+ * Returns: --
+ */
 unsigned int sys_inforeg(uint64_t * buffer);
 
 

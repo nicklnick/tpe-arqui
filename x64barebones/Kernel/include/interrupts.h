@@ -32,12 +32,25 @@ void _hlt();
 void picMasterMask(uint8_t mask);
 void picSlaveMask(uint8_t mask);
 
-/* Termina la ejecución de la cpu */
+/* Halts cpu */
 void haltcpu();
 
 
+/*
+ * < forceNextTask >
+ * ----------------------------------------------------
+ *  Description: used after sys_pause and sys_kill to force 
+ *  the next task to be executed
+ */
 void forceNextTask();
 void forceCurrentTask();
+
+/*
+ * < _swIntHandler >
+ * ----------------------------------------------------
+ *  Description: Converts arguments from an ASM-style to a 
+ *  C-style for them to be used in the swIntDispatcher
+ */
 void _swIntHandler();
 
 
