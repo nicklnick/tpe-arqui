@@ -118,7 +118,7 @@ void commandsDispatcher(char ** words, int count){
             if(pos1 >= 0 && isNum(words[1])){
                 num1  = atoi(words[1]);
                 sys_clear_screen();
-                pid1 = sys_register_process(binaryFunctions[pos1], NORMAL_SCREEN, num1); // !!!!!! PASAJE DE PARAMETROS
+                pid1 = sys_register_process(binaryFunctions[pos1], NORMAL_SCREEN, num1);
             }
             else{
                 puts(INVALID_COMMAND_MSG);
@@ -132,7 +132,7 @@ void commandsDispatcher(char ** words, int count){
                 pos2 = checkCommand(words[2],unaryCommands, TOTAL_UNARY_COMMANDS);
                 if(pos1 >= 0 && pos2 >= 0){
                     sys_clear_screen();
-                    pid1 = sys_register_process(unaryFunctions[pos1], LEFT_SCREEN,0);        // !!! cuiada con argregar uno y despues otro
+                    pid1 = sys_register_process(unaryFunctions[pos1], LEFT_SCREEN,0);      
                     pid2 = sys_register_process(unaryFunctions[pos2], RIGHT_SCREEN,0);
                 }
                 else{
@@ -154,7 +154,7 @@ void commandsDispatcher(char ** words, int count){
                     num1 = atoi(words[3]);
                     sys_clear_screen();
                     pid1 = sys_register_process(unaryFunctions[pos1], LEFT_SCREEN,0);
-                    pid2 = sys_register_process(binaryFunctions[pos2], RIGHT_SCREEN,num1); // !!!!!! PASAJE DE PARAMETROS
+                    pid2 = sys_register_process(binaryFunctions[pos2], RIGHT_SCREEN,num1);
                 }
                 else{
                     puts(INVALID_COMMAND_MSG);          // ### FEO ###
@@ -167,7 +167,7 @@ void commandsDispatcher(char ** words, int count){
                 if(pos1 >=0 && pos2 >=0 && isNum(words[1])){
                     num1 = atoi(words[1]);
                     sys_clear_screen();
-                    pid1 = sys_register_process(binaryFunctions[pos1], LEFT_SCREEN,num1); // !!!!!! PASAJE DE PARAMETROS
+                    pid1 = sys_register_process(binaryFunctions[pos1], LEFT_SCREEN,num1);
                     pid2 = sys_register_process(unaryFunctions[pos2], RIGHT_SCREEN,0);
                 }
                 else{
@@ -189,8 +189,8 @@ void commandsDispatcher(char ** words, int count){
                     num1  = atoi(words[1]);
                     num2 = atoi(words[4]);
                     sys_clear_screen();
-                    pid1 = sys_register_process(binaryFunctions[pos1], LEFT_SCREEN,num1); // !!!!!! PASAJE DE PARAMETROS
-                    pid2 = sys_register_process(binaryFunctions[pos2], RIGHT_SCREEN,num2); // !!!!!! PASAJE DE PARAMETROS
+                    pid1 = sys_register_process(binaryFunctions[pos1], LEFT_SCREEN,num1);
+                    pid2 = sys_register_process(binaryFunctions[pos2], RIGHT_SCREEN,num2);
                 }
                 else{
                     puts(INVALID_COMMAND_MSG);          // ### FEO ###

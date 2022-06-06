@@ -306,7 +306,7 @@ unsigned int sys_read(unsigned int fd, char * buf, unsigned int count)
 }
 
 
-// == RTC ==
+// ====== RTC ====== 
 /* constants */
 #define HOUR 1
 #define DATE 2

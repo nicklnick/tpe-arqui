@@ -8,7 +8,6 @@ void fibonacci();
 void help();
 void time();
 void inforeg();
-void test(uint64_t arg0);			// #### REMOVE ####
 
 #endif
 

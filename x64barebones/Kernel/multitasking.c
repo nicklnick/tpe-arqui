@@ -36,6 +36,8 @@
 #define RET_POS 	8 					/*  	|	 RET	  |		*/
 										/*   	 -------------		*/
 
+#define STACK_POS(POS) (uint64_t *) (stacks[pos] + STACK_SIZE - (POS))
+
 // -----El stack que usa cada task-----
 static uint8_t stack1[STACK_SIZE];
 static uint8_t stack2[STACK_SIZE];
@@ -209,26 +211,26 @@ int addTask(uint64_t entrypoint, int screen, uint64_t arg0){
 	for(pos=0; tasks[pos].state==ACTIVE_PROCESS;pos++);											// encuentro posicion libre en el array de tasks
 
 	// --- Parametros de funcion ---
-	*((uint64_t*) (stacks[pos] + STACK_SIZE - RDI_POS)) = arg0;
+	*(STACK_POS(RDI_POS)) = arg0;
 
 
 	// --- Pongo todos los registros que no se usan en 0 ---
 	for(int i=7 ; i<21 ; i++){
 		if(i!=12)
-			*((uint64_t*) (stacks[pos] + STACK_SIZE - i * 8)) = 0;
+			*(STACK_POS(i * 8)) = 0;
 	}
 
 	
 	// --- "Stack frame" minimo para la funcion ---
-	*((uint64_t*) (stacks[pos] + STACK_SIZE - IP_POS)) = entrypoint;							// puntero al proceso que se va a correr
-	*((uint64_t*) (stacks[pos] + STACK_SIZE - CS_POS)) = CS_VALUE;				
+	*(STACK_POS(IP_POS)) = entrypoint;							// puntero al proceso que se va a correr
+	*(STACK_POS(CS_POS)) = CS_VALUE;				
 	
-	*((uint64_t*) (stacks[pos] + STACK_SIZE - FLAGS_POS)) = FLAG_VALUES;						// tenemos que poner el flag de interrupcion en 1 y otros obligatorios
+	*(STACK_POS(FLAGS_POS)) = FLAG_VALUES;						// tenemos que poner el flag de interrupcion en 1 y otros obligatorios
 	
-	*((uint64_t*) (stacks[pos] + STACK_SIZE - SP_POS)) = stacks[pos] + STACK_SIZE - RET_POS;	// agarro el comienzo del stack
-	*((uint64_t*) (stacks[pos] + STACK_SIZE - SS_POS)) = SS_VALUE;
+	*(STACK_POS(SP_POS)) = stacks[pos] + STACK_SIZE - RET_POS;	// agarro el comienzo del stack
+	*(STACK_POS(SS_POS)) = SS_VALUE;
 	
-	*((uint64_t*) (stacks[pos] + STACK_SIZE - RET_POS)) = (uint64_t) &removeCurrentTask;		// para el RET que vaya y se remueva automaticamente de los tasks
+	*(STACK_POS(RET_POS)) = (uint64_t) &removeCurrentTask;		// para el RET que vaya y se remueva automaticamente de los tasks
 
 	// --- Datos de task ---
 	tasks[pos].stackPointer = stacks[pos] + STACK_SIZE - STACK_POINT_OF_ENTRY;					// comienzo del stack

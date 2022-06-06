@@ -34,8 +34,8 @@ unsigned int swIntDispatcher(uint64_t mode, uint64_t arg0, uint64_t arg1, uint64
 
 
 /*
-	Sys_write y sys_read que permitian elegir a la pantalla
-	a la cual imprimir, fueron eliminadas ya que se considera 
+	Sys_write y sys_read (que permitian elegir a la pantalla
+	a la cual imprimir), fueron eliminadas ya que se considera 
 	responsabilidad del kernel administrar la pantalla a cual
 	se va a escribir.
 */
