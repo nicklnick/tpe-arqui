@@ -73,6 +73,7 @@ void clear_screen();
  */
 unsigned int consume_buffer(char * buffer, int length);
 char getchar();
+void putchar(char c);
 
 
 #endif

@@ -36,7 +36,7 @@ static char scanCodeTable[] = {
 	'9','0','-','=','\b','\t','q','w','e','r',
 	't','y','u','i','o','p','[',']','\n',UNMAPPED,
 	'a','s','d','f','g','h','j','k','l',';',
-	'\'','`',UNMAPPED,'|','z','x','c','v','b','n',
+	'\'','|',UNMAPPED,'|','z','x','c','v','b','n',
 	'm',',','.','/',UNMAPPED,'*',UNMAPPED,' ',UNMAPPED,
 	F1_KEY,F2_KEY,F3_KEY,UNMAPPED,UNMAPPED,
 	UNMAPPED,UNMAPPED,UNMAPPED,UNMAPPED,UNMAPPED,

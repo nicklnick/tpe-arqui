@@ -11,43 +11,63 @@ extern void opCodeError();
 #define SYMBOL_LENGTH 3
 #define PIPE "|"
 #define INVALID_COMMAND_MSG "Invalid command!"
+#define NULL 0                      // quizas poner esto en un defs
 
 // --- Dimensiones ---
 #define BUFFER_LENGTH 150
 #define MAX_WORDS 10
-#define TOTAL_UNARY_COMMANDS 7
-#define TOTAL_BINARY_COMMANDS 1
+#define TOTAL_COMMANDS 8
 
 // --- Caracteres especiales ---
 #define PAUSE_NORMAL_SCREEN 17
 #define PAUSE_LEFT_SCREEN  18
 #define PAUSE_RIGHT_SCREEN 19
 
+#define TOTAL_SPECIAL_KEYS 4
 static char specialKeys[] = {
     PAUSE_RIGHT_SCREEN, PAUSE_LEFT_SCREEN, PAUSE_NORMAL_SCREEN, ESCAPE_KEY
 };
-#define TOTAL_SPECIAL_KEYS 4
 
 // --- Comandos ---
-static char * unaryCommands[] = {
+static char * commands[] = {
     "fibonacci", "primos", "help", "time", "inforeg",
-    "div-error", "opcode-error"
+    "div-error", "opcode-error", "printmem"
 };
 
-static uint64_t unaryFunctions[] = {
+static uint64_t functions[] = {
     (uint64_t) &fibonacci, (uint64_t)&primos, (uint64_t)&help, (uint64_t)&time, (uint64_t)&inforeg,
-    (uint64_t) &divError, (uint64_t)&opCodeError
-};
-
-static char * binaryCommands[] = {
-    "printmem"
-};
-static uint64_t binaryFunctions[] = {
-    (uint64_t)&printmem
+    (uint64_t) &divError, (uint64_t)&opCodeError, (uint64_t)&printmem
 };
 
 
-/* - - - - - - CODIGO - - - - - - */
+#define REGISTER_PROGRAM(name, param, screen) \
+                pos1 = checkCommand(name, commands, TOTAL_COMMANDS);        \
+                if(pos1 >= 0){                                              \
+                    sys_clear_screen();                                     \
+                    pid1 = sys_register_process(functions[pos1], screen, (uint64_t) param); \
+                }                                                           \
+                else{                                                       \
+                    puts(INVALID_COMMAND_MSG);                              \
+                    return;                                                 \
+                }                                                           \
+                break;                                                      \
+
+#define REGISTER_DUAL_PROGRAMS(name1, name2, param1, param2, screen1, screen2) \
+                pos1 = checkCommand(name1, commands, TOTAL_COMMANDS);       \
+                pos2 = checkCommand(name2, commands, TOTAL_COMMANDS);       \
+                if(pos2 >= 0 && pos2 >=0){                                  \
+                    sys_clear_screen();                                     \
+                    pid1 = sys_register_process(functions[pos1], screen1, (uint64_t) param1); \
+                    pid2 = sys_register_process(functions[pos2], screen2, (uint64_t) param2); \
+                }                                                           \
+                else{                                                       \
+                    puts(INVALID_COMMAND_MSG);                              \
+                    return;                                                 \
+                }                                                           \
+                break;                                                      \
+
+
+/* = = = = = = = = = CODIGO = = = = = = = = = */
 
 int parseCommands(char * string, char ** words){         // noto las posiciones de la palabra en words
     int count=0;
@@ -92,9 +112,15 @@ char findSpecialKey(char * string, char * keys, unsigned int size){
 }
 
 
-void commandsDispatcher(char ** words, int count){
+/*
+    Primero se fija si es una combinacion valida de commands y pipe.
+    Luego registra los procesos y entra un loop donde se fija si
+    el usuario toco una tecla especial para pausar o terminar la ejecucion.
+    Parametros: words: array de strings  | count: cantidad de elementos en array
+*/
+void commandsDispatcher(char ** words, unsigned int count){
     char finishedExecution = 0;
-    int pos1, pos2, num1, num2, pid1=-1, pid2=-1;
+    int pos1, pos2, pid1=-1, pid2=-1;
     char buffer[BUFFER_LENGTH];
     int size;
     switch(count){
@@ -102,107 +128,36 @@ void commandsDispatcher(char ** words, int count){
             puts("Too few arguments!");
             return; 
         case 1:
-            pos1 = checkCommand(words[0],unaryCommands, TOTAL_UNARY_COMMANDS);
-            if(pos1 >= 0 ){
-                sys_clear_screen();
-                pid1 = sys_register_process(unaryFunctions[pos1], NORMAL_SCREEN,0);
-            }
-            else{
-                puts(INVALID_COMMAND_MSG);
-                return; 
-           }
-            break;
+            REGISTER_PROGRAM(words[0], NULL, NORMAL_SCREEN)
 
         case 2:
-            pos1 = checkCommand(words[0],binaryCommands, TOTAL_BINARY_COMMANDS);
-            if(pos1 >= 0 && isNum(words[1])){
-                num1  = atoi(words[1]);
-                sys_clear_screen();
-                pid1 = sys_register_process(binaryFunctions[pos1], NORMAL_SCREEN, num1);
-            }
-            else{
+            REGISTER_PROGRAM(words[0], words[1], NORMAL_SCREEN)
+
+        case 3:                                 // caso valido: COMMAND | COMMAND
+           if(strcmp(words[1],PIPE)!=0){
                 puts(INVALID_COMMAND_MSG);
-                return; 
-            }
-            break; 
+                return;
+            } 
+            REGISTER_DUAL_PROGRAMS(words[0],words[2],NULL, NULL, LEFT_SCREEN, RIGHT_SCREEN)
 
-
-        case 3:
-           if(strcmp(words[1],PIPE)==0){
-                pos1 = checkCommand(words[0],unaryCommands, TOTAL_UNARY_COMMANDS);
-                pos2 = checkCommand(words[2],unaryCommands, TOTAL_UNARY_COMMANDS);
-                if(pos1 >= 0 && pos2 >= 0){
-                    sys_clear_screen();
-                    pid1 = sys_register_process(unaryFunctions[pos1], LEFT_SCREEN,0);      
-                    pid2 = sys_register_process(unaryFunctions[pos2], RIGHT_SCREEN,0);
-                }
-                else{
-                    puts(INVALID_COMMAND_MSG);          // ### FEO ###
-                    return; 
-                }
-           }
-           else{
-                puts(INVALID_COMMAND_MSG);
-                return; 
-           }
-           break; 
-
-        case 4:
-            if(strcmp(words[1],PIPE)==0){
-                pos1 = checkCommand(words[0],unaryCommands, TOTAL_UNARY_COMMANDS);
-                pos2 = checkCommand(words[2], binaryCommands, TOTAL_BINARY_COMMANDS);
-                if(pos1 >=0 && pos2 >=0 && isNum(words[3])){
-                    num1 = atoi(words[3]);
-                    sys_clear_screen();
-                    pid1 = sys_register_process(unaryFunctions[pos1], LEFT_SCREEN,0);
-                    pid2 = sys_register_process(binaryFunctions[pos2], RIGHT_SCREEN,num1);
-                }
-                else{
-                    puts(INVALID_COMMAND_MSG);          // ### FEO ###
-                    return; 
-                }
+        case 4:                                 // casos valido: COMMAND ARG | COMMAND  o  COMMAND | COMMAND ARG
+            if(strcmp(words[1],PIPE)==0){              
+                REGISTER_DUAL_PROGRAMS(words[0],words[2],NULL, words[3], LEFT_SCREEN, RIGHT_SCREEN)
             }
             else if(strcmp(words[2],PIPE)==0){
-                pos1 = checkCommand(words[0], binaryCommands, TOTAL_BINARY_COMMANDS);
-                pos2 = checkCommand(words[3],unaryCommands, TOTAL_UNARY_COMMANDS);
-                if(pos1 >=0 && pos2 >=0 && isNum(words[1])){
-                    num1 = atoi(words[1]);
-                    sys_clear_screen();
-                    pid1 = sys_register_process(binaryFunctions[pos1], LEFT_SCREEN,num1);
-                    pid2 = sys_register_process(unaryFunctions[pos2], RIGHT_SCREEN,0);
-                }
-                else{
-                    puts(INVALID_COMMAND_MSG);          // ### FEO ###
-                    return; 
-                }
+                REGISTER_DUAL_PROGRAMS(words[0],words[3], words[1], NULL, LEFT_SCREEN, RIGHT_SCREEN)
             }
             else{
                 puts(INVALID_COMMAND_MSG);
                 return; 
             }
-            break; 
 
         case 5:
-            if(strcmp(words[2],PIPE)==0 && isNum(words[1]) && isNum(words[4])){
-                pos1 = checkCommand(words[0], binaryCommands, TOTAL_BINARY_COMMANDS);
-                pos2 = checkCommand(words[3], binaryCommands, TOTAL_BINARY_COMMANDS);
-                if(pos1 >= 0 && pos2 >=0 ){
-                    num1  = atoi(words[1]);
-                    num2 = atoi(words[4]);
-                    sys_clear_screen();
-                    pid1 = sys_register_process(binaryFunctions[pos1], LEFT_SCREEN,num1);
-                    pid2 = sys_register_process(binaryFunctions[pos2], RIGHT_SCREEN,num2);
-                }
-                else{
-                    puts(INVALID_COMMAND_MSG);          // ### FEO ###
-                    return; 
-                }
-            }
-            else{
+            if(strcmp(words[2],PIPE)!=0){       // caso valido: COMMAND ARG1 | COMMAND ARG2
                 puts(INVALID_COMMAND_MSG);
-                return; 
+                return;
             }
-            break;
+            REGISTER_DUAL_PROGRAMS(words[0],words[3],words[1], words[4], LEFT_SCREEN, RIGHT_SCREEN)
 
          default:
             puts("Too many arguments!");
@@ -221,14 +176,17 @@ void commandsDispatcher(char ** words, int count){
                 sys_clear_screen();                              // pid, no hace nada y listo.
                 finishedExecution = 1;
                 break;
-
             case PAUSE_NORMAL_SCREEN:
-            case PAUSE_LEFT_SCREEN:
+                if(pid2<0)
                 sys_pause_process(pid1);
                 break;
-
+            case PAUSE_LEFT_SCREEN:
+                if(pid2>0)
+                    sys_pause_process(pid1);
+                break;
             case PAUSE_RIGHT_SCREEN:
-                sys_pause_process(pid2);
+                if(pid2>0)
+                    sys_pause_process(pid2);
                 break;
         }  
     }

@@ -79,9 +79,9 @@ int strlen(const char * string){
 
 
 /* Converts string to int */
-int atoi(const char * string) 
+uint64_t atoi(const char * string) 
 {
-    int result = 0;
+    uint64_t result = 0;
 
     for(int i = 0 ; string[i] ; i++)
         result = result*10 + string[i] - '0';

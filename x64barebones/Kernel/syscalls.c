@@ -90,21 +90,38 @@ unsigned int sys_register_process(uint64_t entryPoint, int screen, uint64_t arg0
 
 // ====== SYS_CLEAR_SCREEN ======
 
-void clearScreen(){
-	for(int i=0 ; i < SCREEN_WIDTH * SCREEN_HEIGHT ; ){
+void clearScreen(int start, int length, int step){
+	for(int i=start ; i < SCREEN_WIDTH * SCREEN_HEIGHT - start; ){
 		*(defaultVideoPos + i++) = ' ';
-		*(defaultVideoPos + i++) = STDOUT_COLOR;			
+		*(defaultVideoPos + i++) = STDOUT_COLOR;
+
+		if( i % length  == 0){											// salto a nueva linea, si llegue a fin
+			i += step;
+		}			
 	}
 }
 
 unsigned int sys_clear_screen(){
-	clearScreen();
-	currentVideoPosOffset = currentVideoPosLeftOffset = START_LEFT;		// se resetan las pantallas
-	currentVideoPosRightOffset = START_RIGHT;
+	int screen = getCurrentScreen();
+	switch(screen){
+		case STDOUT_LEFT:
+			currentVideoPosOffset = currentVideoPosLeftOffset = START_LEFT;		// se resetan las pantallas
+			clearScreen(START_LEFT, SPLIT_MODE_LENGTH, SPLIT_MODE_STEP);
+			break;
+		case STDOUT_RIGHT:
+			currentVideoPosOffset = START_LEFT;		// se resetan las pantallas
+			currentVideoPosRightOffset = START_RIGHT;
+			clearScreen(START_RIGHT, SPLIT_MODE_LENGTH, SPLIT_MODE_STEP);
+			break;
+		case STDOUT:
+		default:
+			currentVideoPosOffset = currentVideoPosLeftOffset = START_LEFT;		// se resetan las pantallas
+			currentVideoPosRightOffset = START_RIGHT;
+			clearScreen(START_LEFT, NORMAL_MODE_LENGTH, NORMAL_MODE_STEP);
+	}
+
 	return 0;
 }
-
-
 // ====== SYS_WRITE ======
 
 /*
@@ -232,6 +249,16 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count)
         return 0;       // lo agregue yo (nico) pq no habia nada, supongo que seria error
 }
 
+// ====== SYS_CONSUME_STDIN ======
+
+unsigned int sys_consume_stdin(char * buf, unsigned int count){
+	int i=0;
+	while(checkIfAvailableKey() && i<count){
+		char c = get_key();
+		buf[i++] = c;
+	}
+	return i;
+}
 
 
 // ====== SYS_READ ======
@@ -280,14 +307,6 @@ unsigned int read_stdin(unsigned int fd, char * buf, unsigned int count)
 	return i;
 }
 
-unsigned int sys_consume_stdin(char * buf, unsigned int count){
-	int i=0;
-	while(checkIfAvailableKey() && i<count){
-		char c = get_key();
-		buf[i++] = c;
-	}
-	return i;
-}
 
 // Solo copia
 unsigned int sys_read(unsigned int fd, char * buf, unsigned int count)

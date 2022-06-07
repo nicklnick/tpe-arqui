@@ -11,7 +11,7 @@
  *      (uint64_t) starting position
  * Devuelve: -- 
  */
-void printmem(uint64_t position);
+void printmem(char * arg);
 
 /*
  * << primos >>
