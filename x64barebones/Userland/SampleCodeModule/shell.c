@@ -41,30 +41,30 @@ static uint64_t functions[] = {
 
 
 #define REGISTER_PROGRAM(name, param, screen) \
-                                                pos1 = checkCommand(name, commands, TOTAL_COMMANDS);        \
-                                                if(pos1 >= 0){                                              \
-                                                    sys_clear_screen();                                     \
-                                                    pid1 = sys_register_process(functions[pos1], screen, (uint64_t) param); \
-                                                }                                                           \
-                                                else{                                                       \
-                                                    puts(INVALID_COMMAND_MSG);                              \
-                                                    return;                                                 \
-                                                }                                                           \
-                                                break;                                                      \
+                pos1 = checkCommand(name, commands, TOTAL_COMMANDS);        \
+                if(pos1 >= 0){                                              \
+                    sys_clear_screen();                                     \
+                    pid1 = sys_register_process(functions[pos1], screen, (uint64_t) param); \
+                }                                                           \
+                else{                                                       \
+                    puts(INVALID_COMMAND_MSG);                              \
+                    return;                                                 \
+                }                                                           \
+                break;                                                      \
 
 #define REGISTER_DUAL_PROGRAMS(name1, name2, param1, param2, screen1, screen2) \
-                                                        pos1 = checkCommand(name1, commands, TOTAL_COMMANDS);       \
-                                                        pos2 = checkCommand(name2, commands, TOTAL_COMMANDS);       \
-                                                        if(pos2 >= 0 && pos2 >=0){                                  \
-                                                            sys_clear_screen();                                     \
-                                                            pid1 = sys_register_process(functions[pos1], screen1, (uint64_t) param1); \
-                                                            pid2 = sys_register_process(functions[pos2], screen2, (uint64_t) param2); \
-                                                        }                                                           \
-                                                        else{                                                       \
-                                                            puts(INVALID_COMMAND_MSG);                              \
-                                                            return;                                                 \
-                                                        }                                                           \
-                                                        break;                                                      \
+                pos1 = checkCommand(name1, commands, TOTAL_COMMANDS);       \
+                pos2 = checkCommand(name2, commands, TOTAL_COMMANDS);       \
+                if(pos2 >= 0 && pos2 >=0){                                  \
+                    sys_clear_screen();                                     \
+                    pid1 = sys_register_process(functions[pos1], screen1, (uint64_t) param1); \
+                    pid2 = sys_register_process(functions[pos2], screen2, (uint64_t) param2); \
+                }                                                           \
+                else{                                                       \
+                    puts(INVALID_COMMAND_MSG);                              \
+                    return;                                                 \
+                }                                                           \
+                break;                                                      \
 
 
 /* = = = = = = = = = CODIGO = = = = = = = = = */
@@ -162,7 +162,6 @@ void commandsDispatcher(char ** words, unsigned int count){
          default:
             puts("Too many arguments!");
             return;
-
         }
 
     while(finishedExecution==0){                                // el shell sigue corriendo en el fondo, fijandose si se toco una tecla especial

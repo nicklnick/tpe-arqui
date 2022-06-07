@@ -149,14 +149,14 @@ void page0(){
 
 void page1(){
     puts("= = = = = = = = TECLA ESCPECIAL = = = = = = = = ");
-    puts("       Con tecla - F5 - se hace una captura de los registros\n\n");
+    puts("   - Con tecla - F5 - se hace una captura de los registros\n\n");
     puts("= = = = = = = = = MULTITASKING = = = = = = = = ");
     puts("   - Para ejecucion simultanea comando1 | comando2\n");
-    puts("       Con tecla - F1 - se pausa/reanuda ejecucion de modo normal");
-    puts("       Con tecla - F2 - se pausa/reanuda ejecucion de lado izq");
-    puts("       Con tecla - F3 - se pausa/reanuda ejecucion de lado der");
-    puts("       Con tecla - ESC - regresa a la terminal unica");
-    print("\n\n\n\n\n\n\n\n\n\n\n\n",12);
+    puts("   - Con tecla - F1 - se pausa/reanuda ejecucion de modo normal");
+    puts("   - Con tecla - F2 - se pausa/reanuda ejecucion de lado izq");
+    puts("   - Con tecla - F3 - se pausa/reanuda ejecucion de lado der");
+    puts("   - Con tecla - ESC - regresa a la terminal unica");
+    print("\n\n\n\n\n\n\n\n\n\n\n\n\n",13);
     puts("Pag 2/2 - proxima apretando \".\" - previa apretando \",\"");
 }
 

@@ -249,6 +249,16 @@ unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count)
         return 0;       // lo agregue yo (nico) pq no habia nada, supongo que seria error
 }
 
+// ====== SYS_CONSUME_STDIN ======
+
+unsigned int sys_consume_stdin(char * buf, unsigned int count){
+	int i=0;
+	while(checkIfAvailableKey() && i<count){
+		char c = get_key();
+		buf[i++] = c;
+	}
+	return i;
+}
 
 
 // ====== SYS_READ ======
@@ -297,14 +307,6 @@ unsigned int read_stdin(unsigned int fd, char * buf, unsigned int count)
 	return i;
 }
 
-unsigned int sys_consume_stdin(char * buf, unsigned int count){
-	int i=0;
-	while(checkIfAvailableKey() && i<count){
-		char c = get_key();
-		buf[i++] = c;
-	}
-	return i;
-}
 
 // Solo copia
 unsigned int sys_read(unsigned int fd, char * buf, unsigned int count)
