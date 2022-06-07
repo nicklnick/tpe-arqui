@@ -111,7 +111,7 @@ void commandsDispatcher(char ** words, int count){
                 puts(INVALID_COMMAND_MSG);
                 return; 
            }
-           break;
+            break;
 
         case 2:
             pos1 = checkCommand(words[0],binaryCommands, TOTAL_BINARY_COMMANDS);
@@ -123,8 +123,9 @@ void commandsDispatcher(char ** words, int count){
             else{
                 puts(INVALID_COMMAND_MSG);
                 return; 
-           }
+            }
             break; 
+
 
         case 3:
            if(strcmp(words[1],PIPE)==0){
@@ -208,30 +209,26 @@ void commandsDispatcher(char ** words, int count){
             return;
         }
 
-    while(finishedExecution==0){ 
+    while(finishedExecution==0){                                // el shell sigue corriendo en el fondo, fijandose si se toco una tecla especial
         size = consume_buffer(buffer, BUFFER_LENGTH-1);
         buffer[size] = 0;
         char key = findSpecialKey(buffer, specialKeys, TOTAL_SPECIAL_KEYS);
 
         switch(key){
             case ESCAPE_KEY:
-                sys_kill_process(pid1);
-                if(pid2>0)
-                    sys_kill_process(pid2);
-                sys_clear_screen();
+                sys_kill_process(pid1);     
+                sys_kill_process(pid2);                          // en todos estos casos, nos aprovechamos con que si no existe un task con ese
+                sys_clear_screen();                              // pid, no hace nada y listo.
                 finishedExecution = 1;
                 break;
+
             case PAUSE_NORMAL_SCREEN:
-                if(pid2<0)
-                    sys_pause_process(pid1);
-                break;
-            case PAUSE_RIGHT_SCREEN:
-                if(pid2>0)
-                    sys_pause_process(pid2);
-                break;
             case PAUSE_LEFT_SCREEN:
-                if(pid2>0)
-                    sys_pause_process(pid1);
+                sys_pause_process(pid1);
+                break;
+
+            case PAUSE_RIGHT_SCREEN:
+                sys_pause_process(pid2);
                 break;
         }  
     }

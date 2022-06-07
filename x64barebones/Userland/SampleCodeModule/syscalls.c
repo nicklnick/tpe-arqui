@@ -14,11 +14,11 @@
 
 extern uint64_t syscaller(uint64_t syscallID, uint64_t param1, uint64_t param2, uint64_t param3);
 
-unsigned int sys_write(const char * string, int length){
+unsigned int sys_write(const char * string, unsigned int length){
     return syscaller(SYS_WRITE_TO_SCREEN, (uint64_t) string, (uint64_t) length, NULL);        // feo arreglar
 }   
 
-unsigned int sys_read(char * buf, int length){
+unsigned int sys_read(char * buf, unsigned int length){
     return syscaller(SYS_READ_FROM_SCREEN, (uint64_t) buf, (uint64_t) length, NULL);        // feo arreglar
 }
 
