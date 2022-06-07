@@ -135,7 +135,7 @@ void inforeg()
 
 void page0(){
     puts("= = = = = = = = COMANDOS = = = = = = = = ");
-    puts("   - fibo:\n       imprime la serie de fibonacci\n       se corta ejecucion con la tecla ESC\n");
+    puts("   - fibonacci:\n       imprime la serie de fibonacci\n       se corta ejecucion con la tecla ESC\n");
     puts("   - primos:\n       imprime los numeros primos\n        se corta ejecucion con la tecla ESC\n");
     puts("   - inforeg:\n       imprime el contenido de los registros\n");
     puts("   - printmem:\n       recibe un parametro e imprime un vuelco (32 bytes) desde dicha direccion\n");    
