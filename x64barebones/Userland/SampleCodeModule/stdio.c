@@ -1,4 +1,4 @@
-#include "./include/stdio.h"
+#include "../include/stdio.h"
 
 void print(char * string, int length) {
     sys_write(string, length);

@@ -4,7 +4,6 @@ MODULE=0000-sampleCodeModule.bin
 ASMSOURCES= $(wildcard ./asm/*.asm)
 ASMOBJECTS=$(ASMSOURCES:.asm=.o)
 COBJECTS=$(SOURCES:.c=.o)
-MODULE=0000-sampleCodeModule.bin
 SOURCES=$(wildcard [^_]*.c)
 
 %.o: %.c

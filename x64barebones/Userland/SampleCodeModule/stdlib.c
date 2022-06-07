@@ -1,4 +1,4 @@
-#include "./include/stdlib.h"
+#include "../include/stdlib.h"
 
 
 void reverseString(char * string, int length)
