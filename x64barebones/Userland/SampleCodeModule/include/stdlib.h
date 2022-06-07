@@ -93,6 +93,6 @@ char * strncpy(char * dest, const char * src, unsigned int n);
 uint8_t isNum(const char * string);
 
 int hex_to_string(uint64_t num, char * buffer, int fixedLength);
-unsigned int strContainsChar(char * string, char c);
+int strContainsChar(char * string, char c);
 
 #endif
