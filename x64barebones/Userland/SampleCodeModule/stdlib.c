@@ -1,7 +1,5 @@
 #include "./include/stdlib.h"
 
-#define NULL 0
-
 
 void reverseString(char * string, int length)
 {

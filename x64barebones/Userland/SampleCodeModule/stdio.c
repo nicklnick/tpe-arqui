@@ -1,5 +1,4 @@
-#include "./include/syscalls.h"
-#include "./include/stdlib.h"
+#include "./include/stdio.h"
 
 void print(char * string, int length) {
     sys_write(string, length);

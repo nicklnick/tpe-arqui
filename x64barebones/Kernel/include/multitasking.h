@@ -1,6 +1,19 @@
 #ifndef _MULTITASKING_H
 #define _MULTITASKING_H
 
+/*--------  DEPENDENCIES --------*/
+#include <interrupts.h>
+#include <stdint.h>
+
+/* --- CONSTANTS  --- */
+
+// ----- Valores de retorno ------
+#define NO_TASKS -1
+#define ERROR_NO_SPACE_FOR_TASK -1
+#define NO_TASK_FOUND -1
+#define TASK_ALTERED 1
+
+
 void enableMultiTasking();
 void moveToNextTask(uint64_t stackPointer, uint64_t stackSegment);
 

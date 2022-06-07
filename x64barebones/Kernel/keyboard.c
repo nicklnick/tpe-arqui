@@ -1,20 +1,9 @@
-/*--------  DEPENDENCIES --------*/
 #include <keyboard.h>
-#include <stdint.h>
-#include <syscalls.h>
 
 extern char readKeyboard();		// en libasm.asm
 
 /*-------- CONSTANTS --------*/
 #define BUFFER_SIZE 200
-#define UNMAPPED 4
-
-// --- Caracteres especiales ---
-#define ESCAPE_KEY 27
-#define F1_KEY 17
-#define F2_KEY 18
-#define F3_KEY 19
-#define F5_SCAN_CODE 0x3F
 
 /*--------- MACROS ----------*/
 #define INCREASE_MOD(x,total)	(x) = ((x) + 1) % total;

@@ -48,9 +48,6 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
-// Posible bug primero haciendo sys_read(1,buffer,n) y luego sys_write(3,buffer,n). 
-// Al ser pantallas distintas como q imprime por un microsegundo del lado incorrecto
-
 int main()
 {	
 	sys_clear_screen();

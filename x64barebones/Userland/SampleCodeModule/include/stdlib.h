@@ -1,7 +1,11 @@
 #ifndef _STDLIB_H
 #define _STDLIB_H
 
+/*--------  DEPENDENCIES --------*/
 #include <stdint.h>
+
+/* --- CONSTANTS  --- */
+#define NULL 0
 
 /*
  * << num_to_string >>

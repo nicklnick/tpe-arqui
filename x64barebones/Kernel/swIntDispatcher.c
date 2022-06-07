@@ -9,23 +9,23 @@
 unsigned int swIntDispatcher(uint64_t mode, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5) 
 {
 	switch (mode) {
-		case 0:
+		case SYS_READ_FROM_SCREEN:
 			return sys_read_from_screen((char *) arg0, (unsigned int) arg1);
-		case 1:
+		case SYS_WRITE_TO_SCREEN:
 			return sys_write_to_screen((const char *) arg0,(unsigned int) arg1);
-		case 2:
+		case SYS_CLEAR_SCREEN:
 			return sys_clear_screen();
-		case 3:
+		case SYS_REGISTER_PROCESS:
 			return sys_register_process(arg0, (int) arg1, arg2);
-		case 4:
+		case SYS_RTC:
 			return sys_rtc((unsigned int) arg0);
-		case 7:
+		case SYS_CONSUME_STDIN:
 			return sys_consume_stdin((char *) arg0 , (unsigned int) arg1);
-		case 8:
+		case SYS_KILL_PROCESS:
 			return sys_kill_process((unsigned int) arg0);
-		case 9:
+		case SYS_PAUSE_PROCESS:
 			return sys_pause_process((unsigned int) arg0);
-		case 10:
+		case SYS_INFOREG:
 			return sys_inforeg((uint64_t*) arg0);
 		default:
 			return INVALID_SYS_CALL;

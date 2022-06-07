@@ -9,7 +9,7 @@
 #define INTERRUPS_H_
 
 #include <idtLoader.h>
-#include <stdint.h>         // ? REMOVE ?
+#include <stdint.h>
 
 /* IRQ HANDLERS */
 void _irq00Handler();

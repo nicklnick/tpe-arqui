@@ -2,7 +2,46 @@
 #ifndef _SYSCALLS_H
 #define _SYSCALLS_H
 
+/*--------  DEPENDENCIES --------*/
+
 #include <stdint.h>
+#include <keyboard.h>
+#include <multitasking.h>
+
+/* --- CONSTANTS  --- */
+
+#define SYS_READ_FROM_SCREEN 0
+#define SYS_WRITE_TO_SCREEN 1
+#define SYS_CLEAR_SCREEN 2
+#define SYS_REGISTER_PROCESS 3 
+#define SYS_RTC 4
+#define SYS_CONSUME_STDIN 7
+#define SYS_KILL_PROCESS 8
+#define SYS_PAUSE_PROCESS 9
+#define SYS_INFOREG 10
+
+// Entrada estandar
+#define STDIN 1
+#define STDIN_LEFT 3
+#define STDIN_RIGHT 5
+
+// Normal mode
+#define STDOUT 1
+#define STDERR 2
+
+// Split screen
+#define STDOUT_LEFT 3
+#define STDOUT_RIGHT 5
+#define STDERR_LEFT 4
+#define STDERR_RIGHT 6
+
+// Colores 
+#define STDOUT_COLOR 7
+#define STDERR_COLOR 4
+
+
+// Valores de retorno
+#define INVALID_SCREEN -1
 
 /*
  * << sys_write >>

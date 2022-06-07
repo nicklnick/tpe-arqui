@@ -1,10 +1,19 @@
 #ifndef _STDIO_H
 #define _STDIO_H
 
+/*--------  DEPENDENCIES --------*/
+#include "syscalls.h"
+#include "stdlib.h"
+
+/* --- CONSTANTS  --- */
 #define LEFT_SCREEN 3
 #define RIGHT_SCREEN 5
 #define NORMAL_SCREEN 1
 
+// --- Caracteres especiales ---
+#define PAUSE_NORMAL_SCREEN 17
+#define PAUSE_LEFT_SCREEN  18
+#define PAUSE_RIGHT_SCREEN 19
 #define ESCAPE_KEY 27
 
 /*

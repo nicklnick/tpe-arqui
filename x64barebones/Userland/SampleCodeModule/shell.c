@@ -1,27 +1,18 @@
-#include "./include/stdio.h"
-#include "./include/stdlib.h"
-#include "./include/comandos.h"
-#include "./include/syscalls.h"
+#include "./include/shell.h"
 
 extern void divError();             // exception_test.asm
-extern void opCodeError();
+extern void opCodeError();          // exception_test.asm
 
 // --- Simbolos ---
 #define SYMBOL "$> "
 #define SYMBOL_LENGTH 3
 #define PIPE "|"
 #define INVALID_COMMAND_MSG "Invalid command!"
-#define NULL 0                      // quizas poner esto en un defs
 
 // --- Dimensiones ---
 #define BUFFER_LENGTH 150
 #define MAX_WORDS 10
 #define TOTAL_COMMANDS 8
-
-// --- Caracteres especiales ---
-#define PAUSE_NORMAL_SCREEN 17
-#define PAUSE_LEFT_SCREEN  18
-#define PAUSE_RIGHT_SCREEN 19
 
 #define TOTAL_SPECIAL_KEYS 4
 static char specialKeys[] = {

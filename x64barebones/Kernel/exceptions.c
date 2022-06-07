@@ -1,13 +1,11 @@
 #include <stdint.h>
-#include <libasm.h>
-#include <lib.h>
 #include <syscalls.h>
-#include <multitasking.h>
-
-#define ZERO_EXCEPTION_ID 0
-#define ZERO_EXCEPTION_ERR_MSG "Se produjo una excepcion por division por cero!\n"
+#include <lib.h>
 
 #define INVALID_OP_CODE 6
+#define ZERO_EXCEPTION_ID 0
+
+#define ZERO_EXCEPTION_ERR_MSG "Se produjo una excepcion por division por cero!\n"
 #define INVALID_OP_CODE_ERR_MSG "Se produjo una excepcion por codigo de operacion invalida!\n"
 
 #define TOTAL_REGISTERS 15

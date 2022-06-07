@@ -1,25 +1,4 @@
 #include <syscalls.h>
-#include <keyboard.h>
-#include <multitasking.h>
-
-// Entrada estandar
-#define STDIN 1
-#define STDIN_LEFT 3
-#define STDIN_RIGHT 5
-
-// Normal mode
-#define STDOUT 1
-#define STDERR 2
-
-// Split screen
-#define STDOUT_LEFT 3
-#define STDOUT_RIGHT 5
-#define STDERR_LEFT 4
-#define STDERR_RIGHT 6
-
-// Colores 
-#define STDOUT_COLOR 7
-#define STDERR_COLOR 4
 
 // Columna de comienzo en pantalla
 #define START_LEFT 0
@@ -36,8 +15,6 @@
 #define NORMAL_MODE_STEP 0
 #define SPLIT_MODE_STEP 80
 
-// Valores de retorno
-#define INVALID_SCREEN -1
 
 // Variables estaticas
 static uint8_t * defaultVideoPos = (uint8_t*)0xB8000;
@@ -182,7 +159,7 @@ unsigned int write(const char * buf, char format, unsigned int count,
 
 	for(i=0; i<count; i++) {
 
-		if(*offset >= (SCREEN_HEIGHT-1) * SCREEN_WIDTH + length + start) {							// llego al final de pantalla, tengo que hacer scroll up
+		if(*offset >= (SCREEN_HEIGHT-1) * SCREEN_WIDTH + length + start) {	// llego al final de pantalla, tengo que hacer scroll up
 			scrollUp(start, length, step);
 			*offset = (SCREEN_HEIGHT-1) * SCREEN_WIDTH + start;
 		}
@@ -279,7 +256,7 @@ unsigned int read_stdin(unsigned int fd, char * buf, unsigned int count)
 {
 	char c=0, keyboardResp=0; 
 	int i=0;
-	unsigned int initialPos = getFdOffSet(fd);					// ### FEO ###
+	unsigned int initialPos = getFdOffSet(fd);
 	while(c!='\n' && keyboardResp != BUFFER_FULL) {		
 
 		keyboardResp = keyboard_handler();
@@ -292,7 +269,7 @@ unsigned int read_stdin(unsigned int fd, char * buf, unsigned int count)
 				i++;
 		}
 		else if(keyboardResp == DELETE_KEY){
-			if(getFdOffSet(fd) > initialPos){			// ### FEO ###   // no dejo que borre lo que ya habia
+			if(getFdOffSet(fd) > initialPos){  // no dejo que borre lo que ya habia
 				sys_write(fd,"\b",1);
 				if(i>0)
 					i--;
