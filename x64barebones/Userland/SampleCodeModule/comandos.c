@@ -6,7 +6,7 @@
 #define MAX_MEM_READ 16
 #define BYTE_LENGTH 2
 #define BUFFER_LENGTH 150
-
+#define MAX_MEM_POS 250000000
 
 void printmem(char * arg)
 {
@@ -15,6 +15,12 @@ void printmem(char * arg)
         return;
     }
     uint64_t current, position = atoi(arg);
+
+    if(position >= MAX_MEM_POS){
+        puts("Invalid memory address!");
+        return;
+    }
+
     char buffer[BYTE_LENGTH + 1];
 
     for(int i=0; i < MAX_MEM_READ; i++) {
@@ -128,7 +134,7 @@ void inforeg()
 
 
 void page0(){
-    puts("COMANDOS:");
+    puts("= = = = = = = = COMANDOS = = = = = = = = ");
     puts("   - fibo:\n       imprime la serie de fibonacci\n       se corta ejecucion con la tecla ESC\n");
     puts("   - primos:\n       imprime los numeros primos\n        se corta ejecucion con la tecla ESC\n");
     puts("   - inforeg:\n       imprime el contenido de los registros\n");
@@ -136,22 +142,22 @@ void page0(){
     puts("   - time:\n       imprime el dia y hora del sistema\n");
     puts("   - div-error:\n       ejecuta una division por 0 para testear la excepcion\n");
     puts("   - opcode-error:\n       ejecuta una operacion invalida para testear la excepcion\n");
-    puts("Pag 1/2 |  proxima apretando . | previa apretando ,");
+    puts("Pag 1/2 - proxima apretando \".\" - previa apretando \",\"");
 
     return;
 }
 
 void page1(){
-    puts("\n\nTECLA ESCPECIAL:\n");
-    puts("       Con tecla - F5 - se hace una captura de los registros");
-    puts("\nMULTITASKING:\n");
+    puts("= = = = = = = = TECLA ESCPECIAL = = = = = = = = ");
+    puts("       Con tecla - F5 - se hace una captura de los registros\n\n");
+    puts("= = = = = = = = = MULTITASKING = = = = = = = = ");
     puts("   - Para ejecucion simultanea comando1 | comando2\n");
     puts("       Con tecla - F1 - se pausa/reanuda ejecucion de modo normal");
     puts("       Con tecla - F2 - se pausa/reanuda ejecucion de lado izq");
     puts("       Con tecla - F3 - se pausa/reanuda ejecucion de lado der");
     puts("       Con tecla - ESC - regresa a la terminal unica");
     print("\n\n\n\n\n\n\n\n\n\n\n\n",12);
-    puts("Pag 2/2 |  proxima apretando . | previa apretando ,");
+    puts("Pag 2/2 - proxima apretando \".\" - previa apretando \",\"");
 }
 
 void switchPage(int page){
