@@ -7,9 +7,14 @@
 #define BYTE_LENGTH 2
 #define BUFFER_LENGTH 150
 
-void printmem(uint64_t position)
+
+void printmem(char * arg)
 {
-    uint64_t current;
+    if(!isNum(arg)){                                            // recibe un string que puede o no ser un numero
+        puts("Invalid argument!\nArgument must be number!");
+        return;
+    }
+    uint64_t current, position = atoi(arg);
     char buffer[BYTE_LENGTH + 1];
 
     for(int i=0; i < MAX_MEM_READ; i++) {

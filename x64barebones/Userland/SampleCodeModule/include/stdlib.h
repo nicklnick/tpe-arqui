@@ -52,7 +52,7 @@ int strlen(const char * string);
  * Devuelve: 
  *      (int) number
  */
-int atoi(const char * string);
+uint64_t atoi(const char * string);
 
 /*
  * << removeEnter >>
