@@ -16,6 +16,7 @@ This project is based on a UNIX based operating system where we implement many k
 from the directory where you have the x64Barebones project.
 
 ***Inside the Docker container***
+
 3- Compile the Toolchain
     
     user@linux:$ cd root/x64Barebones/Toolchain
@@ -27,6 +28,7 @@ from the directory where you have the x64Barebones project.
     user@linux:~/x64Barebones$ make all 
 
 ***From Bash terminal***
+
 5- Go inside the x64barebones directory and run:
 
     user@linux:~/x64barebones$ ./run.sh
