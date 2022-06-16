@@ -19,6 +19,7 @@
 #define SYS_KILL_PROCESS 8
 #define SYS_PAUSE_PROCESS 9
 #define SYS_INFOREG 10
+#define SYS_PRINTMEM 11
 
 // Entrada estandar
 #define STDIN 1
@@ -205,5 +206,5 @@ void saveInfoReg(uint64_t * regDumpPos);
  */
 unsigned int sys_inforeg(uint64_t * buffer);
 
-
+unsigned int sys_printmem(uint64_t position, char * buffer);
 #endif

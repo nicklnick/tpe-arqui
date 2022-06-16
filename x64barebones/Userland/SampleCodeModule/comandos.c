@@ -2,11 +2,9 @@
 #include "./include/stdio.h"
 #include "./include/syscalls.h"
 
-// = = = = = = = = PRINTMEM = = = = = = = = 
-#define MAX_MEM_READ 16
-#define BYTE_LENGTH 2
+// = = = = = = = = PRINTMEM = = = = = = = = =
 #define BUFFER_LENGTH 150
-#define MAX_MEM_POS 250000000
+
 
 void printmem(char * arg)
 {
@@ -14,22 +12,16 @@ void printmem(char * arg)
         puts("Invalid argument!\nArgument must be number!");
         return;
     }
-    uint64_t current, position = atoi(arg);
+    uint64_t position = atoi(arg);
 
-    if(position >= MAX_MEM_POS){
+    
+    char buffer[BUFFER_LENGTH];
+
+    if(sys_printmem(position, buffer)<0){
         puts("Invalid memory address!");
-        return;
     }
-
-    char buffer[BYTE_LENGTH + 1];
-
-    for(int i=0; i < MAX_MEM_READ; i++) {
-        if(i!=0 && i%4==0)
-            print(" ",1);
-        current = *((uint8_t * )position + i);
-        hex_to_string(current,buffer,BYTE_LENGTH);
-        print(buffer,BYTE_LENGTH);
-    }
+    else
+        puts(buffer);
 }
 
 

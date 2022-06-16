@@ -9,6 +9,7 @@
 #define SYS_KILL_PROCESS 8
 #define SYS_PAUSE_PROCESS 9
 #define SYS_INFOREG 10
+#define SYS_PRINTMEM 11
 
 #define NULL 0
 
@@ -44,3 +45,6 @@ unsigned int sys_inforeg(uint64_t * buffer){
     return syscaller(SYS_INFOREG,(uint64_t) buffer,NULL,NULL);
 }
 
+unsigned int sys_printmem(uint64_t position, char * buffer){
+    return syscaller(SYS_PRINTMEM, position, (uint64_t) buffer, NULL);
+}

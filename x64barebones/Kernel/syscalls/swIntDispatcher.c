@@ -27,6 +27,8 @@ unsigned int swIntDispatcher(uint64_t mode, uint64_t arg0, uint64_t arg1, uint64
 			return sys_pause_process((unsigned int) arg0);
 		case SYS_INFOREG:
 			return sys_inforeg((uint64_t*) arg0);
+		case SYS_PRINTMEM:
+			return sys_printmem((uint64_t)arg0, (char *) arg1);
 		default:
 			return INVALID_SYS_CALL;
 	}
