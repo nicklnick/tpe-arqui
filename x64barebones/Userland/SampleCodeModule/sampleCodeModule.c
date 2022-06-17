@@ -1,8 +1,6 @@
 #include "../include/shell.h"
 #include "../include/stdio.h"
 
-
-
 int main() {
 
 	// linea de ascii art

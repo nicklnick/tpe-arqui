@@ -1,6 +1,12 @@
 #ifndef _COMANDOS_H
 #define _COMANDOS_H
+
 #include <stdint.h>
+#include "stdlib.h"
+#include "stdio.h"
+
+#define BUFF_SIZE 20
+#define BUFFER_LENGTH 150
 
 /*
  * << printmem >>

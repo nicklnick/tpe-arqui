@@ -89,7 +89,7 @@ unsigned int checkCommand(char * string, char ** array, unsigned int dim){
     return -1;
 }
 
-// retorna la primera key especial que encuntra
+// retorna la primera key especial que encuentra
 char findSpecialKey(char * string, char * keys, unsigned int size){
     int i;
     for(i=0; string[i]!=0; i++){
