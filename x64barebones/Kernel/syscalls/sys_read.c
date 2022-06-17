@@ -11,9 +11,8 @@ unsigned int sys_read(unsigned int fd, char * buf, unsigned int count)
 		case STDIN:
 		case STDIN_LEFT:
 		case STDIN_RIGHT:
-			if(checkIfAvailableKey()){
+			if(checkIfAvailableKey())
 				return sys_consume_stdin(buf,count);		// Si el key buffer no esta vacio, primero tengo que consumirlo
-			}
 			return read_stdin(fd, buf, count);				// El buffer esta vacio, puedo leer de pantalla
 
 		default:
@@ -24,7 +23,7 @@ unsigned int sys_read(unsigned int fd, char * buf, unsigned int count)
 
 unsigned int getFdOffSet(unsigned int fd)
 {
-	switch(fd){
+	switch(fd) {
 		case STDIN_LEFT:
 			return ACCESS_VAR(currentVideoLeftOffset());
 
@@ -55,7 +54,7 @@ unsigned int read_stdin(unsigned int fd, char * buf, unsigned int count)
 				i++;
 		}
 		else if(keyboardResp == DELETE_KEY) {
-			if(getFdOffSet(fd) > initialPos){  // no dejo que borre lo que ya habia
+			if(getFdOffSet(fd) > initialPos) {  // no dejo que borre lo que ya habia
 				sys_write(fd,"\b",1);
 				if(i>0)
 					i--;

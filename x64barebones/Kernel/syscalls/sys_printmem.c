@@ -1,6 +1,5 @@
 #include <syscalls.h>
 
-// ====== SYS_PRINTMEM ========
 #define MAX_MEM_READ 16
 #define BYTE_LENGTH 2
 #define MAX_MEM_POS 250000000

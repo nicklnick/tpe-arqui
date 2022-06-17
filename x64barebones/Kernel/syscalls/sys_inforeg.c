@@ -1,8 +1,7 @@
 #include <syscalls.h>
 
-// ====== SYS_INFOREG =======
-
 #define TOTAL_REGISTERS 15
+
 static uint64_t inforegData[TOTAL_REGISTERS] = {0};
 
 

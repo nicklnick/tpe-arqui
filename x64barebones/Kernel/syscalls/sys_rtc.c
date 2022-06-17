@@ -1,6 +1,5 @@
 #include <syscalls.h>
 
-// ====== RTC ====== 
 /* constants */
 #define HOUR 1
 #define DATE 2
