@@ -1,4 +1,3 @@
-
 #ifndef _SYSCALLS_H
 #define _SYSCALLS_H
 
@@ -36,11 +35,6 @@
 #define STDOUT_RIGHT 5
 #define STDERR_LEFT 4
 #define STDERR_RIGHT 6
-
-// Colores 
-#define STDOUT_COLOR 7
-#define STDERR_COLOR 4
-
 
 // Valores de retorno
 #define INVALID_SCREEN -1

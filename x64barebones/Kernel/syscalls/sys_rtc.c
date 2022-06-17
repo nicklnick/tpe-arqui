@@ -17,7 +17,8 @@
 
 extern int getRTC(uint8_t field);
 
-unsigned int sys_rtc(unsigned int option) {
+unsigned int sys_rtc(unsigned int option) 
+{
         int hours, min, sec;
         int day, month, year;
 
