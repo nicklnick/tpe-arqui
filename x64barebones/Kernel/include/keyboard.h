@@ -58,7 +58,6 @@ char get_key();
  */
 char peek_key();
 
-
-char checkIfAvailableKey();     
+char checkIfAvailableKey();
 
 #endif

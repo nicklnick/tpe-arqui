@@ -11,6 +11,7 @@ void irqDispatcher(uint64_t irq, uint64_t arg0)
 		case 0:
 			int_20();
 			break;
+			
 		case 1:
 			int_21(arg0);
 			break;

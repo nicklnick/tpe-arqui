@@ -6,8 +6,7 @@
 #include <stdint.h>
 
 /* --- CONSTANTS  --- */
-
-// ----- Valores de retorno ------
+// Return values
 #define NO_TASKS -1
 #define ERROR_NO_SPACE_FOR_TASK -1
 #define NO_TASK_FOUND -1

@@ -1,5 +1,6 @@
 #include <video.h>
 #include <syscalls.h>
+#include <multitasking.h>
  
 void clearScreen(int start, int length, int step);
 

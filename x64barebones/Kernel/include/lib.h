@@ -32,4 +32,7 @@ int hex_to_string(uint64_t num, char * buffer, int fixedLength);
  */
 int str_len(const char * string);
 
+
+void printRegisters(int screen, uint64_t * registerDumpPos);
+
 #endif

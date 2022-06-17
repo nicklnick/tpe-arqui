@@ -1,6 +1,5 @@
 #include <video.h>
 
-
 /* Decides where to write */
 unsigned int sys_write(unsigned int fd, const char *buf, unsigned int count) 
 {
@@ -77,8 +76,8 @@ unsigned int write(const char * buf, char format, unsigned int count,
 	return i;
 }
 
-/* ====== SPECIAL CHARACTERS FUNCTIONALITY ======*/
 
+/* ====== SPECIAL CHARACTERS FUNCTIONALITY ======*/
 void deleteKey(unsigned int * offset, unsigned int start,  unsigned int length , unsigned int step)
 {
 	if(*offset == start)			// si llegue al principio de la pantalla, no puedo ir para atras

@@ -1,6 +1,8 @@
 #ifndef LIB_ASM_H
 #define LIB_ASM_H
 
+#include <stdint.h>
+
 /*
  * << readKeyboard >>
  * ----------------------------------------------------------------------

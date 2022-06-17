@@ -1,3 +1,4 @@
+#include <libasm.h>
 #include <syscalls.h>
 
 /* constants */

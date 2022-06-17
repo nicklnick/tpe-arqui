@@ -1,3 +1,4 @@
+#include <lib.h>
 #include <syscalls.h>
 
 #define MAX_MEM_READ 16

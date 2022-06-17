@@ -1,3 +1,4 @@
+#include <keyboard.h>
 #include <syscalls.h>
 #include <video.h>
 

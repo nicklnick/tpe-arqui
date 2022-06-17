@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <syscalls.h>  // para printRegisters
 
 void * memset(void * destination, int32_t c, uint64_t length)
 {
@@ -93,4 +94,26 @@ int hex_to_string(uint64_t num, char * buffer, int fixedLength)
     return i;
 }
 
+/* printRegisters */
+#define TOTAL_REGISTERS 15
+#define REGISTER_LENGTH 16
 
+static char * registerOrder[] = {
+	"RAX: ","RBX: ","RCX: ","RDX: ",
+	"RBP: ","RSI: ","RDI: ","R8: ", 
+	"R9: ","R10: ","R11: ","R12: ",
+	"R13: ","R14: ","R15: " 
+};
+
+void printRegisters(int screen, uint64_t * registerDumpPos)
+{
+	char buffer[100];
+	for(int i=0, j=TOTAL_REGISTERS-1; i<TOTAL_REGISTERS ; i++, j--) {
+
+		sys_write(screen, registerOrder[i], str_len(registerOrder[i])-1);			// imprimo que registro es
+
+		int amount = hex_to_string(registerDumpPos[j], buffer, REGISTER_LENGTH + 1);					
+		sys_write(screen, buffer,amount);										// imprimo valor de registro
+		sys_write(screen, "\n",1);
+	}
+}

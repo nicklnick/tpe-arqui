@@ -1,8 +1,11 @@
 #ifndef _VIDEO_H
 #define _VIDEO_H
 
+/* --- DEPENDENCIES --- */
 #include <syscalls.h>
 
+
+/* --- CONSTANTS --- */
 // Columna de comienzo en pantalla
 #define START_LEFT 0
 #define START_RIGHT 80
@@ -22,14 +25,19 @@
 #define STDOUT_COLOR 7
 #define STDERR_COLOR 4
 
+
+/* --- MACROS --- */
 #define ACCESS_VAR(var) (*(var))
 
+
+/* --- FUNCTIONS --- */
 // setup.c
-// variables usadas en el driver de video
+// para variables estaticas en el driver de video
 uint8_t * defaultVideo();
 unsigned int * currentVideoOffset();
 unsigned int * currentVideoLeftOffset();
 unsigned int * currentVideoRightOffset();
+
 
 /*
  * << write >>

@@ -38,11 +38,6 @@ static char scanCodeTable[] = {
 
 /*-------- CODE --------*/
 
-char checkIfAvailableKey() {
-	return keyBuffer[readPos] != 0;
-}
-
-
 /* Usa un array circular. Si se llega a la capacidad maxima, no sobre-escribe. */
 char keyboard_handler(uint64_t * regDumpPos) 
 {
@@ -114,3 +109,7 @@ char peek_key()
 	return c;
 }
 
+
+char checkIfAvailableKey() {
+	return keyBuffer[readPos] != 0;
+}

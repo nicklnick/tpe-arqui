@@ -2,14 +2,10 @@
 #define _SYSCALLS_H
 
 /*--------  DEPENDENCIES --------*/
-
 #include <stdint.h>
-#include <lib.h>
-#include <keyboard.h>
-#include <multitasking.h>
+
 
 /* --- CONSTANTS  --- */
-
 #define SYS_READ_FROM_SCREEN 0
 #define SYS_WRITE_TO_SCREEN 1
 #define SYS_CLEAR_SCREEN 2
@@ -36,8 +32,9 @@
 #define STDERR_LEFT 4
 #define STDERR_RIGHT 6
 
-// Valores de retorno
+// Return values
 #define INVALID_SCREEN -1
+
 
 /*
  * << sys_write >>
@@ -212,5 +209,6 @@ unsigned int sys_inforeg(uint64_t * buffer);
  * Returns: --
  */
 unsigned int sys_printmem(uint64_t position, char * buffer);
+
 
 #endif

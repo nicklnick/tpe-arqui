@@ -1,4 +1,6 @@
+#include <keyboard.h>
 #include <syscalls.h>
+
 
 unsigned int sys_consume_stdin(char * buf, unsigned int count)
 {
