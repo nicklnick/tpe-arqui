@@ -25,66 +25,6 @@ static unsigned int currentVideoPosRightOffset = START_RIGHT;
 
 
 /* ----------- CODIGO ------------ */
-// ====== SYS_PRINTMEM ========
-#define MAX_MEM_READ 16
-#define BYTE_LENGTH 2
-#define MAX_MEM_POS 250000000
-
-unsigned int sys_printmem(uint64_t position, char * buffer){
-	if(position >= MAX_MEM_POS)
-		return -1;
-	uint64_t current;
-	
-	for(int i=0, k=0; i < MAX_MEM_READ; i++) {
-		if(i!=0 && i%4==0)
-			buffer[k++] = ' ';
-
-       		current = *((uint8_t * )position + i);
-        	k += hex_to_string(current, buffer + k, BYTE_LENGTH);
-	}
-
-	return 0;
-}
-
-
-// ====== SYS_INFOREG =======
-
-#define TOTAL_REGISTERS 15
-static uint64_t inforegData[TOTAL_REGISTERS] = {0};
-
-void saveInfoReg(uint64_t * regDumpPos){
-	for(int i=0; i<TOTAL_REGISTERS; i++){
-		inforegData[i] = regDumpPos[i];
-	}
-}
-
-unsigned int sys_inforeg(uint64_t * buffer){			// recibo buffer y le escribo, NUNCA devuelvo puntero a algo que esta en kernel
-	for(int i=0; i<TOTAL_REGISTERS; i++){
-		buffer[i] = inforegData[i];
-	}
-	return 1;
-}
-
-
-// ====== SYS_PAUSE_PROCESS ======
-
-unsigned int sys_pause_process(unsigned int pid){
-	return pauseOrUnpauseProcess(pid);
-}
-
-// ====== SYS_KILL_PROCESS ======
-
-unsigned int sys_kill_process(unsigned int pid){
-	return removeTask(pid);
-}
-
-// ====== SYS_REGISTER_PROCESS ======
-
-unsigned int sys_register_process(uint64_t entryPoint, int screen, uint64_t arg0){
-	if(screen != STDOUT && screen != STDOUT_LEFT && screen != STDOUT_RIGHT)			// si no es una pantalla valida, se rechaza el proceso.
-		return INVALID_SCREEN;
-	return addTask(entryPoint, screen, arg0);
-}
 
 // ====== SYS_CLEAR_SCREEN ======
 
@@ -120,6 +60,7 @@ unsigned int sys_clear_screen(){
 
 	return 0;
 }
+
 // ====== SYS_WRITE ======
 
 /*
@@ -323,57 +264,7 @@ unsigned int sys_read(unsigned int fd, char * buf, unsigned int count)
 }
 
 
-// ====== RTC ====== 
-/* constants */
-#define HOUR 1
-#define DATE 2
-#define SUCCESS 1
 
-/* fields */
-#define F_SEC   0x00
-#define F_MIN   0x02
-#define F_HOURS 0x04
-
-#define F_DAY   0x07
-#define F_MONTH 0x08
-#define F_YEAR  0x09
-
-extern int getRTC(uint8_t field);
-
-unsigned int sys_rtc(unsigned int option) {
-        int hours, min, sec;
-        int day, month, year;
-
-        switch(option) {
-                // Me piden horario
-                // Devuelve HHMMSS
-                case HOUR:
-                        hours = getRTC(F_HOURS);     // hours
-                        hours = ( (hours & 0x0F) + (((hours & 0x70) / 16) * 10) ) | (hours & 0x80);
-
-                        min = getRTC(F_MIN);         // min
-                        min = (min & 0x0F) + ((min / 16) * 10);
-
-                        sec = getRTC(F_SEC);         // sec
-                        sec = (sec & 0x0F) + ((sec / 16) * 10);
-
-                        return (hours - 3) * 10000 + min * 100 + sec;
-
-                // Me piden fecha
-                // Devuelve DDMMYY
-                case DATE:
-                        day = getRTC(F_DAY);             // day
-                        day = (day & 0x0F) + ((day / 16) * 10);
-
-                        month = getRTC(F_MONTH);       // month
-                        month = (month & 0x0F) + ((month / 16) * 10);
-
-                        year = getRTC(F_YEAR);        // year
-                        year = (year & 0x0F) + ((year / 16) * 10);
-                        return day * 10000 + month * 100 + year;
-        }
-        return 0;       // error?
-}
 
 // ====== SYS_WRITE_TO_SCREEN ======
 

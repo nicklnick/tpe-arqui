@@ -135,4 +135,15 @@ void saveInfoReg(uint64_t * regDumpPos);
  */
 unsigned int sys_inforeg(uint64_t * buffer);
 
+/*
+ * << sys_printmem >>
+ * ----------------------------------------------------------------------
+ * Description: Memory dump starting from [position]
+ * ----------------------------------------------------------------------
+ * Receives: 
+ *      (uint64_t) starting position of mem dump
+ *      (char*) buffer to leave data
+ * Returns: --
+ */
+unsigned int sys_printmem(uint64_t position, char * buffer);
 #endif
