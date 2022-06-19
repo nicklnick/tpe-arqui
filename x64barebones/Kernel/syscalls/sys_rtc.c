@@ -5,7 +5,6 @@
 #define HOUR 1
 #define DATE 2
 
-
 unsigned int sys_rtc(unsigned int option) 
 {
         int hour, min, sec;
@@ -28,7 +27,7 @@ unsigned int sys_rtc(unsigned int option)
                         year = getYear();
                         return day * 10000 + month * 100 + year;
         }
-        
+
         return 0;
 }
 

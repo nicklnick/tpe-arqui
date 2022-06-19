@@ -176,7 +176,23 @@ unsigned int read_stdin(unsigned int fd, char * buf, unsigned int count)
 }
 
 
-/* ====== SPECIAL CHARACTERS FUNCTIONALITY ======*/
+/* Decides how to proceed depending on where to read */
+unsigned int readDispatcher(unsigned int fd, char * buf, unsigned int count) 
+{
+	switch(fd) {										// Eligimos posicion de donde leer. Tambien lo podriamos hacer con una funcion/tabla
+		case STDIN:
+		case STDIN_LEFT:
+		case STDIN_RIGHT:
+			if(checkIfAvailableKey())
+				return consume_stdin(buf,count);		// Si el key buffer no esta vacio, primero tengo que consumirlo
+			return read_stdin(fd, buf, count);				// El buffer esta vacio, puedo leer de pantalla
+
+		default:
+			return 0;	// Seria error?
+	}
+}
+
+
 void deleteKey(unsigned int * offset, unsigned int start,  unsigned int length , unsigned int step)
 {
 	if(*offset == start)			// si llegue al principio de la pantalla, no puedo ir para atras
@@ -205,4 +221,14 @@ void scrollUp(int start, int length, int step)
 	for(int i=(SCREEN_HEIGHT-1) * SCREEN_WIDTH + start; 				// elimino la ultima linea
 		i < (SCREEN_HEIGHT-1) * SCREEN_WIDTH + length + start; i+=2)
 		*(defaultVideoPos+i)=' ';
+}
+
+unsigned int consume_stdin(char * buf, unsigned int count) {
+	int i=0;
+	
+	while(checkIfAvailableKey() && i<count) {
+		char c = get_key();
+		buf[i++] = c;
+	}
+	return i;
 }

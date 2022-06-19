@@ -99,13 +99,28 @@ unsigned int getFdOffSet(unsigned int fd);
  * Descripcion: Writes to corresponding screen
  * ----------------------------------------------------------------------
  * Recibe: 
+*       [fd] = screen
  *      [buf] = string to be leave answer
  *      [count] = number of letters to be written
  * Devuelve: 
- *      (uint) bytes written
+ *      (uint) bytes read
  */
 unsigned int read_stdin(unsigned int fd, char * buf, unsigned int count);
 
+
+/*
+ * << readDispatcher >>
+ * ----------------------------------------------------------------------
+ * Descripcion: Decides how to proceed depending on screen
+ * ----------------------------------------------------------------------
+ * Recibe: 
+ *      [fd] = screen
+ *      [buf] = string to be leave answer
+ *      [count] = number of letters to be read
+ * Devuelve: 
+ *      (uint) bytes read
+ */
+unsigned int readDispatcher(unsigned int fd, char * buf, unsigned int count);
 
 /* ========================= SPECIAL KEYS ============================ */
 /*
@@ -134,5 +149,18 @@ void deleteKey(unsigned int * offset, unsigned int start,  unsigned int length ,
  * Devuelve: --
  */
 void scrollUp(int start, int length, int step);
+/*==================================================================== */
+
+/*
+ * << consume_stdin >>
+ * ----------------------------------------------------------------------
+ * Descripcion: Consumes STDIN
+ * ----------------------------------------------------------------------
+ * Recibe: --
+ * Devuelve: 
+ *      (uint) bytes consumed
+ */
+unsigned int consume_stdin();
+
 
 #endif
