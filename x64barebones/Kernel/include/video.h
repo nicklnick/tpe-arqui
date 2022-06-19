@@ -25,20 +25,6 @@
 #define STDOUT_COLOR 7
 #define STDERR_COLOR 4
 
-
-/* --- MACROS --- */
-#define ACCESS_VAR(var) (*(var))
-
-
-/* --- FUNCTIONS --- */
-// setup.c
-// para variables estaticas en el driver de video
-uint8_t * defaultVideo();
-unsigned int * currentVideoOffset();
-unsigned int * currentVideoLeftOffset();
-unsigned int * currentVideoRightOffset();
-
-
 /*
  * << write >>
  * ----------------------------------------------------------------------
@@ -51,13 +37,77 @@ unsigned int * currentVideoRightOffset();
  *		[offset] = current cursor position
  * 		[start] = initial column of screen
  *		[length] = length of screen where we print
- *		[step] = number of positions to jump after we reach end of sceen
+ *		[step] = number of positions to jump after we reach end of screen
  * Devuelve: 
  *      (uint) bytes written
  */
 unsigned int write(const char * buf, char format, unsigned int count, 
 					unsigned int * offset, unsigned int start,  unsigned int length , unsigned int step);
 
+/*
+ * << writeDispatcher >>
+ * ----------------------------------------------------------------------
+ * Descripcion: Decides how to proceed depending on screen to write
+ * ----------------------------------------------------------------------
+ * Recibe: 
+ *      [fd] = screen to write
+ *      [buf] = string to be written
+ *      [count] = number of letters to be written
+ * Devuelve: 
+ *      0 <=> successful
+ */
+unsigned int writeDispatcher(unsigned int fd, const char * buf, unsigned int count);
+
+/*
+ * << clearScreen >>
+ * ----------------------------------------------------------------------
+ * Descripcion: Writes to corresponding screen
+ * ----------------------------------------------------------------------
+ * Recibe: 
+ *      [start] = initial column of screen
+ *      [length] = length of screen where we print
+ *      [step] = number of positions to jump after we reach end of screen
+ * Devuelve: --
+ */
+void clearScreen(int start, int length, int step);
+
+/*
+ * << clearScreenDispatcher >>
+ * ----------------------------------------------------------------------
+ * Descripcion: Decides which screen to clear
+ * ----------------------------------------------------------------------
+ * Recibe: --
+ * Devuelve: --
+ */
+unsigned int clearScreenDispatcher();
+
+/*
+ * << getFdOffset >>
+ * ----------------------------------------------------------------------
+ * Descripcion: Gets the offset of a given [fd]
+ * ----------------------------------------------------------------------
+ * Recibe: 
+ *      [fd] = screen
+ * Devuelve: 
+ *      (uint) offset to write on screen
+ */
+unsigned int getFdOffSet(unsigned int fd);
+
+/*
+ * << read_stdin >>
+ * ----------------------------------------------------------------------
+ * Descripcion: Writes to corresponding screen
+ * ----------------------------------------------------------------------
+ * Recibe: 
+ *      [buf] = string to be leave answer
+ *      [count] = number of letters to be written
+ * Devuelve: 
+ *      (uint) bytes written
+ */
+unsigned int read_stdin(unsigned int fd, char * buf, unsigned int count);
+
+
+/* ========================= SPECIAL KEYS ============================ */
 /*
  * << deleteKey >>
  * ----------------------------------------------------------------------
@@ -67,7 +117,7 @@ unsigned int write(const char * buf, char format, unsigned int count,
  *		[offset] = current cursor position
  * 		[start] = initial column of screen (Eg: normal=izq=0, right= 80)
  *		[length] = length of screen where we print
- *		[step] = number of positions to jump after we reach end of sceen
+ *		[step] = number of positions to jump after we reach end of screen
  * Devuelve: --
  */
 void deleteKey(unsigned int * offset, unsigned int start,  unsigned int length , unsigned int step);
@@ -80,8 +130,9 @@ void deleteKey(unsigned int * offset, unsigned int start,  unsigned int length ,
  * Recibe: 
  * 		[start] = initial column of screen (Eg: normal=izq=0, right= 80)
  *		[length] = length of screen where we print
- *		[step] = number of positions to jump after we reach end of sceen
+ *		[step] = number of positions to jump after we reach end of screen
  * Devuelve: --
  */
 void scrollUp(int start, int length, int step);
+
 #endif
