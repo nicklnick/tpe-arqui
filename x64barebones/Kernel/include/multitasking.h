@@ -20,6 +20,13 @@ int addTask(uint64_t entrypoint, int screen, uint64_t arg0);
 void removeCurrentTask();
 int removeTask(unsigned int pid);
 int pauseOrUnpauseProcess(unsigned int pid);
+int hyberanteProcess();
+
+
+void killAllProcesses();
+void pauseCenterProcess();
+void pauseLeftScreenProcess();
+void pauseRightScreenProcess();
 
 uint64_t getRSP();
 uint64_t getSS();

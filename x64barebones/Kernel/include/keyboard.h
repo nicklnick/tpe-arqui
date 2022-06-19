@@ -4,6 +4,7 @@
 /*--------  DEPENDENCIES --------*/
 #include <stdint.h>
 #include <syscalls.h>
+#include <multitasking.h>
 
 /* --- CONSTANTS  --- */
 #define NO_KEY 0
@@ -13,10 +14,10 @@
 #define UNMAPPED 4
 
 // --- Caracteres especiales ---
-#define ESCAPE_KEY 27
-#define F1_KEY 17
-#define F2_KEY 18
-#define F3_KEY 19
+#define ESCAPE_KEY 0x2
+#define F1_KEY 0x3B
+#define F2_KEY 0x3C
+#define F3_KEY 0x3D
 #define F5_SCAN_CODE 0x3F
 
 

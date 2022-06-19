@@ -16,6 +16,7 @@
 #define SYS_PAUSE_PROCESS 9
 #define SYS_INFOREG 10
 #define SYS_PRINTMEM 11
+#define SYS_HYBERNATE_PROCESS 12
 
 // Entrada estandar
 #define STDIN 1
@@ -209,6 +210,8 @@ unsigned int sys_inforeg(uint64_t * buffer);
  * Returns: --
  */
 unsigned int sys_printmem(uint64_t position, char * buffer);
+
+unsigned int sys_hybernate_process();
 
 
 #endif

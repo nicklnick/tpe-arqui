@@ -1,4 +1,5 @@
 #include <multitasking.h>
+#include <video.h>
 
 // ---- Constantes ----
 #define TOTAL_TASKS 4
@@ -8,6 +9,7 @@
 #define INACTIVE_PROCESS 0
 #define ACTIVE_PROCESS 1 
 #define PAUSED_PROCESS 2
+#define HYBERNATING_PROCESS 3
 
 // ---- Valores default para el armado del stack ----
 #define FLAG_VALUES 0x202
@@ -66,6 +68,10 @@ static taskInfo defaultStack;
 
 /* =========== CODIGO =========== */
 
+void idleTask(){
+	while(1){}
+}
+
 /*
 	Se habilita el multitasking e instantaneamente
 	pasa al primer task en el queue.
@@ -80,6 +86,33 @@ void enableMultiTasking(){
 */
 uint8_t multitaskingEnabled(){
 	return (dimTasks != NO_TASKS) && isEnabled;
+}
+
+// busco el proximo task
+unsigned int chooseNextTask(){
+	char counter=0, pausedProcess=0;
+
+	for(unsigned int i=currentTask; 1 ; counter++ ){
+		i = (i +  1) % TOTAL_TASKS;
+
+		if(tasks[i].state == PAUSED_PROCESS)
+			pausedProcess=1;
+
+		if(tasks[i].state == ACTIVE_PROCESS) 
+			return i;
+
+		else if(counter>TOTAL_TASKS){
+			if(!pausedProcess){
+				if(tasks[i].state == HYBERNATING_PROCESS)
+					return i;										// si todos fueron matados, busco los procesos hibernados
+			}
+			else{
+				return addTask((uint64_t) &idleTask,0,0);		// todo fue pausado, tengo que tener un idle process hasta que el usuario pas a otra coas
+			}
+			
+		}
+	}
+	return 0;
 }
 
 
@@ -99,17 +132,8 @@ void moveToNextTask(uint64_t stackPointer, uint64_t stackSegment){
 	tasks[currentTask].stackPointer = stackPointer;			// updateo el current
 	tasks[currentTask].stackSegment = stackSegment;
 	
-	char found=0;
-	for(unsigned int i=currentTask; !found ; ){			// busco el proximo stack
-		i = (i +  1) % TOTAL_TASKS;
-		if(tasks[i].state == ACTIVE_PROCESS){
-			currentTask = i;
-			found = 1;
-		}	
-	}
-	
+	currentTask = chooseNextTask();			// busco el proximo task
 }
-
 
 /*
 	Consigue el Stack Pointer del proceso 
@@ -122,8 +146,6 @@ uint64_t getRSP(){
 	}
 	return tasks[currentTask].stackPointer;
 }
-
-
 
 /*
 	Consigue el Stack Segment del proceso 
@@ -187,6 +209,75 @@ int pauseOrUnpauseProcess(unsigned int pid){
 	return TASK_ALTERED;
 }
 
+
+
+
+
+
+// hiberno el proceso, solo puede volver a funcionar si el resto de los procesos fueron matados
+int hyberanteProcess(){
+	tasks[currentTask].state = HYBERNATING_PROCESS;
+	return 0;
+}
+
+void killAllProcesses(){
+	writeDispatcher(1,"kill",4);
+	char changed = 0;
+	for(int i=0; i<TOTAL_TASKS; i++){
+		if(tasks[i].state == ACTIVE_PROCESS || tasks[i].state == PAUSED_PROCESS){
+			tasks[i].state = INACTIVE_PROCESS;
+			changed = 1; 
+		}
+	}
+	if(changed)
+		forceNextTask();
+}
+
+void pauseCenterProcess(){
+	writeDispatcher(1,"center",5);
+		char changed = 0;
+	for(int i=0; i<TOTAL_TASKS; i++){
+		if(tasks[i].screen ==  STDOUT){
+			tasks[i].state = tasks[i].state==PAUSED_PROCESS ? ACTIVE_PROCESS : PAUSED_PROCESS; 	// pausado -> despausado  | despausado -> pausado
+			changed = 1; 
+		}
+	}
+	if(changed)
+		forceNextTask();
+}
+
+void pauseLeftScreenProcess(){
+	writeDispatcher(1,"left",5);
+		char changed = 0;
+	for(int i=0; i<TOTAL_TASKS; i++){
+		if(tasks[i].screen ==  STDOUT_LEFT){
+			tasks[i].state = tasks[i].state==PAUSED_PROCESS ? ACTIVE_PROCESS : PAUSED_PROCESS; 	// pausado -> despausado  | despausado -> pausado
+			changed = 1; 
+		}
+	}
+	if(changed)
+		forceNextTask();
+}
+
+void pauseRightScreenProcess(){
+	writeDispatcher(1,"right",5);
+		char changed = 0;
+	for(int i=0; i<TOTAL_TASKS; i++){
+		if(tasks[i].screen ==  STDOUT_RIGHT){
+			tasks[i].state = tasks[i].state==PAUSED_PROCESS ? ACTIVE_PROCESS : PAUSED_PROCESS; 	// pausado -> despausado  | despausado -> pausado
+			changed = 1; 
+		}
+	}
+	if(changed)
+		forceNextTask();
+}
+
+
+
+
+
+
+
 /*	
 	Agrega una funcion al queue de tasks. 
 	Parametros:  entrypoint: puntero a funcion  |  screen: en que pantalla va a imprimir
@@ -199,7 +290,7 @@ int addTask(uint64_t entrypoint, int screen, uint64_t arg0){
 	dimTasks = dimTasks == NO_TASKS ? 1 : dimTasks+1;
 
 	int pos;
-	for(pos=0; tasks[pos].state==ACTIVE_PROCESS;pos++);											// encuentro posicion libre en el array de tasks
+	for(pos=0; tasks[pos].state != INACTIVE_PROCESS ;pos++);											// encuentro posicion libre en el array de tasks
 
 	// --- Parametros de funcion ---
 	*(STACK_POS(RDI_POS)) = arg0;
@@ -218,13 +309,13 @@ int addTask(uint64_t entrypoint, int screen, uint64_t arg0){
 	
 	*(STACK_POS(FLAGS_POS)) = FLAG_VALUES;						// tenemos que poner el flag de interrupcion en 1 y otros obligatorios
 	
-	*(STACK_POS(SP_POS)) = stacks[pos] + STACK_SIZE - RET_POS;	// agarro el comienzo del stack
+	*(STACK_POS(SP_POS)) = (uint64_t) stacks[pos] + STACK_SIZE - RET_POS;	// agarro el comienzo del stack
 	*(STACK_POS(SS_POS)) = SS_VALUE;
 	
 	*(STACK_POS(RET_POS)) = (uint64_t) &removeCurrentTask;		// para el RET que vaya y se remueva automaticamente de los tasks
 
 	// --- Datos de task ---
-	tasks[pos].stackPointer = stacks[pos] + STACK_SIZE - STACK_POINT_OF_ENTRY;					// comienzo del stack
+	tasks[pos].stackPointer = (uint64_t) stacks[pos] + STACK_SIZE - STACK_POINT_OF_ENTRY;					// comienzo del stack
 	tasks[pos].stackSegment = SS_VALUE;		
 	tasks[pos].screen = screen;
 	tasks[pos].pid = currentPid++;

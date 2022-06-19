@@ -21,13 +21,13 @@ static int peekPos;			        // Posicion para observar en el buffer
 
 /* Tabla de equivalencias entre makeCode y Ascii */
 static char scanCodeTable[] = {
-        UNMAPPED,ESCAPE_KEY,'1','2','3','4','5','6','7','8',	
+        UNMAPPED,UNMAPPED,'1','2','3','4','5','6','7','8',	
 	'9','0','-','=','\b','\t','q','w','e','r',
 	't','y','u','i','o','p','[',']','\n',UNMAPPED,
 	'a','s','d','f','g','h','j','k','l',';',
 	'\'','|',UNMAPPED,'|','z','x','c','v','b','n',
 	'm',',','.','/',UNMAPPED,'*',UNMAPPED,' ',UNMAPPED,
-	F1_KEY,F2_KEY,F3_KEY,UNMAPPED,UNMAPPED,
+	UNMAPPED,UNMAPPED,UNMAPPED,UNMAPPED,UNMAPPED,
 	UNMAPPED,UNMAPPED,UNMAPPED,UNMAPPED,UNMAPPED,
 	UNMAPPED,UNMAPPED,UNMAPPED,UNMAPPED,UNMAPPED,'-',
 	UNMAPPED,UNMAPPED,UNMAPPED,'+',UNMAPPED,UNMAPPED,
@@ -44,8 +44,23 @@ char keyboard_handler(uint64_t * regDumpPos)
 
 	int c = readKeyboard();
 
-	if(c==F5_SCAN_CODE)
-		saveInfoReg(regDumpPos);	// caso: aprienta boton de captura de registros
+	switch(c){
+		case F5_SCAN_CODE:
+			saveInfoReg(regDumpPos);	// caso: aprienta boton de captura de registros
+			return NO_KEY;
+		case ESCAPE_KEY:
+			killAllProcesses();
+			return NO_KEY;
+		case F1_KEY:
+			pauseCenterProcess();
+			return NO_KEY;
+		case F2_KEY:
+			pauseLeftScreenProcess();
+			return NO_KEY;
+		case F3_KEY:
+			pauseRightScreenProcess();
+			return NO_KEY;
+	}
 
 	if(c<0 || c>=128)			// caso: codigo invalido 
 		return NO_KEY;

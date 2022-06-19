@@ -14,11 +14,6 @@ extern void opCodeError();          // exception_test.asm
 #define MAX_WORDS 10
 #define TOTAL_COMMANDS 8
 
-#define TOTAL_SPECIAL_KEYS 4
-static char specialKeys[] = {
-    PAUSE_RIGHT_SCREEN, PAUSE_LEFT_SCREEN, PAUSE_NORMAL_SCREEN, ESCAPE_KEY
-};
-
 // --- Comandos ---
 static char * commands[] = {
     "fibonacci", "primos", "help", "time", "inforeg",
@@ -89,19 +84,6 @@ unsigned int checkCommand(char * string, char ** array, unsigned int dim){
     return -1;
 }
 
-// retorna la primera key especial que encuentra
-char findSpecialKey(char * string, char * keys, unsigned int size){
-    int i;
-    for(i=0; string[i]!=0; i++){
-        for(int j=0; j<size; j++){
-            if(string[i]==keys[j]){
-                return keys[j];
-            }
-        }
-    }
-    return -1;
-}
-
 
 /*
     Primero se fija si es una combinacion valida de commands y pipe.
@@ -154,33 +136,7 @@ void commandsDispatcher(char ** words, unsigned int count){
             puts("Too many arguments!");
             return;
         }
-
-    while(finishedExecution==0){                                // el shell sigue corriendo en el fondo, fijandose si se toco una tecla especial
-        size = consume_buffer(buffer, BUFFER_LENGTH-1);
-        buffer[size] = 0;
-        char key = findSpecialKey(buffer, specialKeys, TOTAL_SPECIAL_KEYS);
-
-        switch(key){
-            case ESCAPE_KEY:
-                sys_kill_process(pid1);     
-                sys_kill_process(pid2);                          // en todos estos casos, nos aprovechamos con que si no existe un task con ese
-                sys_clear_screen();                              // pid, no hace nada y listo.
-                finishedExecution = 1;
-                break;
-            case PAUSE_NORMAL_SCREEN:
-                if(pid2<0)
-                sys_pause_process(pid1);
-                break;
-            case PAUSE_LEFT_SCREEN:
-                if(pid2>0)
-                    sys_pause_process(pid1);
-                break;
-            case PAUSE_RIGHT_SCREEN:
-                if(pid2>0)
-                    sys_pause_process(pid2);
-                break;
-        }  
-    }
+        sys_hybernate_process();
 }
 
 void shell(){

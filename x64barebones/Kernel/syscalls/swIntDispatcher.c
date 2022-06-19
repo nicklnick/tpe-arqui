@@ -38,6 +38,9 @@ unsigned int swIntDispatcher(uint64_t mode, uint64_t arg0, uint64_t arg1, uint64
 
 		case SYS_PRINTMEM:
 			return sys_printmem((uint64_t)arg0, (char *) arg1);
+			
+		case SYS_HYBERNATE_PROCESS:
+			return sys_hybernate_process();
 
 		default:
 			return INVALID_SYS_CALL;

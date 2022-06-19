@@ -10,6 +10,7 @@
 #define SYS_PAUSE_PROCESS 9
 #define SYS_INFOREG 10
 #define SYS_PRINTMEM 11
+#define SYS_HYBERNATE_PROCESS 12
 
 #define NULL 0
 
@@ -47,4 +48,9 @@ unsigned int sys_inforeg(uint64_t * buffer){
 
 unsigned int sys_printmem(uint64_t position, char * buffer){
     return syscaller(SYS_PRINTMEM, position, (uint64_t) buffer, NULL);
+}
+
+
+unsigned int sys_hybernate_process(){
+    return syscaller(SYS_HYBERNATE_PROCESS, NULL, NULL, NULL);
 }
