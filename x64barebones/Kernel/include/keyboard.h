@@ -14,7 +14,7 @@
 #define UNMAPPED 4
 
 // --- Caracteres especiales ---
-#define ESCAPE_KEY 0x2
+#define ESCAPE_KEY 0x1
 #define F1_KEY 0x3B
 #define F2_KEY 0x3C
 #define F3_KEY 0x3D

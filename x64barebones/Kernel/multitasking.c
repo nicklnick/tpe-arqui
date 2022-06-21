@@ -28,6 +28,7 @@
 #define SS_POS	  (2*8)					/*  	|	  SS	  |		*/
 #define RET_POS 	8 					/*  	|	 RET	  |		*/
 										/*   	 -------------		*/
+#define IDLE_POS  TOTAL_TASKS
 
 #define STACK_POS(POS) (uint64_t *) (stacks[pos] + STACK_SIZE - (POS))
 
@@ -36,8 +37,9 @@ static uint8_t stack1[STACK_SIZE];
 static uint8_t stack2[STACK_SIZE];
 static uint8_t stack3[STACK_SIZE];
 static uint8_t stack4[STACK_SIZE];
+static uint8_t idleStack[STACK_SIZE];
 
-static uint8_t * stacks[TOTAL_TASKS] = {stack1, stack2, stack3, stack4};
+static uint8_t * stacks[TOTAL_TASKS + 1] = {stack1, stack2, stack3, stack4, idleStack};		// + 1 para poner el idle process al final
 
 
 // -----Informacion sobre cada task-----
@@ -50,7 +52,7 @@ typedef struct taskInfo{
 }taskInfo;
 
 // ------ Queue de tasks -------
-static taskInfo tasks[TOTAL_TASKS];
+static taskInfo tasks[TOTAL_TASKS + 1];
 
 static uint8_t currentPid;				// identificador para cada proceso
 static uint8_t isEnabled;				// denota si multitasking se habilito
@@ -64,12 +66,15 @@ static int dimTasks = NO_TASKS;
 // al comienzo de la ejecucion del kernel
 static taskInfo defaultStack;
 
+static char idle = 0;
 
 
 /* =========== CODIGO =========== */
 
 void idleTask(){
-	while(1){}
+	while(1){
+			writeDispatcher(1,"hola",5);
+	}
 }
 
 /*
@@ -92,22 +97,35 @@ uint8_t multitaskingEnabled(){
 unsigned int chooseNextTask(){
 	char counter=0, pausedProcess=0;
 
-	for(unsigned int i=currentTask; 1 ; counter++ ){
+	for(unsigned int i=currentTask; counter<30 ; counter++ ){
+
 		i = (i +  1) % TOTAL_TASKS;
 
+		if(tasks[i].state == ACTIVE_PROCESS){
+			idle = 0;
+			return i;
+
+		} 
+			
 		if(tasks[i].state == PAUSED_PROCESS)
 			pausedProcess=1;
 
-		if(tasks[i].state == ACTIVE_PROCESS) 
-			return i;
-
-		else if(counter>TOTAL_TASKS){
+		else if(counter>=TOTAL_TASKS){
 			if(!pausedProcess){
-				if(tasks[i].state == HYBERNATING_PROCESS)
+				if(tasks[i].state == HYBERNATING_PROCESS){
+					tasks[i].state = ACTIVE_PROCESS;
+					idle = 0;
 					return i;										// si todos fueron matados, busco los procesos hibernados
+
+				}
+			}
+			if(idle){
+				return IDLE_POS;
 			}
 			else{
-				return addTask((uint64_t) &idleTask,0,0);		// todo fue pausado, tengo que tener un idle process hasta que el usuario pas a otra coas
+				idle = 1;
+				addSpecialTask((uint64_t) &idleTask);		// todo fue pausado, tengo que tener un idle process hasta que el usuario pas a otra coas
+				return IDLE_POS;
 			}
 			
 		}
@@ -132,6 +150,7 @@ void moveToNextTask(uint64_t stackPointer, uint64_t stackSegment){
 	tasks[currentTask].stackPointer = stackPointer;			// updateo el current
 	tasks[currentTask].stackSegment = stackSegment;
 	
+
 	currentTask = chooseNextTask();			// busco el proximo task
 }
 
@@ -215,12 +234,13 @@ int pauseOrUnpauseProcess(unsigned int pid){
 
 
 // hiberno el proceso, solo puede volver a funcionar si el resto de los procesos fueron matados
-int hyberanteProcess(){
+void hyberanteProcess(){
 	tasks[currentTask].state = HYBERNATING_PROCESS;
-	return 0;
+	forceNextTask();
 }
 
 void killAllProcesses(){
+	for(int k=0; k<5000000000; k++);
 	writeDispatcher(1,"kill",4);
 	char changed = 0;
 	for(int i=0; i<TOTAL_TASKS; i++){
@@ -242,6 +262,7 @@ void pauseCenterProcess(){
 			changed = 1; 
 		}
 	}
+	writeDispatcher(1,"center",5);
 	if(changed)
 		forceNextTask();
 }
@@ -277,6 +298,24 @@ void pauseRightScreenProcess(){
 
 
 
+void addSpecialTask(uint64_t entrypoint){
+	int pos = IDLE_POS;
+
+	*(STACK_POS(IP_POS)) = entrypoint;							// puntero al proceso que se va a correr
+	*(STACK_POS(CS_POS)) = CS_VALUE;				
+	
+	*(STACK_POS(FLAGS_POS)) = FLAG_VALUES;						// tenemos que poner el flag de interrupcion en 1 y otros obligatorios
+	
+	*(STACK_POS(SP_POS)) = (uint64_t) stacks[pos] + STACK_SIZE - RET_POS;	// agarro el comienzo del stack
+	*(STACK_POS(SS_POS)) = SS_VALUE;
+	
+	*(STACK_POS(RET_POS)) = (uint64_t) &removeCurrentTask;		// para el RET que vaya y se remueva automaticamente de los tasks
+	tasks[pos].stackPointer = (uint64_t) stacks[pos] + STACK_SIZE - STACK_POINT_OF_ENTRY;					// comienzo del stack
+	tasks[pos].stackSegment = SS_VALUE;		
+	tasks[pos].screen = 0;
+	tasks[pos].pid = 0;
+	tasks[pos].state = ACTIVE_PROCESS;
+}
 
 /*	
 	Agrega una funcion al queue de tasks. 

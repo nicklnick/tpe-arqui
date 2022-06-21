@@ -20,7 +20,7 @@ int addTask(uint64_t entrypoint, int screen, uint64_t arg0);
 void removeCurrentTask();
 int removeTask(unsigned int pid);
 int pauseOrUnpauseProcess(unsigned int pid);
-int hyberanteProcess();
+void hyberanteProcess();
 
 
 void killAllProcesses();
