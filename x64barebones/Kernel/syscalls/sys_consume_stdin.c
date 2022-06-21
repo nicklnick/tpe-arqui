@@ -1,7 +1,7 @@
 #include <syscalls.h>
-#include <video.h>
+#include <keyboard.h>
 
 
 unsigned int sys_consume_stdin(char * buf, unsigned int count) {
-	return consume_stdin(buf, count);
+	return consume_kb_buffer(buf, count);
 }

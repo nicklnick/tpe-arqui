@@ -58,6 +58,17 @@ char get_key();
  */
 char peek_key();
 
+/*
+ * << consume_kb_buffer >>
+ * ----------------------------------------------------------------------
+ * Descripcion: Consumes keyboard buffer DUH
+ * ----------------------------------------------------------------------
+ * Recibe: --
+ * Devuelve: 
+ *      (uint) bytes consumed
+ */
+unsigned int consume_kb_buffer(char * buf, unsigned int count);
+
 char checkIfAvailableKey();
 
 #endif
