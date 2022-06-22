@@ -218,13 +218,13 @@ int addTask(uint64_t entrypoint, int screen, uint64_t arg0){
 	
 	*(STACK_POS(FLAGS_POS)) = FLAG_VALUES;						// tenemos que poner el flag de interrupcion en 1 y otros obligatorios
 	
-	*(STACK_POS(SP_POS)) = stacks[pos] + STACK_SIZE - RET_POS;	// agarro el comienzo del stack
+	*(STACK_POS(SP_POS)) = (uint64_t) stacks[pos] + STACK_SIZE - RET_POS;	// agarro el comienzo del stack
 	*(STACK_POS(SS_POS)) = SS_VALUE;
 	
 	*(STACK_POS(RET_POS)) = (uint64_t) &removeCurrentTask;		// para el RET que vaya y se remueva automaticamente de los tasks
 
 	// --- Datos de task ---
-	tasks[pos].stackPointer = stacks[pos] + STACK_SIZE - STACK_POINT_OF_ENTRY;					// comienzo del stack
+	tasks[pos].stackPointer = (uint64_t) stacks[pos] + STACK_SIZE - STACK_POINT_OF_ENTRY;					// comienzo del stack
 	tasks[pos].stackSegment = SS_VALUE;		
 	tasks[pos].screen = screen;
 	tasks[pos].pid = currentPid++;

@@ -1,6 +1,8 @@
 #include "../include/comandos.h"
 #include "../include/syscalls.h"
 
+#define INVALID_POS 0xDEAD
+
 void printmem(char * arg)
 {
     if(!isNum(arg)) {                                            // recibe un string que puede o no ser un numero
@@ -12,8 +14,10 @@ void printmem(char * arg)
 
     char buffer[BUFFER_LENGTH];
 
-    if(sys_printmem(position, buffer) < 0)
+    if(sys_printmem(position, buffer) == INVALID_POS){
         puts("Invalid memory address!");
+        puts("Valid memory address range: [ 4,194,304d - 250,000,000d ]");
+    }
     else
         puts(buffer);
 }
