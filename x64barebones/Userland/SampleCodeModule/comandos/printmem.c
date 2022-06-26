@@ -16,7 +16,7 @@ void printmem(char * arg)
 
     if(sys_printmem(position, buffer) == INVALID_POS){
         puts("Invalid memory address!");
-        puts("Valid memory address range: [ 4,194,304d - 250,000,000d ]");
+        puts("Valid memory address range: [ 4,194,304d - 34,359,738,367d )");
     }
     else
         puts(buffer);
